@@ -1,0 +1,5 @@
+name = LB Matching
+description = Solve contacts de-duplication.
+core = 7.x
+package = LB
+dependencies[] = crm_core_match

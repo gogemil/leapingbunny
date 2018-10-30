@@ -1,0 +1,41 @@
+<?php
+/**
+ * @file
+ * Code for the Able Organizer feature.
+ */
+
+/**
+ * Implements hook_enable().
+ */
+function ao_enable() {
+  // Enable page manager handling of contact displaying.
+  variable_set('page_manager_crm_core_contact_view_disabled', FALSE);
+}
+
+function ao_requirements($phase) {
+  
+  $requirements = array();
+  
+  if($phase == 'install'){
+
+    $requirements['ao_minimum_memory'] = array(
+      'title' => st('Memory'),
+      'weight' => -1000000000,
+    );    
+    
+    $mem = preg_replace("/[^0-9]/","",ini_get('memory_limit'));
+
+    if($mem >= 128){
+      $requirements['ao_minimum_memory']['severity'] = REQUIREMENT_OK;
+      $requirements['ao_minimum_memory']['value'] = ini_get('memory_limit');
+    } else {
+      $requirements['ao_minimum_memory']['severity'] = REQUIREMENT_WARNING;
+      $requirements['ao_minimum_memory']['value'] = ini_get('memory_limit');
+      $requirements['ao_minimum_memory']['description'] = st('The maximum amount of memory that a script is allowed to allocate in PHP must be set to a minimum of 128 MB. 256 MB or greater is recommended. This value can be set in the php.ini file on your webserver, check the <a href="@url">instructions on the PHP website</a>.', array('@url' => 'http://php.net/ini.core'));
+    }
+    
+  }
+  
+  return $requirements;
+  
+}

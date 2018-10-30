@@ -1,0 +1,87 @@
+/**
+ * @file
+ * Panel Styles
+ *
+ * Predefined styles for panels and panel panes
+ */
+
+
+/**
+ *  PANEL PANES
+ */
+// standard panel pane
+.ao-standard-panel-pane {
+  @include ao-panel-pane(
+    $ao-panel-pane-background: $f-gray2,
+    $ao-panel-pane-border: false,
+    $ao-panel-pane-border-top: 1px solid $e-gray,
+    $ao-panel-pane-border-bottom: 1px solid $c-gray,
+    $ao-panel-pane-border-left: 1px solid $e-gray,
+    $ao-panel-pane-border-right: 1px solid $c-gray,
+    $ao-panel-pane-border-radius: 8px,
+    $ao-panel-pane-margin: 0em 0em .8em,
+    $ao-panel-pane-padding: 0em .2em .2em,
+    $ao-panel-header-font-style: standard-panel-title,
+    $ao-panel-pane-title-border-bottom: 1px solid #e1e1e1,
+    $ao-panel-content-font-style: $ao-panel-content-font-style  
+  );  
+}
+// highlighted panel pane
+.ao-highlighted-panel-pane {
+  @include ao-panel-pane(
+    $ao-panel-pane-background: White,
+    $ao-panel-pane-border: false,
+    $ao-panel-pane-border-top: 1px solid $e-gray,
+    $ao-panel-pane-border-bottom: 1px solid $c-gray,
+    $ao-panel-pane-border-left: 1px solid $e-gray,
+    $ao-panel-pane-border-right: 1px solid $c-gray,
+    $ao-panel-pane-border-radius: false,
+    $ao-panel-pane-margin: 0em 0em .8em,
+    $ao-panel-pane-padding: 0em 1em,
+    $ao-panel-header-font-style: standard-panel-title-large,
+    $ao-panel-pane-title-border-bottom: standard-panel-title-large,
+    $ao-panel-content-font-style: $ao-panel-content-font-style  
+  );  
+}
+// summary panel panes
+.ao-summary-panel-pane {
+  @include ao-panel-pane(
+    $ao-panel-pane-background: $f-gray2,
+    $ao-panel-pane-border: false,
+    $ao-panel-pane-border-top: 1px solid $e-gray,
+    $ao-panel-pane-border-bottom: 1px solid $c-gray,
+    $ao-panel-pane-border-left: 1px solid $e-gray,
+    $ao-panel-pane-border-right: 1px solid $c-gray,
+    $ao-panel-pane-border-radius: 8px,
+    $ao-panel-pane-margin: 0em 0em .8em,
+    $ao-panel-pane-padding: 0em .2em .2em,
+    $ao-panel-header-font-style: summary-panel-title,
+    $ao-panel-content-font-style: $ao-panel-content-font-style  
+  );  
+}
+ 
+
+/* activity in an activity feed */
+/* activity feed */
+.activity-record-pane {
+  border: 1px solid $e-gray;
+  background-color: White;
+  padding: 1em;
+  margin: 1em 0em;
+  .views-row:last-child {
+    .crm-core-activity {
+      border-bottom: none;
+    }
+  }
+}
+
+/* move to theme */
+/* activity page */
+.view-ao-crm-activities-by-contact {
+  .view-content {
+    @extend .activity-record-pane;
+  }
+}
+
+ 
+ 

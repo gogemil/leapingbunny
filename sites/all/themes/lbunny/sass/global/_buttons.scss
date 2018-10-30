@@ -1,0 +1,88 @@
+%blue-button {
+  @include border-radius(10px);
+  background: $blue;
+  color: $white;
+  display: inline-block;
+  text-decoration: none;
+  &:hover {
+    background: $blue1;
+  }
+  @include transition-duration(300ms);
+}
+
+%green-button {
+  @include lb_button($green, $green, $white, $green, $green, $light-green, $light-green, $light-green, $white);
+}
+
+%black-button {
+  @include lb_button($dark, $dark, $white, $dark, $dark, $light-gray, $light-gray, $light-gray, $white);
+}
+
+%green-button-inverse {
+  @include lb_button($green, $green, $white, $green, $green, $light-green, $light-green, $light-green, $white);
+}
+
+%green-button-inverse {
+  @include lb_button($white, $white, $green, $white, $white, $light-green, $light-green, $light-green, $green);
+}
+
+%social-icons {
+  margin: 10px 0;
+  .icon {
+    background: url(../images/social-icons.png) no-repeat left top transparent;
+    display: inline-block;
+    width: 33px;
+    height: 33px;
+    overflow: hidden;
+    text-align: left;
+    text-indent: -9999px;
+    margin: 2px;
+  }
+  .icon-facebook {
+  }
+  .icon-twitter {
+    background-position: -72px top;
+  }
+  .icon-pinterest {
+    background-position: -109px top;
+  }
+  .icon-instagram {
+    background-position: -36px top;
+  }
+}
+
+// Has to be a mixin instead of placeholder(%) since it's used in media query for mobile
+@mixin social-icons-big {
+  margin: 10px 0;
+  .icon {
+    background: url(../images/social-icons-big.png) no-repeat left top transparent;
+    display: inline-block;
+    width: 61px;
+    height: 61px;
+    overflow: hidden;
+    text-align: left;
+    text-indent: -9999px;
+    margin: 2px;
+  }
+  .icon-facebook {
+  }
+  .icon-twitter {
+    background-position: -160px top;
+  }
+  .icon-pinterest {
+    background-position: -240px top;
+  }
+  .icon-instagram {
+    background-position: -80px top;
+  }
+}
+
+
+input[type=reset] {
+  @extend %green-button;
+  background: none;
+  color: $gray;
+  border: none;
+  text-decoration: underline;
+  margin-left: 10px;
+}

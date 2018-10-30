@@ -1,0 +1,21 @@
+<?php
+/**
+ * @file
+ * Code for the AO Basic Setup feature.
+ */
+
+include_once 'ao_basic_setup.features.inc';
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function ao_basic_setup_preprocess_html() {
+  if (drupal_is_front_page()) {
+    drupal_add_library('system', 'ui', TRUE);
+    drupal_add_library('system', 'effects', TRUE);
+    drupal_add_library('system', 'effects.fade', TRUE);
+    drupal_add_library('system', 'ui.dialog', TRUE);
+    drupal_add_js(drupal_get_path('module', 'ao_basic_setup') . '/js/script.js');
+    drupal_add_css(drupal_get_path('module', 'ao_basic_setup') . '/css/ao_basic_setup.css');
+  }
+}

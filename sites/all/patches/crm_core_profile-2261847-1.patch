@@ -1,0 +1,55 @@
+diff --git a/crm_core_profile.module b/crm_core_profile.module
+index ef0e1eb..bb48382 100644
+--- a/crm_core_profile.module
++++ b/crm_core_profile.module
+@@ -104,44 +104,30 @@ function crm_core_profile_menu() {
+ 
+   // Register our profile path's.
+   foreach (crm_core_profile_load_all() as $profile) {
+-
++    // Profile is enabled.
+     if ($profile->status) {
+-
+       $prepopulate = isset($profile->entities['crm_core_contact']['prepopulate']) ? $profile->entities['crm_core_contact']['prepopulate'] : FALSE;
+       $prepopulate_type = isset($profile->entities['crm_core_contact']['prepopulate_type']) ? $profile->entities['crm_core_contact']['prepopulate_type'] : '';
+       $page_title = empty($profile->page_title) ? $profile->label : $profile->page_title;
+-
++      // Prepopulation is enabled.
+       if ($prepopulate && ($prepopulate_type == 'token_user' || $prepopulate_type == 'token_contact')) {
+-
+         $token_position = crm_core_profile_token_handler($profile);
+-
+         $items[$profile->page_path] = array(
+           'title' => $page_title,
+           'page callback' => 'drupal_get_form',
+-          'page arguments' => array(
+-            'crm_core_profile_entry_form',
+-            $profile,
+-            $token_position,
+-          ),
++          'page arguments' => array('crm_core_profile_entry_form_' . $profile->name, $profile, $token_position),
+           'access callback' => 'crm_core_profile_access',
+-          'access arguments' => array(
+-            $profile,
+-            'access crm_core_profile forms',
+-          ),
++          'access arguments' => array($profile, 'access crm_core_profile forms'),
+           'type' => MENU_CALLBACK,
+         );
+       }
+       elseif ($profile->page && !empty($profile->page_path)) {
+-
+         $items[$profile->page_path] = array(
+           'title' => $page_title,
+           'page callback' => 'drupal_get_form',
+-          'page arguments' => array('crm_core_profile_entry_form', $profile),
++          'page arguments' => array('crm_core_profile_entry_form_' . $profile->name, $profile),
+           'access callback' => 'crm_core_profile_access',
+-          'access arguments' => array(
+-            $profile,
+-            'access crm_core_profile forms',
+-          ),
++          'access arguments' => array($profile, 'access crm_core_profile forms'),
+           'type' => MENU_CALLBACK,
+         );
+       }

@@ -1,0 +1,100 @@
+<?php
+/**
+ * @file
+ * Code for the LB Downloads feature.
+ */
+
+include_once 'lb_downloads.features.inc';
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function lb_downloads_entity_info_alter(&$entity_info) {
+  $entity_info['file']['view modes']['download'] = array(
+    'label' => t('Download'),
+    'custom settings' => TRUE,
+  );
+}
+
+/**
+ * Implements hook_file_formatter_info().
+ */
+function lb_downloads_file_formatter_info() {
+  $formatters = [];
+
+  $formatters['file_field_file_iframe'] = [
+    'label' => t('File Iframe'),
+    'view callback' => 'lb_downloads_file_formatter_file_field_view',
+  ];
+
+  return $formatters;
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function lb_downloads_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = [];
+
+  switch ($display['type']) {
+    case 'file_field_file_iframe':
+      // Prevent 'empty' fields from causing a WSOD.
+      $items = array_filter($items);
+      foreach ($items as $delta => $item) {
+        if (!empty($item['fid']) && ($file = file_load($item['fid'])) && file_entity_access('download', $file)) {
+
+          $url = file_create_url($file->uri);
+          $element[$delta] = [
+            '#markup' => '<iframe src="' . $url . '" frameborder="0"  height="800" width="100%" ></iframe>',
+          ];
+        }
+      }
+      break;
+  }
+  return $element;
+}
+
+
+/**
+ * Implements hook_file_formatter_FORMATTER_view().
+ *
+ * This function provides a bridge to the field formatter API, so that file
+ * field formatters can be reused for displaying the file entity's file
+ * pseudo-field.
+ */
+function lb_downloads_file_formatter_file_field_view($file, $display, $langcode) {
+
+  $item = (array) $file;
+  if (!empty($file->override['attributes'])) {
+    $item = array_merge($item, $file->override['attributes']);
+  }
+
+  // Set $items to what file field formatters expect. See file_field_load(),
+  // and note that, here, $file is already a fully loaded entity.
+  $items = [$item];
+
+  // Invoke hook_field_formatter_prepare_view() and
+  // hook_field_formatter_view(). Note that we are reusing field formatter
+  // functions, but we are not displaying a Field API field, so we set
+  // $field and $instance accordingly, and do not invoke
+  // hook_field_prepare_view(). This assumes that the formatter functions do
+  // not rely on $field or $instance. A module that implements formatter
+  // functions that rely on $field or $instance (and therefore, can only be
+  // used for real fields) can prevent this formatter from being used on the
+  // pseudo-field by removing it within hook_file_formatter_info_alter().
+  $field = $instance = NULL;
+  if (($function = 'file_entity_field_formatter_prepare_view') && function_exists($function)) {
+    $fid = $file->fid;
+    // hook_field_formatter_prepare_view() alters $items by reference.
+    $grouped_items = [$fid => &$items];
+    $function('file', [$fid => $file], $field, [$fid => $instance], $langcode, $grouped_items, [$fid => $display]);
+  }
+
+  if (($function = 'lb_downloads_field_formatter_view') && function_exists($function)) {
+    $element = lb_downloads_field_formatter_view('file', $file, $field, $instance, $langcode, $items, $display);
+    // We passed the file as $items[0], so return the corresponding element.
+    if (isset($element[0])) {
+      return $element[0];
+    }
+  }
+}

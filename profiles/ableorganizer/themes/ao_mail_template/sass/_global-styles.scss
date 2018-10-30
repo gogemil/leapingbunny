@@ -1,0 +1,359 @@
+/**
+ * @file
+ * Global Styles used throughout the theme
+ *
+ */
+ 
+/* admin menu - fixes some incompatibilities */
+#admin-menu .dropdown .admin-menu-icon img {
+  height: 16px;
+  width: 16px;
+}
+
+/* typography */
+A {
+  color: $link-blue;
+  @include transition-property(all);
+  @include transition-duration(.2s);
+  @include transition-timing-function(ease-in-out);  
+  
+  &:hover {
+    color: $link-blue2;
+  }
+  &:active {
+    color: $link-blue3;
+  }
+  
+}
+.title-fonts {
+  font-family: $font-titles;
+  letter-spacing: -0.05em;
+  font-size: 1em;
+}
+.title-fonts-large {
+  font-size: 1.2em;
+}
+.summary-data {
+  font-size: 1.4em;
+  font-weight: 700;
+  background-color: White;
+}
+
+/* page titles */
+.page__title {
+  color: White;
+  position: absolute;
+  left: 0px;
+  bottom: 12px;
+  padding: 0em;
+  font-size: $h1-font-size;
+} 
+ 
+/* navigation links */
+/* navigation links */
+section.banner {
+  font-size: $h6-font-size;
+  
+  A {
+    color: #dfe4e6;
+    text-decoration: none;
+    
+    &:hover {
+      color: White;
+    }
+  
+  }
+  
+}
+  
+
+/* reports */
+.crm_core_reports {
+ $zen-column-count: 6;
+ $zen-gutter-width: 4em;
+ 
+  H3 {
+    @include border-radius(32px);
+    background-color: $base-blue4;
+    display: inline-block;
+    padding: .5em 1em;
+    margin: 0em;
+    color: White;
+    font-weight: 700;
+    @include text-shadow(rgba(0,0,0,.5) 1px 1px 0);
+    font-size: 1.3em;
+    
+    .crm_core_report_icon {
+      height: 30px;
+      width: 30px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+      margin-left: -8px;
+      background-color: white !important;
+      border-radius: 24px;
+      padding: 0;
+    }    
+    
+  }
+  
+  .item-list {
+
+    font-size: 0.9em;
+    
+    
+    UL {
+      list-style: none;
+      margin: 1em 0em 1em 1em;
+      padding: 0em;
+        
+      LI {
+        list-style: none;
+        margin: 0em;
+        padding: 0em;
+        font-style: italic;
+        margin-left: 12px;
+        
+        A {
+          margin-left: -12px;
+          font-style: normal;
+          text-decoration: none;
+          font-size: 1.1em;
+        }
+        
+      }
+    
+    }
+  
+  }
+ 
+  @include zen-grid-container;
+  .column-left {
+    @include zen-grid-item(3,1);
+    padding: 0em 2em 0em 0em;
+  }
+  .column-right {
+    @include zen-grid-item(3,4);
+  }
+  
+}
+
+
+
+
+/* container styles */
+/* colors and fonts applied to common container styles */
+
+ /* basic container */
+.basic-container {
+}
+/* basic container element */
+.basic-item-container {
+}
+
+/* activity feed */
+.activty-feed-container {
+  background-color: $f-gray3;
+  .pane-title {
+    @extend .widget-title;
+    @extend .title-fonts;
+    @extend .title-fonts-large;
+  }
+  .view {
+    .views-row {
+    }
+  }
+}
+
+/* summary widget */
+.summary-widget-container {
+  background-color: $f-gray2;
+  
+  .pane-title {
+    @extend .widget-title;
+    @extend .title-fonts;
+  }
+  
+  
+  TABLE {
+    THEAD {
+      TH {
+        @include background-image(linear-gradient(to bottom, #ffffff 31%,#dfe4e6 100%));
+        @extend .widget-table-titles;
+      }
+    }
+  
+    TR {
+      TD {
+        @extend .summary-data;
+      }
+    }
+    
+  }
+  
+}
+
+/* quicklinks */
+.quick-links {
+    
+  .pane-title {
+    @extend .widget-title-links;
+    @extend .title-fonts;
+  }
+  
+  .link-container {
+  
+    font-size: 0.9em;
+    
+    strong {
+      text-transform: uppercase;
+    }
+    strong, A {
+      margin-bottom: 0.4em;
+      text-decoration: none;
+    }
+  }
+  
+}
+
+/* views filters */
+.views-exposed-form {
+  
+  @extend .filter-wrapper;  
+  .views-exposed-widget {
+  
+    font-size: $h5-font-size;
+    padding: 0em;
+    margin: 0em .4em 0em 0em;
+    
+    LABEL {
+      text-transform: uppercase;
+    }
+  }
+}
+
+/* breadcrumbs */
+#breadcrumb {
+  clear: both;
+  
+  
+  UL.breadcrumbs {
+    list-style-type:none;
+    margin-left: 0px;
+    float: left;
+    margin-top: 12px;
+    background-color: rgba(60, 116, 137, .3);
+    height: 19px;
+    border: 1px solid rgba(255, 255, 255, .3);
+    @include border-radius(5px);        
+    padding: 0px;
+    
+    LI {
+      float: left;
+      margin-right: 2px;
+      height: 19px;
+      padding: 0px;
+      
+      A {
+        height: 19px;
+        display: block;
+        float: left;
+        font-size: 0.8em;
+        margin: 0;
+        padding: 0px 4px 0px 20px;
+        text-decoration: none;
+        color: rgba(255,255,255,.5);
+        background: url('../images/ao-backend-icons.png') -452px -6px no-repeat;
+        line-height: 1.5em;
+        
+        &:hover {
+          color: White;
+        }
+        
+      }
+      
+      
+      &.cmc_home A {
+        display: block;
+        padding: 0;
+        padding-left: 6px;
+        height: 19px;
+        width: 23px;
+        text-indent: -9999px;
+        overflow: hidden;
+        margin-left: 0em;
+        background: url('../images/ao-backend-icons.png') 3px -127px no-repeat;
+        @include transition-property(none);
+        @include transition-duration(0s);
+          
+        &:hover {
+          background: url('../images/ao-backend-icons.png') -27px -127px no-repeat;
+        }
+        
+        
+      }
+      
+    }
+    
+
+  }
+  
+  
+}
+
+#breadcrumb UL.breadcrumbs LI:nth-child(2) A {
+  padding: 0px 4px 0px 8px;
+  background: none;
+  border-left: 1px solid rgba(255,255,255,.3);
+}
+#breadcrumb UL.breadcrumbs LI div.bc_arrow {
+  display: none;
+}
+
+
+
+/* media queries */
+@media all and (min-width: 0px) and (max-width: 683px) {
+  /* logo size */
+  .header__logo {
+    width: 220px;
+    margin-bottom: .5em;
+  }
+  
+  /* report columns */
+  .crm_core_reports {
+    .column-left {
+      display: block;
+      width: 100%;
+      margin: 0em;
+    }
+    .column-right {
+      display: block;
+      width: 100%;
+      margin: 0em;
+    }
+  }
+}
+@media all and (min-width: 684px) and (max-width: 959px) {
+  /* logo size */
+  .header__logo {
+    width: 240px;
+    margin-bottom: .6em;
+  }
+}
+@media all and (min-width: 960px) {
+  /* logo size */
+  .header__logo {
+    width: 260px;
+    margin-bottom: .8em;
+  }
+}
+@media all and (min-width: 1200px) {
+  /* logo size */
+  .header__logo {
+    width: 280px;
+    margin-bottom: 1em;
+  }
+}
+
+

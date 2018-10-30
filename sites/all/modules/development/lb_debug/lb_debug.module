@@ -1,0 +1,40 @@
+<?php
+
+/*
+ * What max len I can write to watchdog?
+ */
+
+function lb_debug_log_trace($message = '', $dump_variable = null) {
+
+  $debug_info = array(
+    'trace' => ddebug_backtrace(TRUE),
+  );
+  $debug_info['$_SERVER'] = $_SERVER;
+  $debug_info['$_GET'] = $_GET;
+  $debug_info['$_POST'] = $_POST;
+  $debug_info['$_FILES'] = $_FILES;
+  $debug_info['$_COOKIE'] = $_COOKIE;
+  $debug_info['$_SESSION'] = $_SESSION;
+  $debug_info['$_ENV'] = $_ENV;
+
+  if (isset($debug_info['$_POST']['current_pass'])) {
+    unset($debug_info['$_POST']['current_pass']);
+  }
+  if (isset($debug_info['$_POST']['pass'])) {
+    unset($debug_info['$_POST']['pass']);
+  }
+
+  if ($dump_variable !== null) {
+    $debug_info['variable'] = $dump_variable;
+  }
+  if (!empty($message)) {
+    $debug_info['message'] = $message;
+  }
+
+  try {
+    watchdog('LB Debug', '<pre>' . print_r($debug_info, TRUE) . '</pre>');
+  } catch (Exception $e) {
+    watchdog_exception('LB Debug', $e, 'LB Debug: error on dumping variables');
+  }
+
+}

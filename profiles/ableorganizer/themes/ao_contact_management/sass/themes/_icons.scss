@@ -1,0 +1,30 @@
+/**
+ * @file
+ * Defines the appearance of various icons used throughout the system
+ *
+ */
+
+/* reports page */
+.crm_core_report_icon {
+
+  background-image: url('../images/ao-icons.png');
+  background-position: -0px -60px;
+  background-repeat: no-repeat;
+  
+  &.report-cmcd {
+    background-position: -1px -61px;
+  }
+  &.report-cmcd-donors {
+    background-position: -60px -60px;
+  }
+  &.report-cmcev {
+    background-position: -30px -60px;
+  }
+  &.report-cmcp {
+    background-position: -90px -60px;
+  }
+  &.report-cmcv {
+    background-position: -120px -60px;
+  }
+}
+

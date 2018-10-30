@@ -1,0 +1,12 @@
+diff --git a/includes/field_handlers/addressfieldProfileFieldHandler.inc b/includes/field_handlers/addressfieldProfileFieldHandler.inc
+index 3e15b99..930ef3b 100644
+--- a/includes/field_handlers/addressfieldProfileFieldHandler.inc
++++ b/includes/field_handlers/addressfieldProfileFieldHandler.inc
+@@ -77,6 +77,7 @@ class addressfieldProfileFieldHandler extends DefaultProfileFieldHandler {
+               $form[$subfield_name] = array('#type' => 'select');
+               $form[$subfield_name] += $format['locality_block']['administrative_area'];
+               $form[$subfield_name]['#size'] = 1;
++              $form[$subfield_name]['#weight'] = $subfld_config['weight'];
+             }
+             else {
+               $form[$subfield_name] = array(

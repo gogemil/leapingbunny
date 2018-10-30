@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the LB Social media feature.
+ */
+
+include_once 'lb_social_media.features.inc';

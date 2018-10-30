@@ -1,0 +1,46 @@
+/**
+ * @file
+ * Displays activities and icons in the system
+ *
+ */
+.crm-core-activity {
+  
+  font-size: $h5-font-size;
+  position: relative;
+  padding: 1em 1em;
+  
+  @include transition-property(all);
+  @include transition-duration(.2s);
+  @include transition-timing-function(ease-in-out);  
+  
+  .crm-core-activity-info {
+  
+    position: relative;
+    margin-left: 3em;
+    
+    .crm-core-activity-actions {
+      float: right;
+    }
+  
+  }
+
+}
+ 
+.crm-core-activity-icon {
+  height: 30px;
+  width: 30px;
+  position: absolute;
+  left: 1em;
+  top: 1em;
+  
+  SPAN {
+    display: block;
+    height: 30px;
+    width: 30px;
+    background: #ffb533 url('../images/ao-backend-icons.png') -120px -30px no-repeat;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;  
+  }
+  
+}

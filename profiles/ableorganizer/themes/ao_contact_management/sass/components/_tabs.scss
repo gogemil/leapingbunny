@@ -1,0 +1,71 @@
+/**
+ * @file
+ * Defines the appearance of tabs within the UI
+ *
+ */  
+UL.tabs {
+
+  &.tabs-primary {
+    padding: 0em;
+    position: relative;
+    &:after {
+      position: absolute;
+      content: "";
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      border-bottom: 1px solid $medium-blue;
+      z-index: 1;
+    }
+  }
+  
+  LI.tabs-primary__tab {
+    border: 1px solid $medium-blue;
+    border-bottom: none;
+    margin: 0em 10px 0em 0em;
+    position: relative;
+    z-index: 0;
+    box-sizing: border-box;
+    font-size: $h5-font-size;
+    
+    A {
+      padding: .3em .6em;
+      position: relative;
+      @include background-image(linear-gradient($e-gray, $d-gray));
+      @include transition-property(all);
+      @include transition-duration(.5s);
+      @include transition-timing-function(ease-in-out);
+      
+      &:hover {
+        color: $medium-blue;
+        @include background-image(linear-gradient($f-gray, $e-gray));
+      }
+    }
+    
+    &.is-active {
+      z-index: 3;
+      border-bottom: 1px solid $f-gray;
+      A {
+        @include background-image(linear-gradient(white, $f-gray));
+      }
+    }    
+  }
+  
+  &.tabs-secondary {
+    background-color: #e9e9e9;
+    background-image: none;
+    border-bottom: none;
+    @include border-radius(5px);
+    margin: 0em 0em 1.6em .4em;
+    padding: 0em 0em 0em .4em;
+    
+    LI {
+      margin: .4em .4em .4em 0em;
+    }
+    
+  }
+  
+  
+
+}
+  

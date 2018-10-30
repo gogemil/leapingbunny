@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the LB Mailing List feature.
+ */
+
+include_once 'lb_mailing_list.features.inc';

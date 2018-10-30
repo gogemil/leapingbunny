@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the LB CRM Core Contacts Views feature.
+ */
+
+include_once 'lb_crm_core_contacts_views.features.inc';

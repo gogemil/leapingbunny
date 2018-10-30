@@ -1,0 +1,131 @@
+
+/**
+ * @file
+ * Block
+ *
+ * Defines styles for displaying blocks
+ */
+
+/**
+ * DEFAULT VARIABLES
+ * Default settings for block
+ * See mixin documentation for explanations.
+ */
+$ao-block-background:     false !default;
+$ao-block-padding:        false !default;
+$ao-block-margin:         false !default;
+$ao-block-box-sizing:     false !default;
+$ao-block-box-shadow:     false !default;
+$ao-block-border-radius:  false !default;
+$ao-block-overflow:       false !default;
+$ao-block-color:          false !default;
+$ao-block-border-top:     false !default;
+$ao-block-border-bottom:  false !default;
+$ao-block-border-left:    false !default;
+$ao-block-border-right:   false !default;
+$ao-block-border-on-last: false !default;
+
+/**
+ * AO NODE
+ * Provides consistent styles for blocks.
+ * Ideally used to change styles for blocks in specific regions.
+ * Can be applied to all blocks or individual blocks.
+ *
+ * Variables:
+ * 
+ * Any variable will be ignored if set to false (unless otherwise stated).
+ * 
+ * $ao-block-background: $ao-background,
+ * $ao-block-padding: $ao-block-padding,
+ * $ao-block-margin: $ao-block-margin,
+ * $ao-block-box-sizing: $ao-block-box-sizing,
+ * $ao-block-box-shadow: $ao-block-box-shadow,
+ * $ao-block-border-radius: $ao-block-border-radius,
+ * $ao-block-overflow: $ao-block-overflow,
+ * $ao-block-color: $ao-block-color
+ * $ao-block-border-top: Top border to apply to the block.
+ * $ao-block-border-bottom: Bottom border to apply to the block.
+ * $ao-block-border-left: Left border to apply to the block.
+ * $ao-block-border-right: Right border to apply to the block.
+ * $ao-block-border-on-last: Border to apply to the last item. Use this to remove borders on the last item. Defaults to false.
+ *
+ */
+@mixin ao-block (
+
+  $ao-block-background: $ao-background,
+  $ao-block-padding: $ao-block-padding,
+  $ao-block-margin: $ao-block-margin,
+  $ao-block-box-sizing: $ao-block-box-sizing,
+  $ao-block-box-shadow: $ao-block-box-shadow,
+  $ao-block-border-radius: $ao-block-border-radius,
+  $ao-block-overflow: $ao-block-overflow,
+  $ao-block-color: $ao-block-color,
+  $ao-block-border-top: $ao-block-border-top,
+  $ao-block-border-bottom: $ao-block-border-bottom,
+  $ao-block-border-left: $ao-block-border-left,
+  $ao-block-border-right: $ao-block-border-right,
+  $ao-block-border-on-last: $ao-block-border-on-last
+
+){
+
+  @if $ao-block-background != false {
+    background: $ao-block-background;
+  }
+
+  @if $ao-block-padding != false {
+    padding: $ao-block-padding;
+  }
+
+  @if $ao-block-margin != false {
+    margin: $ao-block-margin;
+  }
+
+  @if $ao-block-box-sizing != false {
+    @include box-sizing($ao-block-box-sizing);
+  }
+
+  @if $ao-block-box-shadow != false {
+    @include box-shadow($ao-block-box-shadow);
+  }
+  
+  @if $ao-block-border-radius != false {
+    @include border-radius($ao-block-border-radius);
+  }
+  
+  @if $ao-block-border-radius != false {
+    @include border-radius($ao-block-border-radius);
+  }
+  
+  @if $ao-block-overflow != false {
+    overflow: $ao-block-overflow;
+  }
+  
+  @if $ao-block-color != false {
+    color: $ao-block-color;
+  }
+  
+  @if $ao-block-border-top != false {
+    border-top: $ao-block-border-top;
+  }
+  
+  @if $ao-block-border-bottom != false {
+    border-bottom: $ao-block-border-bottom;
+  }
+  
+  @if $ao-block-border-left != false {
+    border-left: $ao-block-border-left;
+  }
+  
+  @if $ao-block-border-right != false {
+    border-right: $ao-block-border-right;
+  }
+  
+  @if $ao-block-border-on-last != false {
+    &:last-child {
+      @if $ao-block-border-on-last != false {
+        border: $ao-block-border-on-last;
+      }
+    }
+  }
+
+}

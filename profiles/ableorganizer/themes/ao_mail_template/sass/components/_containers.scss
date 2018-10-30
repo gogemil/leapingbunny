@@ -1,0 +1,158 @@
+/**
+ * @file
+ * Layout of containers used throughout the theme
+ *
+ *
+ *
+ */
+ 
+ /* basic container - extended by various widgets */
+.basic-container {
+  @include border-radius(8px);
+  border: 1px solid $e-gray;
+  padding: 1em 1.5em;
+}
+/* basic container element - applies to most records */
+.basic-item-container {
+  border-bottom: 1px solid $e-gray;
+  margin: 0em;
+  padding: 0em;
+}
+
+/* activity feed - used on the dashboard */
+.activty-feed-container {
+  
+  .pane-title {
+    position: absolute;
+    top: 8px;
+    left: 24px;
+    z-index: 100;
+    border-bottom: none;
+    text-transform: uppercase;
+    margin: 0em;
+  }
+  
+  .view {
+    @extend .basic-container;
+    padding: 3.6em 0em 1em;
+    
+    .views-row {
+      @extend .basic-item-container;
+      
+      &:hover {
+        background-color: White;
+      }
+      
+    }
+    
+  }
+  
+}
+
+/* summary widget - used on the dashboard */
+.summary-widget-container {
+  
+  @extend .basic-container;
+  padding: 0em .2em .2em;
+  margin: 0em 0em .8em;
+  border: 1px solid #CCC;
+  
+  TABLE {
+    margin: 0em auto;
+    padding: 0em;
+    width: 100%;
+    @include border-radius(8px);
+    border: 1px solid #CCC;
+    overflow: hidden;
+    border-collapse: initial;
+    
+    TH {
+    
+      border: 1px solid #CCC;
+      
+      TD {
+      
+      }
+    }
+    
+    TR {
+      border: none;
+      TD {
+        border: none;
+        text-align: center;
+        padding: 0.5em 0em;
+      }
+    }
+    
+  }
+  
+}
+
+/* quicklinks - used on the dashboard */
+.quick-links {
+  
+  margin: 0em 0em .8em;
+    
+  .pane-title {
+  }
+  
+  .link-container {
+    display: inline-block;
+    vertical-align: top;
+    width: 48%;
+    
+    strong {
+      color: #999;
+    }
+    strong, A {
+      display: block;
+      &.btn {
+        display: inline-block;
+      }
+    }
+  }
+  
+}
+
+/* action links */
+.action-links {
+  margin: 0em 0em .8em;
+  padding: 0em;
+  LI {
+    display: inline-block;
+    margin: 0em;
+    padding: 0em;
+    A {
+      @extend .btn;
+    }
+  }
+}
+
+/* summary rows */
+.results-summary {
+  background-color: #e1e1e1;
+  color: $base-blue4;
+  @include border-radius(4px);
+  text-decoration: none;
+  font-size: 0.8em;
+  display: table;
+  margin: 0em auto 0.8em;
+  padding: 0.2em .75em;
+}
+
+/* views filters */
+.filter-wrapper {
+  
+  @include border-radius(8px);
+  border: 1px solid $e-gray;
+  padding: .5em 1em;
+  background-color: #f9f9f9;  
+  
+  .views-exposed-widget {
+    display: inline-block;
+    vertical-align: top;
+    float: none;
+  }
+  
+}
+

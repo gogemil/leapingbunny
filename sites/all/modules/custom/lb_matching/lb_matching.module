@@ -1,0 +1,82 @@
+<?php
+
+/**
+ * Provide new contacts de-duplication by merging them to existed records on create.
+ *
+ * When matching engine indicate that the new contact is a duplicate:
+ * - ensure that contacts are totally duplicated and been added by same users
+ * - and merge them only in that case.
+ *
+ * Contact deleting could be an issue, as deleting the one that been merged
+ * would remove the contact with all their relationships to other records.
+ * On the applicant company supplier/manufacturer forms (section D)
+ * the contacts removing handling by custom code respecting the duplication case.
+ * But removing contacts from other pages, like /crm-core/contact/ page just remove the contact with all
+ * relationships.
+ * @see _lb_registration_section_d_contractor_form()
+ * @see _lb_registration_contractor_delete()
+ */
+
+/**
+ * Implements hook_entity_presave().
+ *
+ * If new crm_core_contact duplicates an existed one and indentical update an existed contact
+ * instead of creating a new one.
+ */
+function lb_matching_entity_presave($entity, $type) {
+  if ($type == 'crm_core_contact') {
+    /* @var CRMCoreContactEntity $entity */
+    $matched = $entity->match();
+    if (!empty($entity->is_new) && !empty($matched)) {
+      $matched_contact = entity_load_single($type, $matched[0]);
+
+      if (function_exists('lb_debug_log_trace')) {
+        lb_debug_log_trace('system tries to create a contact duplicate', $entity);
+      }
+
+      if (lb_matching_is_contacts_identical($entity, $matched_contact)) {
+        // As entities are identical, update keys only.
+        $entity->is_new = FALSE;
+        $entity->is_new_revision = FALSE;
+        $entity->default_revision = TRUE;
+        $entity->original = $matched_contact;
+        $entity->created = $matched_contact->created;
+        foreach ($entity->entityInfo()['entity keys'] as $key) {
+          $entity->$key = $matched_contact->$key;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Check is two contacts are total duplicates.
+ * Bundle, uid and fields values should have the same values.
+ *
+ * @param CRMCoreContactEntity $contact1
+ *
+ * @param CRMCoreContactEntity $contact2
+ *
+ * @return boolean
+ */
+function lb_matching_is_contacts_identical(CRMCoreContactEntity $contact1, CRMCoreContactEntity $contact2) {
+  // Check that bundle and uid are the a same
+  if($contact1->type != $contact1->type || $contact1->uid != $contact1->uid) {
+    return false;
+  }
+
+  $fields = array_keys(field_info_instances('crm_core_contact', $contact1->type));
+  foreach ($fields as $field) {
+    $values1 = field_get_items('crm_core_contact', $contact1, $field);
+    $values2 = field_get_items('crm_core_contact', $contact1, $field);
+    if ($values1 == FALSE && $values2 == FALSE) {
+      continue;
+    }
+
+    if ($values1 != $values2) {
+      return FALSE;
+    }
+  }
+
+  return TRUE;
+}

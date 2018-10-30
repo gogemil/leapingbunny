@@ -1,0 +1,5 @@
+name = LB Company Reports
+description = Provides a report about corrupted company data.
+core = 7.x
+package = LB
+dependencies[] = views

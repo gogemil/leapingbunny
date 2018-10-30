@@ -1,0 +1,7 @@
+name = "LB Migrate Companies"
+description = "Migrates LB certified companies from CSV"
+package = "LB"
+core = 7.x
+dependencies[] = migrate
+
+files[] = companies.inc

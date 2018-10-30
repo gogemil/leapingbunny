@@ -1,0 +1,3 @@
+[submodule "sites/all/libraries/jquery-match-height"]
+	path = sites/all/libraries/jquery-match-height
+	url = https://github.com/liabru/jquery-match-height.git

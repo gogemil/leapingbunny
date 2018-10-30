@@ -1,0 +1,29 @@
+<?php
+/**
+ * @file
+ * Code for the LB deals feature.
+ */
+
+include_once 'lb_deals.features.inc';
+
+/**
+ * Implements hook_date_popup_process().
+ *
+ * Replacing labels for start and end dates in promotions.
+ */
+function lb_deals_date_popup_process_alter(&$element, &$form_state, $context) {
+  if (isset($context['form']['#node_edit_form']) && $context['form']['#node_edit_form'] == TRUE
+      && $context['form']['type']['#value'] == 'promotion') {
+    if (!empty($element['#parents'][3])) {
+      switch ($element['#parents'][3]) {
+        case 'value':
+          $element['date']['#title'] = t('Start Date');
+          break;
+
+        case 'value2':
+          $element['date']['#title'] = t('End Date');
+          break;
+      }
+    }
+  }
+}

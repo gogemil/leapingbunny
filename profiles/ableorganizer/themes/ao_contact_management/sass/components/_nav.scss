@@ -1,0 +1,24 @@
+/**
+ * @file
+ * Defines the appearance of the main navigation, and some other navigation elements
+ *
+ */
+ 
+.inline-fix {
+  &:after, &:before {
+    content: '';
+    font-size: 0px;
+    line-height: 0px;
+    margin: 0px;
+    padding: 0px;
+  }
+}
+ 
+
+.left-links {
+}
+.right-links {
+  float: right;
+}
+
+

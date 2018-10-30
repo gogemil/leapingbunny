@@ -1,0 +1,122 @@
+/**
+ * @file
+ * Positioning for basic UI elements
+ *
+ * Defining classes around semantic elements such as sections, wrappers and the like.
+ * Will apply breakpoints to define layouts at different resolutions.
+ *
+ */
+
+BODY {
+  font-weight: normal;
+  @include transition-property(all);
+  @include transition-duration(.5s);
+  @include transition-timing-function(ease-in-out);  
+}
+
+/* section layout */
+section {
+  .section-wrapper {
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+  }
+}
+section.banner {
+  background-color: $dark-blue;
+  padding: .5em 0em;
+}
+section.branding {
+  
+  background-color: White;
+  padding: 1em 0em 0em;
+  
+  .header__logo {
+    display: inline-block;
+    vertical-align: bottom;
+    @include transition-property(all);
+    @include transition-duration(.5s);
+    @include transition-timing-function(ease-in-out);
+  }
+
+
+  #main-menu {
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+  }
+  
+}
+section.header {
+  background-color: $base-blue;
+  .section-wrapper {
+    height: 93px;
+  }
+  
+}
+section.content {
+  background-color: $f-gray;
+  padding: 1em 0em 0em;
+}
+
+.panels-flexible-region {
+  @include transition-property(all);
+  @include transition-duration(.5s);
+  @include transition-timing-function(ease-in-out);  
+}
+
+
+@media all and (min-width: 0px)  and (max-width: 480px) {
+  section.branding {
+    padding: 1em 0em 0em;
+  }  
+  .panels-flexible-region {
+    width: 100%;
+    float: none;
+  }
+}
+@media all and (min-width: 480px) {
+}
+@media all and (min-width: 480px) and (max-width: 683px) {
+  section {
+    .section-wrapper {
+    }
+  }
+  .panels-flexible-region {
+    width: 100%;
+    float: none;
+  }
+}
+
+@media all and (min-width: 684px) and (max-width: 959px) {
+  section {
+    .section-wrapper {
+      width: 100%;
+    }
+  }
+}
+
+@media all and (min-width: 960px) {
+  section {
+    .section-wrapper {
+      width: 960px;
+    }
+  }
+  
+  section.branding {
+    padding: 2em 0em 0em;
+  }
+}
+@media all and (min-width: 1200px) {
+  section {
+    .section-wrapper {
+      width: 1200px;
+    }
+  }
+  section.branding {
+    padding: 2em 0em 0em;
+  }  
+}
+

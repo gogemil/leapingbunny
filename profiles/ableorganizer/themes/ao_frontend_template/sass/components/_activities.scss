@@ -1,0 +1,145 @@
+/**
+ * @file
+ * Displays activities and icons in the system
+ *
+ */
+
+/* activity feed */
+.activity-record-pane {
+  border: 1px solid $e-gray;
+  background-color: White;
+  padding: 1em;
+  margin: 1em 0em;
+  .views-row:last-child {
+    .crm-core-activity {
+      border-bottom: none;
+    }
+  }
+}
+
+/* activity in an activity feed */
+.crm-core-activity {
+  position: relative;
+  padding: 0em 0em .5em;
+  margin: 0em 0em .5em;
+  border-bottom: 1px solid $e-gray;
+  @include transition-property(all);
+  @include transition-duration(.2s);
+  @include transition-timing-function(ease-in-out);
+  font-size: 0.95em;
+  
+  .crm-core-activity-info {
+    position: relative;
+    margin-left: 3em;
+    .crm-core-activity-actions {
+      float: right;
+    }
+  }
+  .crm-core-activity-icon {
+    height: 30px;
+    width: 30px;
+    position: absolute;
+    left: 0em;
+    top: 4px;
+    
+    SPAN {
+      display: block;
+      height: 30px;
+      width: 30px;
+      background: #ffb533 url('../images/ao-backend-icons.png') -120px -30px no-repeat;
+      border-radius: 5px;
+      -moz-border-radius: 5px;
+      -webkit-border-radius: 5px;  
+    }
+    
+  }
+
+}
+ 
+/* activity icons */
+/* activty icons for donations */
+.cmcd_donation {
+  .crm-core-activity-icon {
+    SPAN {
+      background: #389a19 url('../images/ao-backend-icons.png') 0px -30px no-repeat;
+    }
+  }
+}
+/* activty icons for events */
+.cmcev_event_registration {
+  .crm-core-activity-icon {
+    SPAN {
+      background: #1a6099 url('../images/ao-backend-icons.png') -90px -30px no-repeat;
+    }
+  }
+}
+/* activty icons for petitions */
+.cmcp_petition_signature {
+  .crm-core-activity-icon {
+    SPAN {
+      background: #e26427 url('../images/ao-backend-icons.png') -60px -30px no-repeat;
+    }
+  }
+}
+
+/* activty icons for petitions */
+.cmcv_volunteer_commitment {
+  .crm-core-activity-icon {
+    SPAN {
+      background: #d02424 url('../images/ao-backend-icons.png') -30px -30px no-repeat;
+    }
+  }
+}
+
+/* full page view of an activity */
+.entity-crm-core-activity {
+  border: 1px solid $e-gray;
+  background-color: White;
+  padding: 1em;
+  margin: 1em 0em;
+}
+
+
+
+/* move to theme */
+
+/* activity page */
+.view-ao-crm-activities-by-contact {
+  .view-content {
+    @extend .activity-record-pane;
+  }
+}
+
+/* dashboard */
+.pane-ao-dashboard-act-stream-panel-pane-1 {
+  
+  h2.pane-title {
+    position: absolute;
+    top: 8px;
+    left: 16px;
+    z-index: 100;
+    border-bottom: none;
+    text-transform: uppercase;
+    margin: 0em;
+  }
+  
+  .view-content {
+    @extend .activity-record-pane;
+    margin: 0em 0em;
+    padding-top: 64px;
+    .crm-core-activity-actions {
+      margin-left: 12px;
+      A {
+        &:first-child {
+        }
+      }
+    }
+    
+  }
+}
+
+.summary-pane {
+}
+
+
+

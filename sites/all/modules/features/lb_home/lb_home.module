@@ -1,0 +1,23 @@
+<?php
+/**
+ * @file
+ * Code for the LB Home feature.
+ */
+
+include_once 'lb_home.features.inc';
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function lb_home_form_crm_core_profile_entry_form_mailing_list_signup_alter(&$form, &$form_state) {
+  if (drupal_is_front_page()) {
+    $form['header'] = array(
+      '#markup' => t('On cruelty-free news and deals'),
+      '#prefix' => '<div id="signup-header">',
+      '#suffix' => '</div>',
+      '#weight' => -100,
+    );
+
+    $form['actions']['submit']['#value'] = t('Sign up to receive emails');
+  }
+}

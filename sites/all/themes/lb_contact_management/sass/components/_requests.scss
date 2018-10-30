@@ -1,0 +1,12 @@
+/**
+ * @file
+ * Controls the appearance of applications
+ */
+
+
+#lb-application-request-approved,
+#lb-application-request {
+  @extend .form-data-form;
+}
+
+

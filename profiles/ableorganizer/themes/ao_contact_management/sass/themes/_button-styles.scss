@@ -1,0 +1,132 @@
+/**
+ * @file
+ * Button Styles
+ *
+ * Predefined buttons used in the theme.
+ */
+/**
+ * DEFAULT BUTTONS
+ * Variables controlling the default appearance of buttons
+ */
+.small-grey-button {
+  @include ao-button();
+  @include ao-transition();
+  @include ao-fontography($ao-fonto-style: button-default);
+}
+.red-button {
+  @include ao-transition();
+  @include ao-button (
+    // $ao-button-margin:          false !default; 
+    $ao-button-padding:         rhythm(.25) rhythm(.5),
+    $ao-button-border:          none,
+    $ao-button-border-radius:   0.5em,
+    $ao-button-color:           White,
+    $ao-button-bg-color:        $base-red
+  );
+}
+// standard button style
+$btn-padding: 0.1em 0.6em;
+.btn {
+  @include ao-button (
+    $ao-button-padding:         $btn-padding,
+    $ao-button-border-radius:   4px,
+    $ao-button-color:           White,
+    $ao-button-bg-color:        $base-orange,
+    $ao-button-hover-color:     White,
+    $ao-button-hover-bg-color:  #ffd889,
+    $ao-button-active-color:    White,
+    $ao-button-active-bg-color: #f89406
+  );
+  @include ao-transition();
+  text-transform: uppercase;
+  @include ao-fontography(
+    $ao-fonto-style: contact-management-btn-font,
+    $ao-fonto-rhythm-unit: px
+  );
+  A { 
+    @include ao-fontography(
+      $ao-fonto-style: contact-management-btn-font,     
+      $ao-fonto-rhythm-unit: px
+    );
+  }
+}
+.btn-small {
+  padding: 0em .8em;
+  @include ao-fontography(
+    $ao-fonto-style: contact-management-btn-font-small,
+    $ao-fonto-rhythm-unit: px
+  );
+  A { 
+    @include ao-fontography(
+      $ao-fonto-style: contact-management-btn-font-small,
+      $ao-fonto-rhythm-unit: px
+    );
+  }
+}
+.btn-large {
+  padding: .2em .8em;
+  @include ao-fontography(
+    $ao-fonto-style: contact-management-btn-font-large,
+    $ao-fonto-rhythm-unit: px
+  );
+  A { 
+    @include ao-fontography(
+      $ao-fonto-style: contact-management-btn-font-large,
+      $ao-fonto-rhythm-unit: px
+    );
+  }
+}
+.btn-blue  {
+  @extend .btn;
+  @include ao-button (
+    $ao-button-bg-color:        $base-blue-alt,
+    $ao-button-padding:         $btn-padding,
+    $ao-button-hover-bg-color:  $base-blue3,
+    $ao-button-active-bg-color: $base-blue2,
+    $ao-button-color:           White,
+    $ao-button-active-color:    White,
+    $ao-button-hover-color:     White
+  );
+}
+.btn-red  {
+  @extend .btn;
+  @include ao-button (
+    $ao-button-bg-color:        #FF5A51,
+    $ao-button-padding:         $btn-padding,
+    $ao-button-hover-bg-color:  #FFBBB7,
+    $ao-button-active-bg-color: rgba(207, 68, 68, 1),
+    $ao-button-color:           White,
+    $ao-button-active-color:    White,
+    $ao-button-hover-color:     White
+  );
+}
+// VIEWS BULK OPERATIONS
+.btn-vbo  {
+  @extend .btn;
+  @include ao-button (
+    $ao-button-bg-color:        #00a03c,
+    $ao-button-padding:         $btn-padding,
+    $ao-button-hover-bg-color:  #00a03c,
+    $ao-button-active-bg-color: #00a03c,
+    $ao-button-color:           White,
+    $ao-button-active-color:    White,
+    $ao-button-hover-color:     White
+  );
+  A {
+    @include ao-fontography(
+      $ao-fonto-style: contact-management-btn-font-large,
+      $ao-fonto-rhythm-unit: px
+    );
+  }
+  &.btn-disabled {
+    @include ao-button (
+      $ao-button-padding:         0.1em .4em,
+      $ao-button-bg-color:        #93e387,
+      $ao-button-hover-bg-color:  #93e387,
+      $ao-button-active-bg-color: #93e387,
+      $ao-button-color:           White,
+      $ao-button-active-color:    White,
+      $ao-button-hover-color:     White
+    );
+  }
+}

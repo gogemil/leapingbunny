@@ -1,0 +1,118 @@
+/**
+ * @file
+ * AbleOrganizer Font Initialization
+ *
+ * Creates font styles used throughout the site
+ */
+
+/* DEFAULT FONT STYLES */
+$normal: ao-fontography-register-style(
+  $ao-fonto-style-name: normal,
+  $ao-fonto-style-color: false,
+  $ao-fonto-style-size: false,
+  $ao-fonto-style-lines: false,
+  $ao-fonto-style-family: false
+);
+
+$regular: ao-fontography-register-style(
+  $ao-fonto-style-name: regular,
+  $ao-fonto-style-margin: 0em 0em rhythm(.5) 0em,
+  $ao-fonto-style-color: false,
+  $ao-fonto-style-size: false,
+  $ao-fonto-style-lines: false,
+  $ao-fonto-style-family: false
+);
+
+$breadcrumb: ao-fontography-register-style(
+  $ao-fonto-style-name: breadcrumb,
+  $ao-fonto-style-size: 0.9em
+);
+
+$hero: ao-fontography-register-style(
+  $ao-fonto-style-name: hero,
+  $ao-fonto-style-color: White,
+  $ao-fonto-style-text-shadow: 1px 1px 3px rgba(0,0,0,.5)
+);
+
+/* NAVIGATION LINKS */
+$form-fieldset-label: ao-fontography-register-style(
+  $ao-fonto-style-name:     navigation-link,
+  $ao-fonto-style-size:     $base-font-size*1.1,
+  $ao-fonto-style-weight:   600,
+  $ao-fonto-style-lines:    1,
+  $ao-fonto-style-margin:   0em 0em rhythm(1),
+  $ao-fonto-style-color:    #555,
+  $ao-fonto-style-text-decoration: none
+);
+
+/* FORMS */
+$form-fieldset-label: ao-fontography-register-style(
+  $ao-fonto-style-name:     form-fieldset-label,
+  $ao-fonto-style-size:     $base-font-size,
+  $ao-fonto-style-lines:    1,
+  $ao-fonto-style-margin:   0em 0em rhythm(1),
+  $ao-fonto-style-color:    #555,
+  $ao-fonto-style-weight:   600
+);
+$form-title-special: ao-fontography-register-style(
+  $ao-fonto-style-name:     form-title-special,
+  $ao-fonto-style-padding:  0em,
+  $ao-fonto-style-margin:   0em 0em rhythm(.5),
+  $ao-fonto-style-border-bottom:   1px solid #CCC
+);
+
+
+/* BLOCKS */
+$block-title: ao-fontography-register-style(
+  $ao-fonto-style-name:             block-title,
+  $ao-fonto-style-padding:          0em,
+  $ao-fonto-style-margin:           0em 0em 0.75em
+);
+$block-title-sample-title: ao-fontography-register-style(
+  $ao-fonto-style-name:             block-title-sample-title,
+  $ao-fonto-style-text-align:       center,
+  $ao-fonto-style-margin:           0em 0em 0.5em,
+  $ao-fonto-style-text-shadow:      White 2px 2px 0
+);
+$block-title-sample-content: ao-fontography-register-style(
+  $ao-fonto-style-name:             block-content-sample-content,
+  $ao-fonto-style-text-align:       left,
+  $ao-fonto-style-text-shadow:      White 2px 2px 0
+);
+$block-title-sample-list: ao-fontography-register-style(
+  $ao-fonto-style-name:             block-content-sample-list,
+  $ao-fonto-style-text-align:       left,
+  $ao-fonto-style-font-style:       italic,
+  $ao-fonto-style-margin:           0em 0em 1em
+);
+
+/* BUTTONS */
+$button-default: ao-fontography-register-style(
+  $ao-fonto-style-name:     button-default,
+  $ao-fonto-style-size:     13.25px,
+  $ao-fonto-style-lines:    1.333,
+  $ao-fonto-style-margin:   0em,
+  $ao-fonto-style-color:    #333,
+  $ao-fonto-style-weight:   normal,
+  $ao-fonto-style-text-decoration:  none
+);
+
+$button-large: ao-fontography-register-style(
+  $ao-fonto-style-name:     button-large,
+  $ao-fonto-style-size:     1.3em,
+  $ao-fonto-style-lines:    1,
+  $ao-fonto-style-margin:   0em,
+  $ao-fonto-style-color:    #333,
+  $ao-fonto-style-weight:   normal,
+  $ao-fonto-style-text-decoration:  none
+);
+
+$button-blue: ao-fontography-register-style(
+  $ao-fonto-style-name:     button-blue,
+  $ao-fonto-style-size:     16px,
+  $ao-fonto-style-lines:    1.333,
+  $ao-fonto-style-padding:  0.25em 1em,
+  $ao-fonto-style-margin:   0em,
+  $ao-fonto-style-color:    White,
+  $ao-fonto-style-weight:   normal
+);

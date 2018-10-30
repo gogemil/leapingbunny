@@ -1,0 +1,13 @@
+diff --git a/sites/all/modules/contrib/mobile_navigation/js/mobile_menu.js b/sites/all/modules/contrib/mobile_navigation/js/mobile_menu.js
+index dd74988..6cd703f 100644
+--- a/sites/all/modules/contrib/mobile_navigation/js/mobile_menu.js
++++ b/sites/all/modules/contrib/mobile_navigation/js/mobile_menu.js
+@@ -378,7 +378,7 @@ window.matchMedia || (window.matchMedia = function() {
+               $("#mobile-menu .item-with-ul").removeClass("active");
+               $("#mobile-menu .item-with-ul ul").each(function() {
+                 if ($(this).css("display") != "none") {
+-                  $(this).parent("li").addClass("active");
++                  $(this).closest("li").addClass("active");
+                 }
+               });
+ 

@@ -1,0 +1,175 @@
+/**
+ * @file
+ * Buttons
+ *
+ * Defines the appearance of buttons used throughout the system
+ */
+ 
+/**
+ * DEFAULT VARIABLES
+ * Default settings for ao-buttons.
+ * See mixin documentation for explanations.
+ */
+$ao-button-display:         inline-block !default; 
+$ao-button-margin:          false !default; 
+$ao-button-padding:         0.1em 1em !default; 
+$ao-button-border:          none !default; 
+$ao-button-border-radius:   0.5em !default; 
+$ao-button-color:           #333 !default; 
+$ao-button-bg-color:        #f1f1f1 !default; 
+$ao-button-hover-color:     false !default; 
+$ao-button-hover-bg-color:  false !default; 
+$ao-button-hover-border:    false !default; 
+$ao-button-active-color:    false !default; 
+$ao-button-active-bg-color: false !default; 
+$ao-button-active-border:   false !default; 
+$ao-button-focus-color:     false !default; 
+$ao-button-focus-bg-color:  false !default; 
+$ao-button-focus-border:    false !default; 
+ 
+/**
+ * AO BUTTON
+ * Creates buttons, which can be 1 to 4 stages.
+ * This mixin works several ways.
+ *
+ * 1) You can specify the colors used in the various states. Any state without a color change is ignored.
+ * 2) You can specify specify a difference for each state, which will automatically adjust the colors.
+ *
+ * $ao-button-display: display mode applied to buttons. Set to false to ignore. Defaults to inline-block;
+ * $ao-button-margin: margin applied to buttons. Set to false to ignore. Defaults to false;
+ * $ao-button-padding: padding applied to buttons. Set to false to ignore. Defaults to 0.25em 1em;
+ * $ao-button-border: border to apply to the button. Set to false to ignore. Defaults to .5em;
+ * $ao-button-border-radius: border radius for the button. Set to false to ignore. Defaults to .5em;
+ * $ao-button-color: color used for the text of the button. Set to false to ignore. Defaults to #333.
+ * $ao-button-bg-color: background color for button. Set to false to ignore. Defaults to #f1f1f1;
+ * $ao-button-hover-color: color used when hovering. Set to false to ignore. Defaults to false;
+ * $ao-button-hover-bg-color: background color when hovering. Set to false to ignore. Defaults to false;
+ * $ao-button-hover-border: border when hovering. Set to false to ignore. Defaults to false;
+ * $ao-button-active-color: color used when hovering. Set to false to ignore. Defaults to false;
+ * $ao-button-active-bg-color: background color when hovering. Set to false to ignore. Defaults to false;
+ * $ao-button-focus-color: color used when hovering. Set to false to ignore. Defaults to false;
+ * $ao-button-focus-bg-color: background color when hovering. Set to false to ignore. Defaults to false;
+ * $ao-button-hover-diff: ;
+ * $ao-button-active-diff: ;
+ * $ao-button-focus-diff: ;
+ *
+ */ 
+@mixin ao-button (
+
+  $ao-button-display:         $ao-button-display,
+  $ao-button-margin:          $ao-button-margin,
+  $ao-button-padding:         $ao-button-padding,
+  $ao-button-border:          $ao-button-border,
+  $ao-button-border-radius:   $ao-button-border-radius,
+  $ao-button-color:           $ao-button-color,
+  $ao-button-bg-color:        $ao-button-bg-color,
+  $ao-button-hover-color:     $ao-button-hover-color,
+  $ao-button-hover-bg-color:  $ao-button-hover-bg-color,
+  $ao-button-hover-border:    $ao-button-hover-border,
+  $ao-button-active-color:    $ao-button-active-color,
+  $ao-button-active-bg-color: $ao-button-active-bg-color,
+  $ao-button-active-border:   $ao-button-active-border,
+  $ao-button-focus-color:     $ao-button-focus-color,
+  $ao-button-focus-bg-color:  $ao-button-focus-bg-color,
+  $ao-button-focus-border:    $ao-button-focus-border
+
+) {
+
+  // BASIC SETTINGS
+  // display
+  @if $ao-button-display != false {
+    display: $ao-button-display;
+  }
+  // padding
+  @if $ao-button-padding != false {
+    padding: $ao-button-padding;
+  }
+  // margin
+  @if $ao-button-margin != false {
+    margin: $ao-button-margin;
+  }
+  // color
+  @if $ao-button-color != false {
+    color: $ao-button-color;
+    A {
+      color: $ao-button-color;
+    }
+  }
+  // bg color
+  @if $ao-button-bg-color != false {
+    background-color: $ao-button-bg-color;
+  }
+  // border
+  @if $ao-button-border != false {
+    border: $ao-button-border;
+  }
+  // border radius
+  @if $ao-button-border-radius != false {
+    @include border-radius($ao-button-border-radius);
+  }
+  
+  // INTERACTION
+  // hover style 
+  @if $ao-button-hover-color != false or $ao-button-hover-bg-color != false {
+    &:hover {
+      // color
+      @if $ao-button-hover-color != false {
+        color: $ao-button-hover-color;
+        A {
+          color: $ao-button-hover-color;
+        }
+      }
+      // bg color
+      @if $ao-button-hover-bg-color != false {
+        background-color: $ao-button-hover-bg-color;
+      }
+      // border
+      @if $ao-button-hover-border != false {
+        border: $ao-button-hover-border;
+      }
+    }
+  }
+  
+  // active style 
+  @if $ao-button-active-color != false or $ao-button-active-bg-color != false {
+    &:active {
+      // color
+      @if $ao-button-active-color != false {
+        color: $ao-button-active-color;
+        A {
+          color: $ao-button-active-color;
+        }
+      }
+      // bg color
+      @if $ao-button-active-bg-color != false {
+        background-color: $ao-button-active-bg-color;
+      }
+      // border
+      @if $ao-button-active-border != false {
+        border: $ao-button-active-border;
+      }
+    }
+  }
+  
+  // focus style 
+  @if $ao-button-focus-color != false or $ao-button-focus-bg-color != false {
+    &:focus {
+      // color
+      @if $ao-button-focus-color != false {
+        color: $ao-button-focus-color;
+      }
+      // bg color
+      @if $ao-button-focus-bg-color != false {
+        background-color: $ao-button-focus-bg-color;
+      }
+      // border
+      @if $ao-button-focus-border != false {
+        border: $ao-button-focus-border;
+      }
+    }
+  }
+  
+  // AUTO INTERACTION
+  
+} 
+

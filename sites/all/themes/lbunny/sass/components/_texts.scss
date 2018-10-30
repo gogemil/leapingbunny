@@ -1,0 +1,14 @@
+#page-title {
+  @include page-title;
+  @media #{$mobile} {
+    @include page-title(mobile);
+  }
+}
+
+#content {
+  @include headings(1, 2);
+  @include headings(3);
+  p {
+    @include lb_standard_fonts(content-text);
+  }
+}

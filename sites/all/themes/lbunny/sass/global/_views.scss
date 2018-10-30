@@ -1,0 +1,34 @@
+%glossary-listing-row {
+  border-bottom: 5px solid $dark;
+  padding-top: 40px;
+  padding-bottom: 75px;
+  position: relative;
+  &:last-child, &.views-row-last {
+    border-bottom: 0;
+    padding-bottom: 0;
+
+    .back-to-top {
+      display: none;
+    }
+  }
+  a {
+    color: $dark;
+  }
+
+  .back-to-top {
+    bottom: -2em;
+    color: #005bab;
+    display: block;
+    font-size: 11px;
+    position: absolute;
+    right: 0;
+    z-index: 10;
+  }
+}
+
+%glossary-listing-letter {
+  position: absolute;
+  left: -80px;
+  top: -32px;
+  @include lb_standard_fonts(glossary-letter);
+}

@@ -1,0 +1,79 @@
+/**
+ * @file
+ * Defines the appearance of buttons throughout the theme
+ *
+ */
+
+
+.btn {
+  background-color: $base-orange;
+  color: White;
+  @include border-radius(4px);
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  display: inline-block;
+  margin: 0.3em 0.3em 0.3em 0em;
+  padding: 0.2em 1.5em;
+  letter-spacing: 2px;
+  @include transition-property(all);
+  @include transition-duration(.1s);
+  @include transition-timing-function(ease-in-out);
+  @include user-select(none);
+  cursor: pointer;
+  
+  &:hover {
+    background-color: $base-orange2;
+    color: White;
+  }
+  &:active {
+    background-color: $base-orange3;
+    color: $base-orange4;
+  }
+  
+  A {
+    color: White;
+    text-decoration: none;
+    &:hover {
+      color: White;
+    }
+  }
+}
+
+.btn-small {
+  font-size: 0.8em;
+  padding: 0.1em .8em;
+}
+
+.btn-blue  {
+  
+  @extend .btn;
+  background-color: $base-blue-alt;
+    
+  &:hover {
+    background-color: $base-blue3;
+  }
+  
+  &:active {
+    background-color: $base-blue2;
+    color: $base-blue4;
+  }
+  
+}
+
+.btn-red  {
+  
+  @extend .btn;
+  background-color: #FF5A51;
+    
+  &:hover {
+    background-color: #FFBBB7;
+  }
+  
+  &:active {
+    background-color: #C1443D;
+    color: rgba(207, 68, 68, 1);
+  }
+  
+}
+

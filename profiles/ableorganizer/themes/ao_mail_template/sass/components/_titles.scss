@@ -1,0 +1,62 @@
+/**
+ * @file
+ * Controls the layouts of titles used in different parts of the system
+ *
+ */
+
+/* typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+}
+
+/* widget titles */
+/* small colored title used in summaries and other items */
+.widget-title {
+  border: none;
+  text-align: center;
+  font-size: 1.2em;
+  margin: 0px auto;
+  padding: 0px;
+  color: $blue-almost-black;
+  text-transform: uppercase;
+}
+
+/* applied to tables */
+/* used in dashboard, reports */
+.widget-title-links {
+  @extend .widget-title;
+  margin: 0em 0em .8em;
+  border-bottom: 1px solid $e-gray;
+  text-align: left;
+}
+
+/* titles for widget tables */
+.widget-table-titles {
+  @extend .widget-title;
+  font-size: 0.8em;
+  padding: 0.5em 0.5em;
+  color: $base-purple;
+  border-bottom: 1px solid #CCC;
+  white-space: nowrap;
+  overflow: hidden;
+}
+/* larger version of widget tables */
+.widget-table-titles-large {
+  @extend .widget-title;
+  font-size: 0.9em;
+  padding: 0.5em 0.5em;
+  white-space: nowrap;
+  overflow: hidden;
+  border-top: 1px solid #CCC;
+  border-bottom: 1px solid #CCC;
+  
+  A {
+    text-decoration: none;
+    
+    IMG {
+      margin-left: 0.4em;
+    }
+    
+  }
+  
+}

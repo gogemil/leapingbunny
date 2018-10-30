@@ -1,0 +1,127 @@
+form {
+  .form-type-textfield {
+    label {
+      display: inline-block;
+    }
+    .form-item {
+
+    }
+  }
+  .form-item {
+    .form-element-required {
+      color: $white;
+      padding-left: 15px;
+      padding-right: 5px;
+    }
+    > .form-element-wrapper {
+      display: block;
+      &.error {
+        background-color: $red;
+        padding: 5px;
+      }
+    }
+  }
+  .form-type-select {
+    select {
+      position: relative;
+      top: 2px;
+    }
+  }
+/*   .form-required {
+    color: $gray;
+  } */
+  .form-item {
+    .form-text {
+      border: 1px solid $blue;
+      line-height: 30px;
+      height: 30px;
+      padding: 5px;
+    }
+    .form-select {
+      border: 1px solid $blue;
+      line-height: 30px;
+      height: 30px;
+      padding: 5px;
+    }
+    textarea {
+      border: 1px solid $blue;
+    }
+  }
+  .form-submit {
+    font-family: 'source_sans_probold', $verdana;
+    font-size: $h5-font-size;
+    border: 0;
+    background: $blue;
+    color: $white;
+    padding: 8px 13px 6px;
+    text-align: center;
+    text-transform: uppercase;
+    @include border-radius(5px);
+  }
+}
+
+%middle-align-form {
+  .form-item {
+    margin: 2em 0;
+  }
+  .form-type-textfield,
+  .form-type-textarea,
+  .form-type-select,
+  .form-type-phone-number,
+  .form-type-name-element,
+  .form-type-link-field {
+    label {
+      display: inline-block;
+      width: 235px;
+      text-align: right;
+      vertical-align: baseline;
+      &:after {
+        content: ":";
+        margin-right: 10px;
+      }
+    }
+  }
+  .form-type-textarea {
+    label {
+      vertical-align: top;
+    }
+  }
+  .form-element-wrapper {
+    input, select, textarea {
+      width: 300px;
+    }
+  }
+  .form-phone-number {
+    .form-type-select {
+      display: none;
+    }
+  }
+  .form-type-name-element,
+  .form-type-link-field {
+    .form-item {
+      margin: 0;
+    }
+    .clearfix {
+      &:after {
+        content: "";
+        clear: none;
+        overflow: auto;
+        display: none;
+      }
+    }
+  }
+  .form-type-name-element {
+    label {
+      position: relative;
+      top: -10px;
+    }
+  }
+  .locality-block {
+    .form-type-textfield {
+      margin: 0;
+    }
+  }
+  div.addressfield-container-inline > div.form-item {
+    float: none;
+  }
+}

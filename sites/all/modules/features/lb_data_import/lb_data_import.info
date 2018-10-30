@@ -1,0 +1,6 @@
+name = LB Data Import
+core = 7.x
+package = LB
+dependencies[] = crm_core_data_import
+features[crm_core_data_import][] = companies
+features[features_api][] = api:2

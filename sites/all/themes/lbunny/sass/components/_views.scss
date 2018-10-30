@@ -1,0 +1,406 @@
+.view-lb-brands {
+  width: 90%;
+  margin: 0 auto;
+  .application {
+    float: right;
+    font-size: 0.95em;
+    line-height: 1em;
+    text-align: center;
+    width: 140px;
+  }
+  .view-content {
+    h3 {
+      @extend %glossary-listing-letter;
+      @media #{$mobile} {
+        position: static;
+      }
+    }
+  }
+  .letter-wrapper {
+    position: relative;
+    a {
+      vertical-align: top;
+    }
+    @extend %glossary-listing-row;
+    @media #{$mobile} {
+      padding-top: 75px;
+      clear: both;
+    }
+  }
+}
+
+.view-display-id-page_1 {
+  .views-row {
+    margin: 10px 0;
+  }
+  .columns {
+    $zen-column-count: 2;
+    @include zen-grid-container();
+
+    .column {
+      @include zen-float(left);
+      @include zen-grid-flow-item(1, 3);
+    }
+  }
+}
+
+.brand-icon-content {
+  display: inline-block;
+}
+.brand-icon {
+  display: inline-block;
+  background: url("../images/legend-icons.png") no-repeat scroll left top rgba(0, 0, 0, 0);
+  width: 30px;
+  height: 20px;
+  vertical-align: top;
+  margin-left: 10px;
+  &.brand-icon-dirty {
+    background-position: left -170px;
+  }
+  &.brand-icon-logo {
+    background-position: left top;
+  }
+  &.brand-icon-canadian {
+    background-position: left -88px;
+  }
+}
+            
+.view-display-id-page {
+  .views-rows-wrapper {
+    $zen-column-count: 5;
+    @include zen-grid-container();
+    .views-row {
+      @include zen-grid-flow-item(1, 5);
+      @include zen-float(left);
+      margin-right: 0;
+      padding-bottom: 16px;
+      .views-row-content {
+        border: 1px solid $dark;
+        border-bottom: none;
+        .brand-tooltip-wrapper {
+          display: none;
+          position: absolute;
+          z-index: 15;
+          left: 0;
+          background: url(../images/popup-arrow.png) no-repeat 20px top;
+          .brand-tooltip {
+            padding: 10px;
+            margin-top: 20px;
+            border: 6px solid $green;
+            background-color: $white;
+            .title {
+              font-size: 24px;
+              border-bottom: 1px solid $light-gray;
+              padding-bottom: 10px;
+              margin-bottom: 10px;
+            }
+            .website {
+              border-bottom: 1px solid $light-gray;
+              display: block;
+              padding-bottom: 5px;
+              margin-bottom: 10px;
+              $zen-column-count: 12;
+              @include zen-grid-container();
+              .website-content {
+                @include zen-float(left);
+                @include zen-grid-flow-item(8, 12);
+                padding-right: 0;
+                margin-right: 0;
+              }
+              a {
+                color: $blue;
+                font-size: 20px;
+                text-decoration: none;
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
+            }
+            .brand-icon-content {
+              @include zen-float(right);
+              @include zen-grid-flow-item(4, 12);
+              padding-right: 0;
+              margin-right: 0;
+              text-align: right;
+            }
+            .label {
+              color: $green;
+              text-transform: uppercase;
+              font-size: 14px;
+            }
+            .content-wrapper {
+              border-bottom: 1px solid $light-gray;
+              display: block;
+              margin-bottom: 10px;
+              $zen-column-count: 12;
+              @include zen-grid-container();
+              .description {
+                @include zen-float(left);
+                @include zen-grid-flow-item(8, 12);
+                padding-right: 0;
+                margin-right: 0;
+                .description-content {
+                  p {
+                    &:first-child {
+                      margin-top: 0;
+                    }
+                  }
+                }
+              }
+              .categories {
+                @include zen-float(left);
+                @include zen-grid-flow-item(4, 12);
+                padding-left: 10px;
+                padding-right: 0;
+                margin-right: 0;
+                text-transform: uppercase;
+                font-size: 12px;
+                .category-item {
+                  display: inline;
+                  &::after {
+                    content: " | ";
+                    padding: 0 5px;
+                  }
+                  &:last-child::after {
+                    content: none;
+                  }
+                }
+              }
+            }
+            .brand-footer {
+              font-size: 12px;
+              a {
+                color: $blue;
+                text-decoration: none;
+                &:hover {
+                  text-decoration: underline;
+                  border-bottom: none;
+                }
+              }
+            }
+          }
+        }
+        >.views-field-title {
+          display: block;
+          width: auto;
+          text-align: center;
+          background-color: $dark;
+          color: $white;
+          height: 50px;
+          line-height: 50px;
+          font-family: $verdana;
+          font-size: 12px;
+          padding: 5px;
+
+          a {
+            color: $white;
+          }
+
+          .field-content {
+            display: inline-block;
+            line-height: 1.25em;
+            vertical-align: middle;
+          }
+        }
+        >.views-field-field-lb-logo {
+          @media #{$desktop} {
+            height: 130px;
+          }
+          overflow: hidden;
+          margin: 5px;
+          background-color: $white;
+          img {
+            max-width: 100%;
+          }
+        }
+        &:hover,
+        &.active {
+          border: 1px solid $green;
+          border-bottom: none;
+          >.views-field-title {
+            background-color: $green;
+          }
+        }
+      }
+    }
+    @media #{$mobile} {
+      $zen-column-count: 3;
+      @include zen-grid-container();
+      .views-row {
+        @include zen-float(left);
+        @include zen-grid-flow-item(1, 3);
+        margin-right: 0;
+        &:nth-child(3n+1) {
+          @include zen-clear(left);
+        }
+      }
+    }
+  }
+}
+
+.view-lb-recent-promotions {
+  @media #{$narrow} {
+    $zen-column-count: 3;
+    @include zen-grid-container();
+
+    .views-row {
+      @include zen-float(left);
+      @include zen-grid-flow-item(1, 3);
+      margin-right: 0;
+      &.views-row-last {
+        @include zen-float(right);
+        @include zen-grid-flow-item(1, 3, false, false);
+        margin-right: 0;
+      }
+    }
+  }
+
+  .views-row {
+    @media #{$mobile} {
+      margin-bottom: 40px;
+    }
+    .views-field-title,
+    .views-field-field-lb-logo,
+    .views-field-nothing {
+      text-align: center;
+    }
+
+    .views-field-title {
+      border-top: 1px solid $dark;
+      border-bottom: 1px solid $dark;
+      padding: 10px 0;
+      a {
+        color: $dark;
+        font-size: 18px;
+        text-decoration: none;
+      }
+    }
+
+    .views-field-nothing {
+      a {
+        @extend %black-button;
+        padding: 12px 15px 11px 15px;
+        font-weight: bold;
+        margin-top: 20px;
+        color: #ffffff;
+        background: #000000;
+      }
+    }
+  }
+}
+
+.view-lb-press-releases {
+  &.view-display-id-page {
+    margin-top: 20px;
+    .views-row {
+      padding-bottom: 20px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #9e9e9e;
+      .views-field-created  {
+        color: $green;
+        text-transform: uppercase;
+        font-weight: bold;
+        font-family: 'source_sans_prosemibold', $verdana;
+      }
+      .views-field-title {
+        color: $light-gray1;
+        font-family: $verdana;
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+      .views-field-view-node {
+        text-transform: uppercase;
+        font-weight: bold;
+        font-family: 'source_sans_prosemibold', $verdana;
+        font-size: 14px;
+      }
+    }
+  }
+  &.view-display-id-page_1 {
+    h3 {
+      margin-top: 50px;
+      font-size: 24px;
+      font-family: 'source_sans_prosemibold', $verdana;
+      color: $dark;
+    }
+    .views-field-title {
+      margin-bottom: 15px;
+      a {
+        .date {
+          text-transform: uppercase;
+          font-family: 'source_sans_prosemibold', $verdana;
+        }
+        color: $dark;
+        text-decoration: underline;
+        &:hover {
+          text-decoration: none;
+        }
+      }
+    }
+  }
+  .view-footer {
+    margin-top: 50px;
+    a {
+      color: #646464;
+      font-family: 'source_sans_prosemibold', $verdana;
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.view-lb-take-action-signatures {
+  color: $dark;
+  .views-row {
+    margin-bottom: 25px;
+    padding-top: 25px;
+    border-top: 1px solid $tabs-border;
+    .header {
+      $zen-column-count: 2;
+      @include zen-grid-container();
+      margin-bottom: 15px;
+      .user-info {
+        @include zen-grid-item(1, 1);
+        color: $green;
+        .user-name {
+          font-size: 16px;
+          text-transform: uppercase;
+          font-family: 'source_sans_prosemibold', $verdana;
+        }
+      }
+      .date-info {
+        @include zen-grid-item(1, 2);
+        font-size: 16px;
+        text-align: right;
+      }
+    }
+  }
+}
+
+
+.view-leaping-bunny-blog {
+  .views-row {
+    border-bottom: 1px dotted $light-gray;
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+    &:last-child {
+      border: none;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+  }
+  .views-field-title .node-title {
+    line-height: 1em;
+    font-size: 1.75em;
+    font-weight: 700;
+  }
+  .views-field-created,
+  .views-field-field-product-type {
+    font-style: italic;
+  }
+  .views-field-created {
+    color: $light-gray;
+  }
+}

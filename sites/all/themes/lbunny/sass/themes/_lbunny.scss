@@ -1,0 +1,978 @@
+/**
+ * @file lbunny.scss
+ * This implements some styles specific to the lbunny theme
+ */
+
+/**
+  * APPLICATION
+  */
+BODY.page-company-application {
+  .pane-lb-application-section-b-panel-pane-2,
+  .pane-lb-application-section-c-panel-pane-2,
+  .pane-lb-application-section-d-company-panel-pane-1,
+  .pane-lb-application-section-e-panel-pane-2,
+  .pane-lb-application-section-f-panel-pane-2,
+  .pane-lb-application-section-g-company-page-panel-pane-1,
+  .pane-lb-application-section-a-panel-pane-2 {
+    @include lb_app_box($fields-as-table: true);
+  }
+}
+
+/**
+ * FORMS: UTILITIES
+ */
+// clean up CKEditor links
+.ckeditor_links {
+  @include ao-ckeditor-styles();
+}
+// clean up input formats
+.filter-wrapper {
+  @include ao-filter-wrapper();
+  .filter-help {
+    font-size: 90%;
+    padding: 0px;
+  }
+  .ao-input-format-select {
+    font-size: 90%;
+  }
+}
+// control the appearance of callouts
+.aoCallout,
+.aoFormatBubble {
+  @include ao-callout();
+}
+.ao-field-help {
+  background-color: #CCC;
+  color: White;
+  margin-left: rhythm(.5);
+  display: inline-block;
+  height: $base-font-size;
+  width: $base-font-size;
+  text-align: center;
+  padding: $base-font-size*0.25;
+  line-height: $base-font-size;
+  @include border-radius(50%);
+
+  .ao-show-help {
+    display: none;
+  }
+
+  A {
+    color: White;
+    text-decoration: underline;
+  }
+
+}
+
+
+/**
+ * NODE ENTRY FORMS
+ * Utilities for specific fields
+ */
+// controls the appearance of multivalue fields
+TABLE[id*=field-brand-values] {
+  @include ao-table-dragger();
+}
+// makes date fields with start an end appear on a single line
+#edit-field-promotion-dates {
+  @include ao-date-field-cleanup($stacked: true);
+}
+// makes radio buttons appear on a single line
+#edit-field-promotion-status {
+  @include ao-horizontal-radios();
+}
+
+// try to make a node entry form a vertical form
+#crm-core-profile-entry-form-application-form-section-a,
+#crm-core-profile-entry-form-application-form-section-c,
+#crm-core-profile-entry-form-application-form-section-d,
+#lb-registration-application-section-d-form,
+#lb-registration-application-section-g-form,
+#lb-user-brands-form,
+#brand-node-form,
+#promotion-node-form,
+#crm-core-profile-entry-form-request-guide,
+#partnership-node-form,
+#crm-core-profile-entry-form-donate,
+#crm-core-contact-ui-form {
+  @include lb-vertical-form( $hide-name-label: true );
+  // make the textarea the right size
+  position: relative;
+
+  #edit-field-lb-cosmetics,
+  #edit-field-lb-animal-care,
+  #edit-field-lb-personal-care,
+  #edit-field-lb-household-products,
+  #edit-field-lb-countries,
+  #edit-field-lb-distributor-list {
+    margin-bottom: rhythm(.25);
+  }
+
+  #edit-field-lb-countries,
+  #edit-field-lb-distributor-list {
+    @include vertical-forms-place-desc ($desc-postion: none,  $label-margin: 0%);
+    .description {
+      text-align: left;
+      margin-top: rhythm(.25);
+      margin-bottom: rhythm(.25);
+    }
+  }
+
+  .form-item-field-lb-description-und-0-format {
+    label {
+      position: inherit !important;
+      width: auto !important;
+      text-align: left !important;
+    }
+  }
+}
+
+.form-element-required ~ .form-element-required {
+  display: none;
+}
+  
+#lb-user-brands-form,
+#brand-node-form,
+#promotion-node-form,
+#partnership-node-form {
+  .description {
+    margin-left: 21%;
+    position: relative !important;
+    text-align: left !important;
+    top: 0 !important;
+    margin-top: 0 !important;
+    @media #{$mobile} {
+      margin-left: 0;
+    }
+  }
+  .field-type-taxonomy-term-reference,
+  .form-field-type-taxonomy-term-reference {
+    .form-checkboxes  {
+      .form-type-checkbox {
+        display: block;
+        INPUT {
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+}
+
+#promotion-node-form {
+  .date-no-float .form-item.form-type-textfield {
+    input {
+      width: 100%;
+    }
+  }
+}
+
+form#crm-core-profile-entry-form-logo-licensing-application {
+  .form-item > .form-element-wrapper {
+  //.field-name-field-company-gross-sales .form-type-textfield label  {
+    display: inline;
+  }
+  .form-item-field-ao-primary-telephone-und-0-country-codes {
+    display: none;
+  }
+  .form-type-textfield label {
+    display: block;
+  }  
+}
+/**
+ * USER: BRAND REPORTS
+ * Controls the appearance of tables and whatnot for showing details about brands
+ */
+.view-lb-brand-partnerships,
+.view-lb-brand-promotions  {
+  TABLE {
+    @include lb_user_table();
+  }
+}
+
+/**
+ * PETITION PAGE
+ */
+.node-type-cmcp-petition .petition-signatures {
+  color: $green;
+  @include lb_standard_fonts(petition-counter);
+}
+.field-name-body {
+
+}
+#crm-core-profile-entry-form-pledge-to-go-cruelty-free {
+  @include lb-vertical-form(  $hide-name-label: true );
+  position: relative;
+  margin-bottom: 50px;
+  .field-type-list-boolean {
+    margin-bottom: 15px !important;
+    .form-type-checkbox {
+      margin-left: 17%;
+      @media #{$mobile} {
+        margin-left: 0;
+      }
+      .form-element-wrapper {
+        margin: 0 !important;
+        label {
+          margin-left: 15px !important;
+        }
+      }
+    }
+  }
+
+  .field-name-field-cmcp-pm-content {
+    .description {
+      position: inherit !important;
+      text-align: left !important;
+      margin: 0 0 30px 21% !important;
+      @media #{$mobile} {
+        margin-left: 0!important;
+      }
+    }
+  }
+
+  .form-actions {
+    margin-left: 21%;
+    @media #{$mobile} {
+      margin-left: 0;
+    }
+  }
+}
+
+/**
+ * FORMS - USER ACCOUNT MANAGEMENT
+ * For adding manufacturers, suppliers, contacts, etc.
+ */
+#crm-core-profile-entry-form-register-company {
+  @include lb-vertical-form();
+  position: relative;
+
+  .form-item {
+    margin: rhythm(.25) 0 rhythm(.15) 0;
+  }
+
+  .form-actions {
+    text-align: center;
+  }
+}
+
+#crm-core-profile-entry-form-pledge-to-go-cruelty-free,
+FORM[id*='lb-user-suppliers-form'],
+FORM[id*='lb-user-manufacturers-form'],
+#lb-user-brand-manager-form  {
+  @include lb-vertical-form($hide-name-label: true);
+  position: relative;
+}
+
+#edit-add-supplier {
+  margin-top: rhythm(1);
+  margin-left: 20%;
+}
+
+
+
+
+
+
+
+
+
+/**
+  * USER PROFILE
+  */
+BODY.page-user {
+  /**
+  * Hide timezone fieldset
+  */
+  fieldset#edit-timezone {
+    display: none;
+  }
+
+  /**
+   * Create LB Boxes where appropriate
+   */
+  .user-profile-container-class {
+    @include lb_box($fields-as-table: false);
+  }
+  .pane-lb-user-profile-brands-managers-panel-pane-1,
+  .pane-lb-user-profile-primary-contact-panel-pane-1 {
+    @include lb_box($fields-as-table: true);
+    border: none;
+  }
+
+  .view-lb-user-profile-company {
+    .field-content {
+      a {
+        @include lb_standard_fonts(heading-two);
+      }
+    }
+  }
+
+  /**
+   * Apply box button styles as needed
+   */
+  .view-lb-user-profile-brands-managers {
+    .views-row {
+      border-bottom: 1px solid #CCC;
+      padding: rhythm(.5) 0em;
+      &:last-child {
+        border-bottom: none;
+      }
+      SPAN {
+        width: 40%;
+      }
+    }
+  }
+  .view-lb-user-profile-brands-managers,
+  .pane-lb-user-profile-primary-contact-panel-pane-1 {
+    .view-footer P,
+    .views-field-nothing {
+      margin: rhythm(.25) 0em;
+      @include lb_box_button($position: 'topright', $topoffset: rhythm(2), $rightoffset: rhythm(.5));
+    }
+  }
+
+  .pane-application-certification {
+    text-align: center;
+    padding: rhythm(.25);
+    margin-bottom: rhythm(.5);
+
+    DIV {
+      margin: 0px !important;
+    }
+  }
+
+  .pane-brand-contact-button,
+  .pane-manufacturer-contact-button,
+  .pane-supplier-contact-button {
+    position: relative;
+    .lb_action_button {
+      @include lb_header_button($position: 'topright', $topoffset: 0px, $rightoffset: 5px);
+    }
+  }
+  .pane-marketing-contact-button,
+  .pane-primary-contact-button {
+    position: relative;
+    .lb_action_button {
+      @include lb_header_button($position: 'topright', $topoffset: 10px, $rightoffset: 5px);
+    }
+  }
+  .pane-application-certification span {
+    @include lb_header_button($position: 'full');
+  }
+
+  /**
+   * Apply table styles to the info pages
+   */
+  .pane-company-status TABLE {
+    @include lb_user_table('flying');
+    TH {
+      @include lb_standard_fonts(heading-four);
+    }
+  }
+  .view-lb-user-profile-manufacturers,
+  .view-lb-user-profile-suppliers {
+    margin-bottom: rhythm(.5);
+
+    TABLE {
+      @include lb_user_table();
+      TD {
+        font-weight: normal;
+        width: 22%;
+      }
+    }
+  }
+
+  /**
+   * Apply title fonts to some of the panes
+   */
+  .pane-lb-user-profile-brands-panel-pane-1 h2.pane-title,
+  .pane-lb-user-profile-manufacturers-panel-pane-1 H2.pane-title,
+  .pane-lb-user-profile-suppliers-panel-pane-1 H2.pane-title {
+    @include lb_standard_fonts(header);
+  }
+
+  /**
+   * Position the panes correctly
+   */
+  .panels-flexible-region-5-left-inside,
+  .pane-lb-user-profile-brands-panel-pane-1,
+  .pane-lb-user-profile-suppliers-panel-pane-1,
+  .pane-lb-user-profile-brands-managers-panel-pane-1,
+  .pane-lb-user-profile-suppliers-panel-pane-1,
+  .pane-lb-user-profile-manufacturers-panel-pane-1 {
+    position: relative;
+  }
+
+  /**
+   * Apply header button styles as needed
+   */
+  .view-id-lb_user_profile_brands .view-header P,
+  .view-lb-user-profile-manufacturers .view-header P,
+  .view-lb-user-profile-suppliers .view-header P {
+    margin: 0em;
+    @include lb_header_button($position: 'topright', $topoffset: rhythm(.5), $rightoffset: rhythm(.5));
+  }
+
+  /**
+   * Apply activity list styles
+   */
+  .view-lb-user-profile-recent-activities {
+    @include lb_activity_list();
+  }
+
+  .view-lb-user-profile-brands {
+
+    .view-content {
+      @include zen-grid-container();
+      padding-top: rhythm(.5);
+    }
+
+    .views-row {
+      @include lb_grid_item(1, 3);
+      @include zen-float();
+      padding: rhythm(.5) rhythm(.5) 0;
+      background-color: #f1f1f1;
+      @include transition-property(all);
+      @include transition-duration(.1s);
+      @include transition-timing-function(ease-in);
+      margin-right: 0;
+
+      &:hover {
+        background-color: White;
+      }
+
+      .views-field-title {
+        @include lb_standard_fonts($type: header);
+        a {
+          @include lb_standard_fonts(heading-three);
+        }
+      }
+
+      .views-field-field-lb-description {
+        @include lb_standard_fonts();
+        margin-bottom: rhythm(.5); //rhythm(9);
+        padding: rhythm(.3) rhythm(.3) rhythm(.1);
+        position: relative;
+        left: rhythm(.6);
+        
+      }
+      
+      .lb_action_button {
+        position: relative;
+        bottom: 0; //rhythm(6);
+      }
+      .lb_brand_links {
+        background-color: #CCC;
+        font-weight: bold;
+        text-align: center;
+        padding: rhythm(.3) rhythm(.3) rhythm(.1);
+        position: relative;
+        bottom: 0; //rhythm(.6);
+        left: rhythm(.6);
+        width: 88%;
+
+        A {
+          @extend %black-button;
+          padding: 10px;
+          margin-bottom: 5px;
+        }
+      }
+
+      .views-field-field-lb-logo {
+        //border: 1px solid #CCC;
+        overflow: hidden;
+        text-align: center;
+        //margin-bottom: rhythm(.5);
+
+        IMG {
+          //width: 100%;
+        }
+      }
+    }
+  }
+}
+
+
+.page-lb-raw-material-compliance,
+.page-lb-product-compliance-form {
+  .entity-crm-core-activity {
+    h2,
+    .field-name-field-activity-participants {
+      display: none;
+    }
+  }
+}
+
+#lb-registration-application-section-d-form,
+#lb-user-suppliers-form,
+#lb-user-manufacturers-form {
+  .description {
+    margin-bottom: 1em;
+  }
+
+  .field-type-list-boolean {
+    @include lb-radios;
+  }
+
+  .field-type-list-text {
+    @include lb-radios;
+  }
+
+  .form-item {
+    margin: 0;
+    &.form-type-checkbox {
+      label {
+        margin-left: 0;
+      }
+    }
+  }
+  .form-type-managed-file {
+    .description {
+      position: relative;
+    } 
+  }
+
+  .form-wrapper {
+    .form-wrapper {
+      margin-bottom: 1em;
+      clear: both;
+    }
+  }
+
+  .suppliers-description {
+    clear: both;
+    margin: 3em 0 1em;
+  }
+
+  .form-type-checkbox {
+    clear: both;
+    height: 1em;
+    margin: 1em 0;
+
+    .form-checkbox, .form-element-wrapper {
+      float: left;
+    }
+
+    .form-element-wrapper {
+      bottom: 4px;
+      margin-left: 5px;
+      position: relative;
+      width: 90%;
+      
+      label {
+        margin-left: 0;
+      }
+    }
+  }
+
+  .manufacturers-description {
+    margin: 1em 0;
+    margin-top: 0;
+  }
+
+  #edit-add-supplier {
+    margin: 0;
+  }
+
+  @include actions
+}
+
+#lb-registration-application-section-e-form {
+  .field-type-list-boolean {
+    @include lb-radios;
+  }
+
+  @include actions;
+}
+
+#crm-core-profile-entry-form-application-form-section-b {
+  @include actions;
+}
+
+#lb-registration-application-section-f-form {
+  .help-text,
+  .form-wrapper {
+    margin: 1em 0;
+  }
+
+  .form-checkboxes {
+    .form-type-checkbox {
+      margin: 0.5em 0;
+
+      .form-checkbox {
+        position: absolute;
+      }
+
+      .form-element-wrapper {
+        margin-left: 2em;
+        position: relative;
+        bottom: 5px;
+      }
+    }
+  }
+
+  .field-type-list-boolean {
+    @include lb-radios;
+  }
+  .field-name-field-lb-product-types {
+    margin-bottom: 0;
+    .form-item {
+      margin-bottom: 0;
+    }
+    .form-element-wrapper {
+      display: none;
+    }
+  }
+  .field-name-field-lb-animal-care,
+  .field-name-field-lb-cosmetics,
+  .field-name-field-lb-household-products,
+  .field-name-field-lb-personal-care {
+    width: 49%;
+    float: left;
+    @media #{$mobile} {
+      float: none;
+      width: 100%;
+    }
+  }
+  @include actions;
+}
+
+.page-node-2 {
+  .field-name-field-cf-body {
+    clear: both;
+
+    img {
+      float: left;
+      @media #{$mobile} {
+        display: block;
+        margin: 0 auto;
+        float: none;
+      }
+    }
+  }
+}
+
+#crm-core-profile-entry-form-request-guide {
+  .form-actions {
+    margin-left: 20%;
+    padding-left: 5px;
+  }
+  #edit-field-mailing-list {
+    .form-element-wrapper {
+      display: none;
+    }
+
+    .form-checkbox {
+      margin-left: 18%;
+      position: relative;
+    }
+
+    .description {
+      margin-left: 21%;
+    }
+
+    @media #{$mobile} {
+      .form-checkbox {
+        margin-left: 0;
+      }
+      .description {
+        margin-left: 21px;
+      }
+    }
+  }
+}
+
+// Donate page styling.
+#crm-core-profile-entry-form-donate {
+  .amounts {
+    margin-top: 1.5em;
+    text-align: center;
+    @media #{$alt-desktop} {
+      text-align: left;
+      margin-left: 17%;
+      label {
+        margin-left: 3%;
+      }
+    }
+    @media #{$mobile} {
+      label {
+        display: inline;
+        position: initial;
+      }
+    }
+
+    .amount {
+      display: inline-block;
+      margin: 0 5%;
+      @extend %blue-button;
+      border: medium none;
+      font-weight: bold;
+      padding: 8px 13px 6px;
+      @media #{$mobile} {
+        display: block;
+        margin: 10px auto;
+      }
+    }
+  }
+
+  .form-item {
+    &.form-item-commerce-amount-single {
+      margin-top: 1em;
+      text-align: center;
+      @media #{$alt-desktop} {
+        text-align: left;
+        margin-left: 20%;
+      }
+      @media #{$mobile} {
+        #edit-commerce-amount-single {
+          width: 90%;
+        }
+      }
+
+      label {
+        display: inline;
+        position: initial;
+      }
+
+      .form-element-wrapper {
+        margin: 0;
+      }
+    }
+  }
+
+  .form-actions {
+    text-align: center;
+    margin-top: 1.5em;
+    @media #{$alt-desktop} {
+      text-align: left;
+      margin-left: 17%;
+      input {
+        margin-left: 5%;
+      }
+    }
+    @media #{$mobile} {
+      input, .form-submit {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+// MixitUp required style.
+#lb-brands {
+  .views-row {
+    display: none;
+  }
+  &.view-display-id-page_1 {
+    .views-row {
+      display: block;
+    }
+  }
+}
+
+.page-lb-brand-add #lb-user-brands-form .form-item.form-type-select .form-element-wrapper {
+  margin-left: 30%;
+}
+
+// site-404 no title
+BODY.site-404 {
+  #page-title {
+    display: none;
+  }
+}
+
+// Print styles.
+.print-content {
+ .pane-lb-registration-print,
+ .pane-lb-registration-actions,
+ .lb_action_button,
+ .view-ao-5-latest-contact-activities .views-row div {
+    display: none;
+  }
+ .view-ao-5-latest-contact-activities .views-row .views-field {
+   display: block;
+ }
+ th {
+   padding: 0 15px 0 0;
+ }
+}
+
+/**
+ * Font smoothing
+ */
+html {
+  text-rendering: optimizeLegibility;
+  text-rendering: geometricPrecision;
+  font-smooth: always;
+
+  font-smoothing: antialiased;
+  -moz-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/**
+ * Blog page
+ */
+.page-blog {
+ /**
+   * Use 12 grid columns for larger screens.
+   */
+  @media all and (min-width: 960px) {
+
+    $zen-column-count: 12;
+
+    .region-sidebar-second {
+       padding-right: 0;
+       margin-top: 85px;
+    }
+    #content {
+      padding-left: 110px;
+    }
+    /**
+     * The layout when there is only one sidebar, the left one.
+     */
+    &.sidebar-first {
+      #content {
+        @include zen-grid-item(9, 4);
+      }
+
+      .region-sidebar-first {
+        @include zen-grid-item(3, 1);
+      }
+    }
+
+    /**
+     * The layout when there is only one sidebar, the right one.
+     */
+    &.sidebar-second {
+      #content {
+        @include zen-grid-item(9, 1);
+      }
+
+      .region-sidebar-second {
+        @include zen-grid-item(3, 10);
+      }
+    }
+
+    /**
+     * The layout when there are two sidebars.
+     */
+    &.two-sidebars {
+      #content {
+        @include zen-grid-item(6, 4);
+      }
+
+     .region-sidebar-first {
+        @include zen-grid-item(3, 1);
+      }
+
+      .region-sidebar-second {
+        @include zen-grid-item(3, 10);
+      }
+    }
+  }
+  
+  @media #{$mobile} {
+  
+    $zen-column-count: 12;
+
+    /**
+     * The layout when there is only one sidebar, the left one.
+     */
+    &.sidebar-first {
+      #content {
+        @include zen-grid-item(12, 1);
+        @include zen-clear();
+      }
+
+      .region-sidebar-first {
+        @include zen-grid-item(12, 1);
+        @include zen-clear();
+      }
+    }
+
+    /**
+     * The layout when there is only one sidebar, the right one.
+     */
+    &.sidebar-second {
+      #content {
+        @include zen-grid-item(12, 1);
+        @include zen-clear();
+      }
+
+      .region-sidebar-second {
+        @include zen-grid-item(12, 1);
+        @include zen-clear();
+      }
+    }
+
+    /**
+     * The layout when there are two sidebars.
+     */
+    &.two-sidebars {
+      #content {
+        @include zen-grid-item(12, 1);
+        @include zen-clear();
+      }
+
+     .region-sidebar-first {
+        @include zen-grid-item(12, 1);
+        @include zen-clear();
+      }
+
+      .region-sidebar-second {
+        @include zen-grid-item(12, 1);
+        @include zen-clear();
+      }
+    }
+  }
+  
+  .accordion-container {
+    @media #{$narrow} {
+      display: none;
+    }
+    margin-top: 20px;
+    @include lb_blog_container($title_selector: '.accordion-icon, h3');
+    padding-bottom: 0;
+    .accordion-icon {
+      display: block;
+      height: 24px;
+      background: url("../images/mobile-menu-icon.png") no-repeat scroll center center $green;
+      width: 100%;
+      cursor: pointer;
+    }
+    h3 {
+      text-align: center;
+      border-radius: 0;
+      border-left: none;
+      border-right: none;
+      border-bottom: none;
+      margin-top: 0;
+      border-color: $light-gray3;
+      &:hover {
+        border-color: $light-gray3;
+      }
+      a {
+        color: $white;
+      }
+      .ui-icon {
+        display: none;
+      }
+    }
+    .ui-accordion-content {
+      border: none;
+      padding: 0;
+    }
+    .accordion-content {
+      a {
+        color: $blue;
+      }
+    }
+  }
+}

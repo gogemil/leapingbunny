@@ -1,0 +1,2513 @@
+<?php
+/**
+ * @file
+ * Code for the LB Registration feature.
+ */
+
+define('LB_REGISTRATION_QUEUE_NAME', 'lb_registration_company_recommit');
+include_once 'lb_registration.features.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function lb_registration_menu() {
+  $items['company/%crm_core_contact/application_section_d'] = array(
+    'title' => 'Section D: Supplier chain management',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_registration_application_section_d_form', 1),
+    // @see lb_user_menu_alter() where access is fixed.
+    'access callback' => TRUE,
+  );
+
+  $items['company/%crm_core_contact/application_section_e'] = array(
+    'title' => 'Section E: Distributors',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_registration_application_section_e_form', 1),
+    // @see lb_user_menu_alter() where access is fixed.
+    'access callback' => TRUE,
+  );
+
+  $items['company/%crm_core_contact/application_section_f'] = array(
+    'title' => 'Section F: Brands, Products & Availability',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_registration_application_section_f_form', 1),
+    // @see lb_user_menu_alter() where access is fixed.
+    'access callback' => TRUE,
+  );
+
+  $items['company/%crm_core_contact/application_section_g'] = array(
+    'title' => 'Section G: Your company declaration',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_registration_application_section_g_form', 1),
+    // @see lb_user_menu_alter() where access is fixed.
+    'access callback' => TRUE,
+  );
+
+  $items['admin/config/lb'] = array(
+    'title' => 'Leaping Bunny',
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+    'position' => 'left',
+    'weight' => -50,
+  );
+
+  $items['admin/config/lb/section-d'] = array(
+    'title' => 'Section D',
+    'description' => 'Adjust application registration settings related to section D.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_registration_section_d_admin_form'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'lb_registration.admin.inc',
+    'weight' => 4,
+  );
+
+  $items['admin/config/lb/section-a'] = array(
+    'title' => 'Section A',
+    'description' => 'Adjust application registration settings related to section A.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_registration_section_a_admin_form'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'lb_registration.admin.inc',
+    'weight' => 0,
+  );
+
+  $items['lb-registration/application/%crm_core_activity/%'] = array(
+    'title' => 'Registration application action',
+    'page callback' => '_lb_registration_application_action',
+    'page arguments' => array(2, 3),
+    'access arguments' => array('administer site configuration'),
+  );
+
+
+  return $items;
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * Adds some fields for additional contact that needs to be created at
+ * CRM Core Profile form submission.
+ */
+function lb_registration_form_crm_core_profile_entry_form_register_company_alter(&$form, &$form_state) {
+  $form_section = 'individual_contact';
+  $submit_handler = 'lb_registration_registration_submit_handler';
+  _lb_registration_application_form_alter($form, $form_state, $form_section, $submit_handler);
+
+  // Make address fields not required.
+  $address_fields = array('street_block', 'locality_block');
+  foreach ($address_fields as $comp) {
+    if (!empty($form['field_ao_home_address'])) {
+      foreach($form['field_ao_home_address'][LANGUAGE_NONE][0][$comp] as $key => $subcomp) {
+        if (isset($form['field_ao_home_address'][LANGUAGE_NONE][0][$comp][$key]['#required'])) {
+          $form['field_ao_home_address'][LANGUAGE_NONE][0][$comp][$key]['#required'] = 0;
+        }
+      }
+    }
+    if (!empty($form['field_ao_business_address'])) {
+      foreach($form['field_ao_business_address'][LANGUAGE_NONE][0][$comp] as $key => $subcomp) {
+        if (isset($form['field_ao_business_address'][LANGUAGE_NONE][0][$comp][$key]['#required'])) {
+           $form['field_ao_business_address'][LANGUAGE_NONE][0][$comp][$key]['#required'] = 0;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Helper to alter application forms.
+ *
+ * Adds custom fields for contact_name field components and for
+ * relationship position field. Also attach widgets for
+ * 'field_ao_email_address' and 'field_ao_primary_telephone' fields.
+ *
+ * @param array $form
+ *   Form.
+ * @param array $form_state
+ *   Form state.
+ * @param string $form_section
+ *   Form section string used to separate main contact fields
+ * attached to form from additional that we adding.
+ * @param string $submit_handler
+ *   Submit handler name that will handle form submission.
+ */
+function _lb_registration_application_form_alter(&$form, &$form_state, $form_section, $submit_handler, $individual = NULL) {
+  if (!empty($individual)) {
+    $individual_wrapper = entity_metadata_wrapper('crm_core_contact', $individual);
+  }
+  $form['#submit'][] = $submit_handler;
+  $entity_type = 'crm_core_contact';
+  $bundle = 'individual';
+  module_load_include('inc', 'ctools', 'includes/fields');
+  $form[$form_section]['#entity_type'] = $entity_type;
+  $form[$form_section]['#bundle'] = $bundle;
+  $form[$form_section]['#weight'] = -51;;
+  if (empty($form[$form_section]['#contact'])) {
+    $entity = entity_create($entity_type, array('type' => $bundle));
+    $form[$form_section]['#contact'] =& $entity;
+  }
+  else {
+    $entity =& $form[$form_section]['#contact'];
+  }
+
+  // Adds text field for the 'First name' component of the contact_name field.
+  if (!empty($individual_wrapper)) {
+    $contact_name = $individual_wrapper->contact_name->value();
+    $first_name = $contact_name['given'];
+  }
+  $form[$form_section]['first_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('First name'),
+    '#maxlength' => 63,
+    '#weight' => 0,
+    '#required' => TRUE,
+    '#default_value' => !empty($first_name) ? $first_name : '',
+  );
+
+  // Adds text field for the 'Last name' component of the contact_name field.
+  if (!empty($individual_wrapper)) {
+    $contact_name = $individual_wrapper->contact_name->value();
+    $last_name = $contact_name['family'];
+  }
+  $form[$form_section]['last_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Last name'),
+    '#maxlength' => 63,
+    '#weight' => 1,
+    '#required' => TRUE,
+    '#default_value' => !empty($last_name) ? $last_name : '',
+  );
+
+  // Adds 'field_lb_contact_position' field.
+  $field_name = 'field_lb_contact_position';
+  $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+  $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $individual, $form, $form_state, array('default' => TRUE));
+  $element[$field_name]['#parents'] = array($form_section, $field_name);
+  $element[$field_name]['#weight'] = 2;
+  $form[$form_section] = array_merge($form[$form_section], $element);
+
+  // Adds 'field_ao_email_address' field.
+  $field_name = 'field_ao_email_address';
+  $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+  $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $individual, $form, $form_state, array('default' => TRUE));
+  $element[$field_name]['#parents'] = array($form_section, $field_name);
+  $element[$field_name]['#weight'] = 3;
+  // We want to make sure a user uses a unique email as a primary contact.
+  $element[$field_name][LANGUAGE_NONE][0]['email']['#element_validate'][] = '_lb_registration_validate_primary_contact_email';
+  $form[$form_section] = array_merge($form[$form_section], $element);
+
+  // Adds 'field_ao_primary_telephone' field.
+  $field_name = 'field_ao_primary_telephone';
+  $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+  $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $individual, $form, $form_state, array('default' => TRUE));
+  $element[$field_name]['#parents'] = array($form_section, $field_name);
+  $element[$field_name]['#weight'] = 4;
+  $element['field_ao_primary_telephone'][LANGUAGE_NONE][0]['#title'] = t('Contact Telephone');
+  $form[$form_section] = array_merge($form[$form_section], $element);
+
+  // Alter company primary phone title.
+  $form['field_ao_primary_telephone'][LANGUAGE_NONE][0]['#title'] = t('Company Telephone');
+  $form['field_ao_primary_telephone'][LANGUAGE_NONE][0]['#element_validate'][] = '_lb_registration_phone_number_validate';
+
+  // When attaching this form to section A on recommitment, company contact
+  // loses part of its data without this.
+  foreach (element_children($form) as $key) {
+    if (isset($form[$key]['#access']) && $form[$key]['#access'] === FALSE) {
+      unset($form[$key]);
+    }
+  }
+  $form['#token'] = NULL;
+}
+
+/**
+ * Submit handler.
+ *
+ * Fills individual contact fields with submitted values, saves it and creates
+ * the 'primary contact' relationship.
+ */
+function lb_registration_registration_submit_handler($form, &$form_state) {
+  // Create or update individual contact.
+  $individual_contact = $form['individual_contact']['#contact'];
+  field_attach_submit($form['individual_contact']['#entity_type'], $individual_contact, $form['individual_contact'], $form_state);
+  $individual_wrapper = entity_metadata_wrapper('crm_core_contact', $individual_contact);
+  $individual_wrapper->contact_name = array('given' => $form_state['values']['first_name'], 'family' => $form_state['values']['last_name']);
+  $dupes = $individual_contact->match($individual_contact);
+  if (!empty($dupes) && $existing_contact = crm_core_contact_load($dupes[0])) {
+    // Taking first duplicate that exists.
+    $existing_contact_wrapper = entity_metadata_wrapper('crm_core_contact', $existing_contact);
+    $existing_contact_wrapper->contact_name->given = $form_state['values']['first_name'];
+    $existing_contact_wrapper->contact_name->family = $form_state['values']['last_name'];
+    $existing_contact->field_ao_email_address = $individual_contact->field_ao_email_address;
+    $existing_contact->field_ao_primary_telephone = $individual_contact->field_ao_primary_telephone;
+    $existing_contact_wrapper->save();
+    $individual_wrapper = $existing_contact_wrapper;
+  }
+  else {
+    crm_core_contact_save($individual_contact);
+    $individual_wrapper = entity_metadata_wrapper('crm_core_contact', $individual_contact);
+  }
+
+  if (empty($form_state['values']['recommitment'])) {
+    // Creating 'primary contact' relationship.
+    $relationship = entity_create('relation', array('relation_type' => 'lb_primary_contact'));
+    $relation_wrapper = entity_metadata_wrapper('relation', $relationship);
+    $company_wrapper = entity_metadata_wrapper('crm_core_contact', $form_state['crm_core_contact']);
+    $relation_wrapper->endpoints = array($individual_wrapper, $company_wrapper);
+    $relation_wrapper->crm_core_relationship_status = TRUE;
+    $relation_wrapper->save();
+
+    $individual_id = $individual_wrapper->getIdentifier();
+    $company_id = $company_wrapper->getIdentifier();
+
+    // Create application request activity.
+    $request = entity_create('crm_core_activity', array('type' => 'lb_application_request', 'title' => 'Application Request'));
+    $request->save();
+    $request_wrapper = entity_metadata_wrapper('crm_core_activity', $request);
+    $request_wrapper->field_activity_participants->set(array($individual_id, $company_id));
+    $request_wrapper->field_lb_primary_contact->set($individual_id);
+    $request_wrapper->field_lb_company->set($company_id);
+    $request_wrapper->save();
+
+    rules_invoke_component('rules_lb_application_request', $company_id);
+    rules_invoke_component('rules_lb_application_request_received', $company_id, $individual_id);
+  }
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * Adds some fields for marketing contact that needs to be crated at
+ * Application form section A submission.
+ */
+function lb_registration_form_crm_core_profile_entry_form_application_form_section_a_alter(&$form, &$form_state) {
+  $company = $form_state['crm_core_contact'];
+
+  if (lb_registration_company_must_recommit($company->contact_id)) {
+
+    $form['help_intro'] = array(
+      '#markup' => t('Please review and update all company information in the recommitment application and submit when you are finished.'),
+      '#prefix' => '<div class="help-text">',
+      '#suffix' => '</div>',
+      '#weight' => -110,
+    );
+    $form['recommitment'] = array(
+      '#type' => 'value',
+      '#value' => TRUE,
+    );
+    // Adding registration form so user can update info.
+    $registration_form = 'registration_form';
+    $form[$registration_form] = crm_core_profile_get_profile('register_company');
+    $form[$registration_form]['#weight'] = -101;
+    // Filling in company fields with defaults.
+    foreach (_lb_registration_company_fields_2_update_on_recommitment() as $field_name) {
+      $form[$registration_form][$field_name][LANGUAGE_NONE] = $form[$field_name][LANGUAGE_NONE];
+    }
+    // Disabling submit button.
+    $form[$registration_form]['actions']['submit']['#access'] = FALSE;
+
+    // Filling in primary contact fields with defaults.
+    $primary_contact = lb_user_get_primary_contact_for_company($company);
+    if ($primary_contact) {
+      $form_section = 'individual_contact';
+      $submit_handler = 'lb_registration_registration_submit_handler';
+      _lb_registration_application_form_alter($form[$registration_form], $form_state, $form_section, $submit_handler, $primary_contact);
+      // Removing validation that don't belong here.
+      unset($form[$registration_form][$form_section]['field_ao_email_address'][LANGUAGE_NONE][0]['email']['#element_validate']);
+    }
+    // Removing defaults from section A fields on recommitment.
+    $text_fields = array(
+      'field_lb_trading_name',
+      'field_lb_consumer_email',
+      'field_lb_date_established',
+      'field_lb_legal_status',
+    );
+    foreach ($text_fields as $field) {
+      $column = 'value';
+      if ($field == 'field_lb_consumer_email') {
+        $column = 'email';
+      }
+      if ($field == 'field_lb_date_established') {
+        $form[$field][LANGUAGE_NONE][0]['#default_value']['value'] = '';
+      }
+      else {
+        $form[$field][LANGUAGE_NONE][0][$column]['#default_value'] = '';
+      }
+    }
+    // Hide reffered by field.
+    $form[$registration_form]['field_lb_referred_by']['#access'] = FALSE;
+  }
+
+  // Show description only if not on recommit form.
+  if (!lb_registration_company_must_recommit($company->contact_id)) {
+    $standard_fid = variable_get('lb_registration_corporate_standard', FALSE);
+    if (!empty($standard_fid)) {
+      $standard_file = file_load($standard_fid);
+      if ($standard_file) {
+        $link = l(t('Corporate Standard of Compassion for Animals'), file_create_url($standard_file->uri), array('attributes' => array('target' => '_blank')));
+        $form['description'] = array(
+          '#prefix' => '<div class="description">',
+          '#suffix' => '</div>',
+          '#markup' => t('Before completing this form, please refer to the !standard_link (the Standard) for details about the criteria for approval and definitions as they apply to the Standard.', array('!standard_link' => $link)),
+          '#weight' => -100,
+        );
+      }
+    }
+  }
+
+  $form['help'] = array(
+    '#markup' => t('Please provide additional Company details not provided in your registration form.'),
+    '#prefix' => '<div class="help-text">',
+    '#suffix' => '</div>',
+    '#weight' => -99,
+  );
+
+  $entity_type = 'crm_core_activity';
+  $bundle = 'lb_application';
+  $application = _lb_registration_comany_get_sertification_application($company);
+  $form_state[$entity_type] =& $application;
+  module_load_include('inc', 'ctools', 'includes/fields');
+  $app_fields = array(
+    'field_lb_manufactures_own',
+    'field_lb_manufactures_other',
+    'field_lb_contracts_manufacturing',
+  );
+
+  foreach ($app_fields as $i => $field_name) {
+    $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+    $parents = array($entity_type, $bundle, $field_name);
+    $field_widget['#parents'] = $parents;
+    $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $application, $field_widget, $form_state, array('default' => TRUE));
+    $element[$field_name]['#parents'] = $parents;
+    $form[$field_name] = $element[$field_name];
+    _lb_registration_replace_title_with_desc($field_name, $form);
+    _lb_registration_reverse_options($field_name, $form);
+    _lb_registration_add_num_prefix($field_name, $form, ++$i);
+  }
+
+  $form['#submit'][] = 'lb_registration_application_section_a_submit_handler';
+  $form['actions']['submit']['#value'] = t('Next');
+
+  // Company contact loses part of its data without this.
+  foreach (element_children($form) as $key) {
+    if (isset($form[$key]['#access']) && $form[$key]['#access'] === FALSE) {
+      unset($form[$key]);
+    }
+  }
+  $form['#token'] = NULL;
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * Adds submit handler, previous button and checks if an application was
+ * approved, if so, disables Fixed Cut-off Date field from edit.
+ */
+function lb_registration_form_crm_core_profile_entry_form_application_form_section_b_alter(&$form, &$form_state) {
+  $company = $form_state['crm_core_contact'];
+  // If application was approved once cut-off date could not be changed.
+  $approvement = lb_application_report_get_activity_by_company('lb_company_application_approved', $company);
+  if ($approvement) {
+    $form['field_lb_cutoff_date']['#disabled'] = TRUE;
+  }
+  $form['field_lb_cutoff_date'][LANGUAGE_NONE][0]['#element_validate'][] = '_lb_registration_application_section_b_field_lb_cutoff_date_validate_handler';
+  $form['#submit'][] = 'lb_registration_application_section_b_submit_handler';
+  _lb_registration_attach_prev_button($form, 'company/' . $company->contact_id . '/application_section_a');
+}
+
+/**
+ * Validate handler for field 'field_lb_cutoff_date'.
+ *
+ * Field value could not be in the future.
+ */
+function _lb_registration_application_section_b_field_lb_cutoff_date_validate_handler($element, &$form_state, $form) {
+  $cutoff_date = drupal_array_get_nested_value($form_state['values'], $element['value']['#parents']);
+  $cutoff_date_obj = new DateObject($cutoff_date);
+  $today_obj = new DateObject();
+  if ($cutoff_date_obj > $today_obj) {
+    form_error($element, t('You must pick a Fixed Cut Off Date that is on or before today’s date.'));
+  }
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * Adds additional validation, submission, prevent animal policy change after
+ * was approved.
+ */
+function lb_registration_form_crm_core_profile_entry_form_application_form_section_c_alter(&$form, &$form_state) {
+  $company = $form_state['crm_core_contact'];
+  $form['#validate'][] = 'lb_registration_application_section_c_validate_handler';
+  $form['#submit'][] = 'lb_registration_application_section_c_submit_handler';
+  _lb_registration_attach_prev_button($form, 'company/' . $company->contact_id . '/application_section_b');
+  // If application was approved once animal policy could not be changed.
+  $approvement = lb_application_report_get_activity_by_company('lb_company_application_approved', $company);
+
+  $standard_fid = variable_get('lb_registration_corporate_standard', FALSE);
+  if (!empty($standard_fid)) {
+    $standard_file = file_load($standard_fid);
+    if ($standard_file) {
+      $link = l(t('Corporate Standard of Compassion for Animals'), file_create_url($standard_file->uri), array('attributes' => array('target' => '_blank')));
+      $form['description'] = array(
+        '#prefix' => '<div class="description">',
+        '#suffix' => '</div>',
+        '#markup' => t('This section relates to your policy on Animal Testing. Please refer to the !standard_link for details on this criteria and definitions.', array('!standard_link' => $link)),
+        '#weight' => -100,
+      );
+    }
+  }
+
+  $fields = array(
+    'field_lb_tests_goods',
+    'field_lb_tests_ingredients',
+    'field_lb_dirty_affiliates',
+    'field_lb_dirty_contractor',
+    'field_lb_dirty_subcontractor',
+    'field_lb_tests_before_cutoff',
+  );
+  foreach ($fields as $i => $field) {
+    _lb_registration_replace_title_with_desc($field, $form, NULL);
+    _lb_registration_reverse_options($field, $form, NULL);
+    _lb_registration_add_num_prefix($field, $form, ++$i);
+    if ($approvement) {
+      $form[$field]['#disabled'] = TRUE;
+    }
+  }
+
+  unset($form['field_lb_tests_before_cutoff'][LANGUAGE_NONE]['#options']['_none']);
+  $form['field_lb_tests_before_cutoff']['#states'] = array(
+    'visible' => array(
+      array(
+        array(
+          ':input[name="field_lb_dirty_contractor[' . LANGUAGE_NONE . ']"]' => array('value' => '1'),
+        ),
+        array(
+          ':input[name="field_lb_dirty_subcontractor[' . LANGUAGE_NONE . ']"]' => array('value' => '1'),
+        ),
+      ),
+    ),
+  );
+  $form['field_lb_tests_before_cutoff']['help_text'] = array(
+    '#markup' => t('If any animal tests were conducted after your Fixed Cut-off Date, please specify the purpose and date of those tests in an e-mail to !mail.', array('!mail' => l('admin@LeapingBunny.org', 'mailto:admin@leapingbunny.org'))),
+    '#prefix' => '<div style="font-size: 0.7em; margin-top: -1.5em;" class="field-lb-tests-before-cutoff-help-text help-text">',
+    '#suffix' => '</div>',
+  );
+}
+
+/**
+ * Section C validation handler.
+ *
+ * Checks that 'field_lb_tests_before_cutoff' conditional field has some value
+ * if field 'field_lb_dirty_subcontractor' is set to 'Yes'.
+ */
+function lb_registration_application_section_c_validate_handler(&$form, &$form_state) {
+  if (!empty($form_state['values']['field_lb_dirty_subcontractor'][LANGUAGE_NONE][0]['value']) && !isset($form_state['values']['field_lb_tests_before_cutoff'][LANGUAGE_NONE][0]['value'])) {
+    form_set_error('field_lb_tests_before_cutoff', t('Field "Were all of these animal tests conducted or commissioned before the fixed cutoff date for animal testing specified in Section B?" is required'));
+  }
+}
+
+/**
+ * Application section D form builder.
+ */
+function lb_registration_application_section_d_form($form, &$form_state, $company) {
+  module_load_include('inc', 'ctools', 'includes/fields');
+  drupal_add_js('sites/all/modules/features/lb_registration/lb_registration.js');
+
+  $form_state['storage']['applicant_company'] = $company;
+
+  $entity_type = 'crm_core_activity';
+  $bundle = 'lb_application';
+  $form_section = $bundle;
+  $application_editable = _lb_registration_application_editable($company);
+
+  $form['description'] = array(
+    '#prefix' => '<div class="description">',
+    '#suffix' => '</div>',
+    '#markup' => t('This section relates to your process and procedures for ensuring that you only purchase or manufacture Cosmetic and/or Household Products and use Ingredients that have not been tested on animals after your Fixed Cut-off Date.'),
+    '#weight' => -100,
+  );
+
+  if (empty($form[$form_section]['#entity'])) {
+    $application = _lb_registration_comany_get_sertification_application($company);
+    $form[$form_section]['#entity'] =& $application;
+  }
+  else {
+    $application =& $form[$form_section]['#entity'];
+  }
+
+  // Updating current application in company contact.
+  $company_wrapper = entity_metadata_wrapper('crm_core_contact', $company);
+  $company_wrapper->field_lb_current_application = $application;
+  $company_wrapper->save();
+
+  $form[$form_section]['#entity_type'] = $entity_type;
+  $form[$form_section]['#bundle'] = $bundle;
+  $form[$form_section]['#weight'] = 0;
+
+  $activity_fields = array(
+    'field_lb_agree_monitoring',
+    'field_lb_agree_recommit',
+    'field_lb_agree_audit',
+  );
+
+  foreach ($activity_fields as $key => $field_name) {
+    $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+    $parents = array($form_section, $field_name);
+    $field_widget['#parents'] = $parents;
+    $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $application, $field_widget, $form_state, array('default' => TRUE));
+    $element[$field_name]['#parents'] = $parents;
+    $element[$field_name]['#weight'] = $key;
+    $element[$field_name]['#disabled'] = !$application_editable;
+    $form[$form_section] = array_merge($form[$form_section], $element);
+    _lb_registration_replace_title_with_desc($field_name, $form, $form_section);
+    _lb_registration_reverse_options($field_name, $form, $form_section);
+    _lb_registration_add_num_prefix($field_name, $form, ++$key, $form_section);
+    // Alerts user about not appropriate choices.
+    $form[$form_section][$field_name][LANGUAGE_NONE]['#ajax']['callback'] = 'lb_registration_section_d_ajax_alerts_callback';
+  }
+
+  $own_manufacturing = $company_wrapper->field_lb_manufactures_own->value();
+  $contracts_manufacturing = $company_wrapper->field_lb_contracts_manufacturing->value();
+
+  $form_type = $form_state['build_info']['form_id'];
+  // Working with suppliers.
+  if ($own_manufacturing || $form_type == 'lb_user_suppliers_form') {
+    if (empty($own_manufacturing) && $form_type == 'lb_user_suppliers_form') {
+      $form_state['storage']['custom_call_form'] = 1;
+    }
+    $contractors_wrapper = 'suppliers_wrapper';
+
+    $form[$contractors_wrapper] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Ingredient Suppliers'),
+      '#id' => 'suppliers-wrapper',
+    );
+
+    $field_name = 'field_lb_suppliers_option';
+    $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+    $parents = array($form_section, $field_name);
+    $field_widget['#parents'] = $parents;
+    $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $application, $field_widget, $form_state, array('default' => TRUE));
+    $element[$field_name]['#parents'] = $parents;
+    $element[$field_name]['#weight'] = -10;
+    $element[$field_name][LANGUAGE_NONE]['#ajax'] = array(
+      'callback' => '_lb_registration_section_d_ajax_options_callback',
+      'wrapper' => 'suppliers-wrapper',
+    );
+    $form[$contractors_wrapper] += $element;
+    _lb_registration_replace_title_with_desc($field_name, $form, $contractors_wrapper);
+    _lb_registration_reverse_options($field_name, $form, $contractors_wrapper);
+
+    _lb_registration_section_d_check_supplier_option($form_state);
+    $application_wrapper = entity_metadata_wrapper('crm_core_activity', $application);
+    $suppliers_option = $application_wrapper->field_lb_suppliers_option->value();
+    if (
+      !empty($form_state['storage']['supplier_option']) && $form_state['storage']['supplier_option'] == 'collect'
+      ||
+      $suppliers_option == 'collect'
+    ) {
+      _lb_registration_section_d_contractor_form($form, $form_state, 'supplier');
+    }
+    elseif (
+      !empty($form_state['storage']['supplier_option']) && $form_state['storage']['supplier_option'] == 'amend'
+      ||
+      $suppliers_option == 'amend'
+    ) {
+
+      // User could click both options when first time on the page,
+      // so we want to ensure that form state is consistent.
+      $form_state['storage']['suppliers_count'] = 1;
+
+      $form[$contractors_wrapper]['description'] = array(
+        '#type' => 'container',
+        '#id' => 'description',
+      );
+      $top = t("You will need to include this exact language on all purchase orders for ingredients in your products:");
+      $form[$contractors_wrapper]['description']['top'] = array(
+        '#type' => 'item',
+        '#markup' => $top,
+        '#id' => 'top',
+      );
+
+      $quote_vars = array(
+        '%company' => entity_label('crm_core_contact', $company),
+        '@cutoff_date' => format_date($company_wrapper->field_lb_cutoff_date->value(), 'custom', 'F j, Y'),
+      );
+      $form[$contractors_wrapper]['description']['quote'] = array(
+        '#prefix' => '<blockquote>&ldquo;',
+        '#suffix' => '&rdquo;</blockquote>',
+        '#markup' => t("The supplier affirms by fulfilling this order that it does not conduct or commission animal testing of any cosmetics and/or household products, including without limitation, ingredients or formulations of such products, supplied to %company after @cutoff_date.", $quote_vars),
+      );
+
+      $form[$contractors_wrapper]['description']['bottom'] = array(
+        '#type' => 'item',
+        '#markup' => t('Then you will need to submit a sample purchase order to us for our records.'),
+        '#id' => 'bottom',
+      );
+
+      $field_name = 'field_lb_sample_purchase_order';
+      $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+      $parents = array($form_section, $field_name);
+      $field_widget['#parents'] = $parents;
+      $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $application, $field_widget, $form_state, array('default' => TRUE));
+      $element[$field_name]['#parents'] = $parents;
+      $form[$contractors_wrapper] += $element;
+    }
+  }
+
+  // Working with manufacturers.
+  if ($contracts_manufacturing || $form_type == 'lb_user_manufacturers_form') {
+    if (empty($own_manufacturing) && $form_type == 'lb_user_manufacturers_form') {
+      $form_state['storage']['custom_call_form'] = 1;
+    }
+    $contractors_wrapper = 'manufacturers_wrapper';
+
+    $form['form-separator']['#markup'] = '<hr class="lb-form-separator" />';
+
+    $form[$contractors_wrapper] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Product Manufacturers'),
+      '#id' => 'manufacturers-wrapper',
+    );
+
+    _lb_registration_section_d_contractor_form($form, $form_state, 'manufacturer');
+  }
+
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#value' => t('Submit'),
+    '#type' => 'submit',
+  );
+
+  _lb_registration_attach_prev_button($form, 'company/' . $company->contact_id . '/application_section_c');
+
+  return $form;
+}
+
+/**
+ * Ajax callback for section D.
+ *
+ * Alerts user about not appropriate choices.
+ */
+function lb_registration_section_d_ajax_alerts_callback($form, $form_state) {
+  if (empty($form_state['triggering_element']['#value'])) {
+    $text = '';
+    switch ($form_state['triggering_element']['#parents'][1]) {
+      case 'field_lb_agree_monitoring':
+        $text = t("In order to receive approval, you must set up a Supplier Monitoring System.\n\nYou will be required to provide copies of the documentation your Third Party Manufacturers and/or Ingredient Suppliers are asked to complete or copies of your amended purchase order forms as required by the Standard.\n\nPlease use the pro forma Declaration of Product Compliance and Declaration of Raw Material Compliance.");
+        break;
+
+      case 'field_lb_agree_recommit':
+        $text = t('In order to join The Leaping Bunny Program, a company must agree to show its continued commitment to to the no animal testing Standard created by the Leaping Bunny Program. During recommitment, companies will be asked to provide updated information about their company and suppliers.');
+        break;
+
+      case 'field_lb_agree_audit':
+        $text = t('All companies that join the Leaping Bunny Program must be open to receiving an independent audit of their Supplier Monitoring System to ensure compliance with the program.');
+        break;
+    }
+
+    if (!empty($text)) {
+      $commands = array();
+      $commands[] = ajax_command_alert($text);
+      return array('#type' => 'ajax', '#commands' => $commands);
+    }
+  }
+}
+
+/**
+ * Returns application activity for company.
+ *
+ * Depends on system state:
+ * - if company must recommit and NO new application was saved returns new
+ * application activity.
+ * - if company must recommit and new application was saved returns saved
+ * application activity.
+ * - if time to recommit is not come returns existing application or create it
+ *
+ * @param CRMCoreContactEntity $company
+ *   Company object.
+ *
+ * @return CRMCoreActivityEntity
+ *   In general should return activity object for all system states, new or
+ *  stored. Returning FALSE means that there is some issue in the system.
+ */
+function _lb_registration_comany_get_sertification_application($company) {
+  $application = FALSE;
+  $must_recommit = lb_registration_company_must_recommit($company->contact_id);
+  // New application has to appear it 2 cases: must recommit or initial
+  // certification.
+  if ($must_recommit) {
+    // New application could exist already.
+    $application = lb_application_report_get_activity_by_company('lb_application', $company);
+    $application_wrapper = entity_metadata_wrapper('crm_core_activity', $application);
+    $submitted = $application_wrapper->field_lb_application_submitted->value();
+    $editable = _lb_registration_application_editable($company);
+    // If it was submitted we need to create new one.
+    if ($submitted && !$editable) {
+      $new_application = _lb_registration_application_prepare_lb_application($company);
+      // Fields that shouldn't change on recommitment.
+      $fields = array(
+        'field_lb_agree_monitoring',
+        'field_lb_agree_recommit',
+        'field_lb_agree_audit',
+        'field_lb_suppliers_option',
+        'field_lb_sample_purchase_order',
+      );
+      foreach ($fields as $field) {
+        if (!empty($application->$field)) {
+          $new_application->$field = $application->$field;
+        }
+      }
+      $application = $new_application;
+    }
+  }
+  // Time to recommit not come, editing existing application.
+  else {
+    $application = lb_application_report_get_activity_by_company('lb_application', $company);
+    if (!$application) {
+      $application = _lb_registration_application_prepare_lb_application($company);
+    }
+  }
+
+  return $application;
+}
+
+/**
+ * Application section E form builder.
+ */
+function lb_registration_application_section_e_form($form, &$form_state, $company) {
+  $company_name = entity_label('crm_core_contact', $company);
+  $entity_type = 'crm_core_activity';
+  $bundle = 'lb_application';
+  $application = lb_application_report_get_activity_by_company($bundle, $company);
+  module_load_include('inc', 'ctools', 'includes/fields');
+
+
+  $form['#entity'] =& $application;
+  $form['#entity_type'] = $entity_type;
+  $form['#bundle'] = $bundle;
+  $form_state['storage']['applicant_company'] =& $company;
+
+  $field_name = 'field_lb_distributors';
+  $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+  $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $application, $form, $form_state, array('default' => TRUE));
+  $element[$field_name]['#parents'] = array($field_name);
+  unset($element[$field_name]['#weight']);
+  $form[$field_name] = $element[$field_name];
+  // why was default_value being set to null? wouldn't show entered values otherwise
+  // $form[$field_name][LANGUAGE_NONE]['#default_value'] = NULL;
+  _lb_registration_replace_title_with_desc($field_name, $form);
+  _lb_registration_reverse_options($field_name, $form);
+
+  // Description.
+  $states = array(
+    'visible' => array(
+      ':input[name="field_lb_distributors[und]"]' => array('value' => 1),
+    ),
+  );
+  $form['description'] = array(
+    '#type' => 'container',
+    '#id' => 'description',
+    '#states' => $states,
+  );
+  $form['description']['top'] = array(
+    '#type' => 'item',
+    '#markup' => t("No animal testing can be performed by or for submission to regulatory agencies in foreign countries. You must include language as an addendum to your company's contracts with any distributor(s) selling its products for entry into foreign markets (any country other than United States and Canada). The language must read as follows:"),
+    '#id' => 'top',
+  );
+  $form['description']['quote'] = array(
+    '#prefix' => '<blockquote>&ldquo;',
+    '#suffix' => '&rdquo;</blockquote>',
+    '#markup' => t("The Distributor affirms that it will not conduct, commission, or be a party to animal testing nor allow animal testing to be performed by or for submission to regulatory agencies in order to distribute @company products in foreign markets.", array('@company' => $company_name)),
+  );
+  $form['description']['bottom'] = array(
+    '#type' => 'item',
+    '#markup' => t('Then you will need to submit a sample contract addendum to us for our records.'),
+    '#id' => 'bottom',
+  );
+
+  $field_name = 'field_lb_distributor_contract';
+  $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+  $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $application, $form, $form_state, array('default' => TRUE));
+  $element[$field_name]['#parents'] = array($field_name);
+  unset($element[$field_name]['#weight']);
+  $element[$field_name]['#states'] = $states;
+  $form[$field_name] = $element[$field_name];
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#value' => t('Submit'),
+    '#type' => 'submit',
+  );
+
+  _lb_registration_attach_prev_button($form, 'company/' . $company->contact_id . '/application_section_d');
+
+  return $form;
+}
+
+/**
+ * Application section F form builder.
+ */
+function lb_registration_application_section_f_form($form, &$form_state, $company) {
+  module_load_include('inc', 'ctools', 'includes/fields');
+  $form_state['crm_core_contact'] = $company;
+  $company_wrapper = entity_metadata_wrapper('crm_core_contact', $company);
+  $brands = $company_wrapper->field_lb_brands->value();
+  $brands_count = count($brands);
+  // Removing unpublished.
+  foreach ($brands as $i => $brand) {
+    if ($brand->status == NODE_NOT_PUBLISHED) {
+      // do not filter out so brands can be added at any point
+      // i.e. before an application is started
+      // unset($brands[$i]);
+    }
+  }
+  if ($brands_count != count($brands) && !empty($brands)) {
+    $brands = array_values($brands);
+  }
+
+  $form['help'] = array(
+    '#markup' => t('Please provide current information about your company’s brands to be included in our online Compassionate Shopping Guide. Please note you can add as many brands as needed.<br><br>
+        After you’ve entered your brand information, Leaping Bunny will review your submission and let you know if there are any questions. Be aware that your brand will not appear on your company page until your submission is reviewed.'),
+    '#prefix' => '<div class="help-text">',
+    '#suffix' => '</div>',
+    '#weight' => -100,
+  );
+
+  // Adding it here cause we need to know that it was clicked when adding
+  // new brand form.
+  $form['add_brand'] = array(
+    '#type' => 'button',
+    '#value' => t('Add another brand'),
+    '#ajax' => array(
+      'callback' => 'lb_registration_ajax_add_brand',
+      'wrapper' => 'brands',
+    ),
+    '#limit_validation_errors' => array(),
+    '#weight' => 99,
+  );
+
+  // Initialization.
+  // Adding brands only on first loading.
+  if (!empty($brands) && empty($form_state['storage']['brands_added'])) {
+    $form_state['storage']['brands'] = count($brands);
+    $form_state['storage']['brands_added'] = TRUE;
+  }
+  elseif (empty($form_state['storage']['brands'])) {
+    $form_state['storage']['brands'] = 1;
+  }
+  // Adding new empty form fof new brand only if 'add_brand' button was clicked.
+  elseif ($form_state['triggering_element']['#value'] == $form['add_brand']['#value']) {
+    $form_state['storage']['brands']++;
+  }
+  // Processing remove button.
+  if (isset($form_state['triggering_element']['#brand-id']) && isset($form_state['triggering_element']['#brand-id'])) {
+    $brand_id = $form_state['triggering_element']['#brand-id'];
+    $form_state['storage']['brands_to_remove'][$brand_id] = $brand_id;
+  }
+
+  $form['brands'] = array(
+    '#type' => 'container',
+    '#tree' => TRUE,
+    '#id' => 'brands',
+  );
+
+  if ($form_state['storage']['brands']) {
+    for ($i = 1; $i <= $form_state['storage']['brands']; $i++) {
+      // Skip rendering brand form if it was marked for removal
+      // and setting it unpublished.
+      if (isset($form_state['storage']['brands_to_remove']) && isset($form_state['storage']['brands_to_remove'][$i])) {
+        if (isset($brands[$i - 1])) {
+          $brand = $brands[$i - 1];
+          $brand->status = NODE_NOT_PUBLISHED;
+          node_save($brand);
+        }
+        continue;
+      }
+
+      $form['brands'][$i] = array(
+        '#type' => 'fieldset',
+        '#tree' => TRUE,
+        '#id' => 'brand-' . $i,
+      );
+
+      // Brand.
+      $entity_type = 'node';
+      $bundle = 'brand';
+      $form_section = $bundle;
+      if (empty($form['brands'][$i][$form_section]['#entity'])) {
+        if (isset($brands[$i - 1])) {
+          $brand = $brands[$i - 1];
+        }
+        else {
+          $brand = entity_create($entity_type, array('type' => $bundle));
+        }
+        $form['brands'][$i][$form_section]['#entity'] =& $brand;
+      }
+      else {
+        $brand =& $form['brands'][$i][$form_section]['#entity'];
+      }
+      $form['brands'][$i][$form_section]['#entity_type'] = $entity_type;
+      $form['brands'][$i][$form_section]['#bundle'] = $bundle;
+      $weight = 0;
+
+      // Field 'title'.
+      $field_name = 'title';
+      $parents = array('brands', $i, $form_section, $field_name);
+      $form['brands'][$i][$form_section][$field_name] = array(
+        '#type' => 'textfield',
+        '#title' => t('Brand name'),
+        '#parents' => $parents,
+        '#weight' => $weight++,
+        '#default_value' => empty($brand->title) ? '' : $brand->title,
+        '#required' => TRUE,
+      );
+
+      foreach (_lb_registration_section_f_fields() as $field_name) {
+        $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+        $parents = array('brands', $i, $form_section, $field_name);
+        $field_widget = array('#parents' => $parents);
+        $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $brand, $field_widget, $form_state, array('default' => TRUE));
+        $element[$field_name]['#parents'] = $parents;
+        $element[$field_name]['#weight'] = $weight++;
+        $question_fields = array(
+          'field_lb_product_types',
+          'field_lb_distributor_list',
+          'field_lb_countries',
+          'field_lb_certifications',
+          'field_lb_animal_ingredients',
+        );
+        if (in_array($field_name, $question_fields)) {
+          _lb_registration_replace_title_with_desc($field_name, $element);
+        }
+        if ($field_name == 'field_lb_logo') {
+          // File fields can't differentiate that we generation field widget for
+          // different entities until those have an ID set. Because of this we
+          // must set defaults ourselves.
+          if (
+            // Clear default value when adding new brand form.
+            empty($brand->nid)
+            && !isset($form_state['input']['brands'][$i])
+            && !empty($element[$field_name][LANGUAGE_NONE][0]['#default_value']['fid'])
+          ) {
+            $element[$field_name][LANGUAGE_NONE][0]['#default_value'] = array();
+          }
+
+          // Set proper default value on AJAX form update.
+          if (
+            empty($brand->nid)
+            && isset($form_state['input']['brands'][$i])
+            && isset($form_state['input']['brands'][$i][$bundle][$field_name][LANGUAGE_NONE][0])
+            && $element[$field_name][LANGUAGE_NONE][0]['#default_value']['fid'] != $form_state['input']['brands'][$i][$bundle][$field_name][LANGUAGE_NONE][0]['fid']
+          ) {
+            $element[$field_name][LANGUAGE_NONE][0]['#default_value']['fid'] = $form_state['input']['brands'][$i][$bundle][$field_name][LANGUAGE_NONE][0]['fid'];
+          }
+        }
+        if ($field_name == 'field_lb_animal_ingredients') {
+          _lb_registration_reverse_options($field_name, $element);
+          // Client wants additional help text here.
+          $element[$field_name]['help_text'] = array(
+            '#markup' => t('Note: Products do not have to be vegetarian or vegan to be approved, but some inquirers may wish to know.'),
+            '#prefix' => '<div style="font-size: 0.7em; margin-top: -1.5em;" class="field-lb-animal-ingredients help-text">',
+            '#suffix' => '</div>',
+          );
+        }
+        if ($field_name == 'field_lb_description') {
+          $instance = field_info_instance('node', 'field_lb_description', 'brand');
+          _maxlength_children($element, array('field_lb_description' => $instance));
+        }
+        $form['brands'][$i][$form_section] = array_merge($form['brands'][$i][$form_section], $element);
+      }
+
+      $product_weight = $form['brands'][$i][$form_section]['field_lb_product_types']['#weight'];
+      $product_weight++;
+      $form['brands'][$i][$form_section]['field_lb_animal_care']['#weight'] = $product_weight++;
+
+      $form['brands'][$i][$form_section]['field_lb_cosmetics']['#weight'] = $product_weight++;
+
+      $form['brands'][$i][$form_section]['field_lb_household_products']['#weight'] = $product_weight++;
+
+      $form['brands'][$i][$form_section]['field_lb_personal_care']['#weight'] = $product_weight++;
+
+      // Remove button.
+      $form['brands'][$i][$form_section]['remove'] = array(
+        '#type' => 'button',
+        '#value' => t('Remove brand'),
+        '#weight' => $weight++,
+        '#limit_validation_errors' => array(),
+        '#ajax' => array(
+          'callback' => 'lb_registration_ajax_remove_brand',
+        ),
+        '#brand-id' => $i,
+        '#name' => 'remove-brand-' . $i,
+      );
+
+      // Clear link.
+      unset($brand);
+    }
+  }
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#value' => t('Submit'),
+    '#type' => 'submit',
+  );
+
+  _lb_registration_attach_prev_button($form, 'company/' . $company->contact_id . '/application_section_e');
+
+  return $form;
+}
+
+/**
+ * Application section G form builder.
+ */
+function lb_registration_application_section_g_form($form, &$form_state, $company) {
+  module_load_include('inc', 'ctools', 'includes/fields');
+  $form_state['storage']['applicant_company'] = $company;
+  $company_wrapper = entity_metadata_wrapper('crm_core_contact', $company);
+
+  $standard_text = t('Corporate Standard of Compassion for Animals');
+  $standard_fid = variable_get('lb_registration_corporate_standard', FALSE);
+  if (!empty($standard_fid)) {
+    $standard_file = file_load($standard_fid);
+    if ($standard_file) {
+      $link = l($standard_text, file_create_url($standard_file->uri), array('attributes' => array('target' => '_blank')));
+    }
+  }
+
+  $vars = array(
+    '@company-name' => $company_wrapper->label(),
+    '@cut-off-date' => format_date($company_wrapper->field_lb_cutoff_date->value(), 'custom', 'F j, Y'),
+    '!standard' => isset($link) ? $link : $standard_text,
+  );
+
+  $markup = '<p>';
+  $markup .= t('This declaration must be completed in full by an authorized Company representative. Subsequent public statements made by your Company must not contradict this declaration. Your Company may be required to supply additional information upon request.');
+  $markup .= '</p>';
+  $markup .= '<p>';
+  $markup .= t('@company-name certifies that as of @cut-off-date each of the Cosmetics and/or Household Products that it manufactures, produces, or distributes is developed and manufactured in compliance with the !standard (the Standard) as outlined in said document.', $vars);
+  $markup .= '</p>';
+  $markup .= '<p>';
+  $markup .= t('The undersigned hereby attests that s/he is the duly authorized agent of the Company with full power and authority to execute this Declaration and thereby to bind the Company to the commitments made herein.');
+  $markup .= '</p>';
+
+  $form['description'] = array(
+    '#prefix' => '<div class="description">',
+    '#suffix' => '</div>',
+    '#markup' => $markup,
+    '#weight' => -100,
+  );
+
+  // Adding 'Registration' activity 'field_lb_agree_monitoring' field.
+  $entity_type = 'crm_core_activity';
+  $bundle = 'lb_application';
+  $form_section = $bundle;
+  if (empty($form[$form_section]['#entity'])) {
+    $application = _lb_registration_comany_get_sertification_application($company);
+    $form[$form_section]['#entity'] =& $application;
+  }
+  else {
+    $application =& $form[$form_section]['#entity'];
+  }
+  $application_wrapper = entity_metadata_wrapper('crm_core_activity', $application);
+
+  // Updating current application in company contact.
+  $company_wrapper->field_lb_current_application = $application;
+  $company_wrapper->save();
+
+  $form[$form_section]['#entity'] =& $application;
+  $form[$form_section]['#entity_type'] = $entity_type;
+  $form[$form_section]['#bundle'] = $bundle;
+  // Adding 'Registration' activity 'field_lb_sig_name' field.
+  $field_name = 'field_lb_sig_name';
+  $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+  $parents = array($form_section, $field_name);
+  $field_widget = array('#parents' => $parents);
+  $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $application, $field_widget, $form_state, array('default' => TRUE));
+  $element[$field_name]['#parents'] = $parents;
+  $element[$field_name]['#weight'] = 1;
+  $element[$field_name][LANGUAGE_NONE][0]['value']['#title'] = t('Your name');
+  $form[$form_section] = array_merge($form[$form_section], $element);
+  // End of adding 'Registration' activity 'field_lb_agree_monitoring' field.
+
+  // Adding 'Registration' activity 'field_lb_sig_title' field.
+  $field_name = 'field_lb_sig_title';
+  $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+  $parents = array($form_section, $field_name);
+  $field_widget = array('#parents' => $parents);
+  $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $application, $field_widget, $form_state, array('default' => TRUE));
+  $element[$field_name]['#parents'] = $parents;
+  $element[$field_name]['#weight'] = 2;
+  $element[$field_name][LANGUAGE_NONE][0]['value']['#title'] = t('Your title');
+  $form[$form_section] = array_merge($form[$form_section], $element);
+  // End of adding 'Registration' activity 'field_lb_agree_monitoring' field.
+
+  // Adding 'Registration' activity 'field_lb_sig_company' field.
+  $field_name = 'field_lb_sig_company';
+  $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+  $parents = array($form_section, $field_name);
+  $field_widget = array('#parents' => $parents);
+  $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $application, $field_widget, $form_state, array('default' => TRUE));
+  $element[$field_name]['#parents'] = $parents;
+  $element[$field_name]['#weight'] = 3;
+  $element[$field_name][LANGUAGE_NONE][0]['value']['#title'] = t('Company name');
+  $form[$form_section] = array_merge($form[$form_section], $element);
+  // End of adding 'Registration' activity 'field_lb_agree_monitoring' field.
+
+  // Adding 'Registration' activity 'field_lb_sig_mail' field.
+  $field_name = 'field_lb_sig_mail';
+  $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+  $parents = array($form_section, $field_name);
+  $field_widget = array('#parents' => $parents);
+  $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $application, $field_widget, $form_state, array('default' => TRUE));
+  $element[$field_name]['#parents'] = $parents;
+  $element[$field_name]['#weight'] = 4;
+  $element[$field_name][LANGUAGE_NONE][0]['value']['#title'] = t('Your email address');
+  $form[$form_section] = array_merge($form[$form_section], $element);
+  // End of adding 'Registration' activity 'field_lb_agree_monitoring' field.
+
+  // Adding 'Registration' activity 'field_lb_sig_date' field.
+  $field_name = 'field_lb_sig_date';
+  $application_wrapper->{$field_name} = REQUEST_TIME;
+  $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+  $parents = array($form_section, $field_name);
+  $field_widget = array('#parents' => $parents);
+  $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $application, $field_widget, $form_state, array('default' => TRUE));
+  $element[$field_name]['#parents'] = $parents;
+  $element[$field_name]['#weight'] = 5;
+  $element[$field_name][LANGUAGE_NONE][0]['#disabled'] = TRUE;
+  $element[$field_name][LANGUAGE_NONE][0]['value']['#title'] = t('Date');
+  $form[$form_section] = array_merge($form[$form_section], $element);
+  // End of adding 'Registration' activity 'field_lb_agree_monitoring' field.
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['previous'] = array(
+    '#type' => 'submit',
+    '#value' => t('Previous'),
+    '#id' => 'button-previous',
+    '#weight' => -1,
+    '#limit_validation_errors' => array(),
+    '#submit' => array('_lb_registration_previous_button_callback'),
+    '#prev_path' => 'company/' . $company->contact_id . '/application_section_f',
+  );
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+
+  return $form;
+}
+
+/**
+ * @param $form_state
+ */
+function _lb_registration_section_d_check_supplier_option(&$form_state) {
+  if (
+    (!empty($form_state['values'])
+      && !empty($form_state['values']['lb_application'])
+      && !empty($form_state['values']['lb_application']['field_lb_suppliers_option'])
+      && !empty($form_state['values']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE])
+      && !empty($form_state['values']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0])
+      && !empty($form_state['values']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0]['value'])
+      && $form_state['values']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0]['value'] == 'collect')
+    ||
+    (!empty($form_state['input'])
+      && !empty($form_state['input']['lb_application'])
+      && !empty($form_state['input']['lb_application']['field_lb_suppliers_option'])
+      && !empty($form_state['input']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE])
+      && !empty($form_state['input']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0])
+      && !empty($form_state['input']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0]['value'])
+      && $form_state['input']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0]['value'] == 'collect')
+  ) {
+    $form_state['storage']['supplier_option'] = 'collect';
+  }
+  elseif (
+    (!empty($form_state['values'])
+      && !empty($form_state['values']['lb_application'])
+      && !empty($form_state['values']['lb_application']['field_lb_suppliers_option'])
+      && !empty($form_state['values']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE])
+      && !empty($form_state['values']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0])
+      && !empty($form_state['values']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0]['value'])
+      && $form_state['values']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0]['value'] == 'amend')
+    ||
+    (!empty($form_state['input'])
+      && !empty($form_state['input']['lb_application'])
+      && !empty($form_state['input']['lb_application']['field_lb_suppliers_option'])
+      && !empty($form_state['input']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE])
+      && !empty($form_state['input']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0])
+      && !empty($form_state['input']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0]['value'])
+      && $form_state['input']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0]['value'] == 'amend')
+  ) {
+    $form_state['storage']['supplier_option'] = 'amend';
+  }
+}
+
+/**
+ */
+function _lb_registration_section_d_contractor_form(&$form, &$form_state, $contractor_type) {
+  $supported_types = array('supplier', 'manufacturer');
+  if (!in_array($contractor_type, $supported_types)) {
+    return NULL;
+  }
+
+  // Init.
+  $declarations = variable_get('lb_registration_section_d_declarations', array());
+  switch ($contractor_type) {
+    case 'supplier':
+      $contractors_wrapper = 'suppliers_wrapper';
+      $contractors = 'suppliers';
+      $desc_source = t('Raw Material');
+      if (!empty($declarations['declaration_product'])) {
+        $pdf_file = file_load($declarations['declaration_material']);
+      }
+      break;
+
+    case 'manufacturer':
+      $contractors_wrapper = 'manufacturers_wrapper';
+      $contractors = 'manufacturers';
+      $desc_source = t('Product');
+      if (!empty($declarations['declaration_product'])) {
+        $pdf_file = file_load($declarations['declaration_product']);
+      }
+      break;
+  }
+  $add_button = 'add_' . $contractor_type;
+  $add_button_value = check_plain('Add another ' . $contractor_type);
+  $relation_type = 'lb_' . $contractor_type;
+
+  $form[$contractors_wrapper][$contractors] = array(
+    '#type' => 'container',
+    '#tree' => TRUE,
+    '#id' => $contractors,
+  );
+
+  $form[$contractors_wrapper][$contractors]['description'] = array(
+    '#prefix' => '<div class="' . $contractor_type . 's-description" >',
+    '#suffix' => '</div>',
+    '#markup' => t('You will need to obtain Declaration of @source Compliance from all your @contractor-types. This can be done both online and offline by choosing one of the options below:', array('@source' => $desc_source, '@contractor-type' => $contractor_type)),
+  );
+
+  // Adding it here cause we need to know that it was clicked when adding
+  // new form.
+  $form[$contractors_wrapper][$add_button] = array(
+    '#type' => 'button',
+    '#value' => $add_button_value,
+    '#ajax' => array(
+      'callback' => '_lb_registration_section_d_ajax_add_' . $contractor_type . '_callback',
+      'wrapper' => $contractors,
+    ),
+    '#limit_validation_errors' => array(),
+    '#weight' => 99,
+  );
+
+  // Initialization.
+  $contractors_arrays = _lb_registration_get_contractors('crm_core_contact', $form_state['storage']['applicant_company']->contact_id, array($relation_type));
+  // Add contractors only on first loading.
+  if (!empty($contractors_arrays) && empty($form_state['storage'][$contractors . '_added'])) {
+    $form_state['storage'][$contractors . '_count'] = count($contractors_arrays);
+    $form_state['storage'][$contractors . '_added'] = TRUE;
+  }
+  elseif (empty($form_state['storage'][$contractors])) {
+    $form_state['storage'][$contractors . '_count'] = 1;
+  }
+  // Adding new empty form for new contractor only if 'add_contractor'
+  // button was clicked.
+  elseif ($form_state['triggering_element']['#value'] == $form[$contractors_wrapper][$add_button]['#value']) {
+    $form_state['storage'][$contractors . '_count']++;
+  }
+  // Processing remove button.
+  if (isset($form_state['triggering_element']) && isset($form_state['triggering_element']['#contractor-id'])) {
+    if ($form_state['triggering_element']['#contractor-type'] == $contractor_type) {
+      $contractor_id = $form_state['triggering_element']['#contractor-id'];
+      $form_state['storage']['contractors_to_remove'][$contractor_type][$contractor_id] = $contractor_id;
+    }
+  }
+  if (isset($form_state['storage']['contractors_to_remove']) && isset($form_state['storage']['contractors_to_remove'][$contractor_type])) {
+    $removal_id = array_shift($form_state['storage']['contractors_to_remove'][$contractor_type]);
+    $removal_id--;
+    if (isset($contractors_arrays[$removal_id])) {
+      $contractor = $contractors_arrays[$removal_id];
+      crm_core_contact_delete($contractor->contact_id);
+      unset($contractors_arrays[$removal_id]);
+      $contractors_arrays = array_values($contractors_arrays);
+    }
+  }
+
+  for ($i = 1; $i <= $form_state['storage'][$contractors . '_count']; $i++) {
+    $form[$contractors_wrapper][$contractors][$i] = array(
+      '#type' => 'fieldset',
+      '#tree' => TRUE,
+      '#id' => $contractor_type . '-' . $i,
+    );
+    $contractor_form =& $form[$contractors_wrapper][$contractors][$i];
+
+    // We want to put fields of 2 entities in custom order so we will need
+    // to use a bit of magic.
+
+
+    // Contractor.
+    $entity_type = 'crm_core_contact';
+    $bundle = 'company';
+
+    // Storage init.
+    if (empty($form_state['storage'][$contractors][$i])) {
+      $form_state['storage'][$contractors][$i] = array();
+      $storage =& $form_state['storage'][$contractors][$i];
+      $storage['#relation_type'] = $relation_type;
+    }
+
+    if (empty($storage[$bundle]) && empty($storage[$bundle]['#entity'])) {
+      if (isset($contractors_arrays[$i - 1])) {
+        $contractor = $contractors_arrays[$i - 1];
+      }
+      else {
+        $contractor = entity_create($entity_type, array('type' => $bundle));
+      }
+      $storage[$bundle]['#entity'] =& $contractor;
+    }
+    else {
+      $contractor =& $storage[$bundle]['#entity'];
+    }
+    $storage[$bundle]['#entity_type'] = $entity_type;
+    $storage[$bundle]['#bundle'] = $bundle;
+
+    // Field 'contact_name'.
+    $field_name = 'contact_name';
+    $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+    $parents = array($contractors, $i, $bundle, $field_name);
+    $field_widget = array('#parents' => $parents);
+    $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $contractor, $field_widget, $form_state, array('default' => TRUE));
+    $element[$field_name]['#parents'] = $parents;
+    $element[$field_name]['#weight'] = 1;
+    // Setting more appropriate element title.
+    $element[$field_name]['#attributes']['class'][] = 'show-this';
+    $element[$field_name][LANGUAGE_NONE][0]['#title'] = t('@contractor-type Company Name', array('@contractor-type' => ucwords($contractor_type)));
+    $wrapper_name = $bundle . '_' . $field_name;
+    $contractor_form[$wrapper_name] = $element[$field_name];
+
+    // Declaration download section.
+    $field_name = 'lb_declaration_text';
+    $wrapper_name = $bundle . '_' . $field_name;
+    $contractor_form[$wrapper_name] = array('#type' => 'container', '#weight' => 5);
+    $contractor_form[$wrapper_name][$field_name] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Download the !link that can be filled out offline, and upload it here:', array('!link' => l(t('pdf version'), file_create_url($pdf_file->uri), array('attributes' => array('target' => '_blank'))))),
+      '#weight' => 5,
+      '#parents' => array($contractors, $i, $field_name),
+    );
+
+    // Field 'field_lb_declaration'.
+    $field_name = 'field_lb_declaration';
+    $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+    $parents = array($contractors, $i, $bundle, $field_name);
+    $field_widget = array('#parents' => $parents);
+    $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $contractor, $field_widget, $form_state, array('default' => TRUE));
+    $element[$field_name]['#parents'] = $parents;
+    $element[$field_name]['#weight'] = 6;
+    // File fields can't differentiate that we generation field widget for
+    // different contacts until those have an ID set. Because of this we
+    // must set defaults ourselves.
+    if (
+      // Clear default value when adding new contractor form.
+      empty($contractor->contact_id)
+      && !isset($form_state['input'][$contractors][$i])
+      && !empty($element[$field_name][LANGUAGE_NONE][0]['#default_value']['fid'])
+    ) {
+      $element[$field_name][LANGUAGE_NONE][0]['#default_value'] = array();
+    }
+
+    // Set proper default value on AJAX form update.
+    if (
+      empty($contractor->contact_id)
+      && isset($form_state['input'][$contractors][$i])
+      && isset($form_state['input'][$contractors][$i][$bundle][$field_name][LANGUAGE_NONE][0])
+      && $element[$field_name][LANGUAGE_NONE][0]['#default_value']['fid'] != $form_state['input'][$contractors][$i][$bundle][$field_name][LANGUAGE_NONE][0]['fid']
+    ) {
+      $element[$field_name][LANGUAGE_NONE][0]['#default_value']['fid'] = $form_state['input'][$contractors][$i][$bundle][$field_name][LANGUAGE_NONE][0]['fid'];
+    }
+    $wrapper_name = $bundle . '_' . $field_name;
+    $contractor_form[$wrapper_name] = $element[$field_name];
+    // Contractor ends.
+
+
+    // Contractor primary contact.
+    $entity_type = 'crm_core_contact';
+    $bundle = 'individual';
+
+
+    if (empty($storage[$bundle]) && empty($storage[$bundle]['#entity'])) {
+      if (empty($contractor->contact_id)) {
+        $contractor_contact = entity_create($entity_type, array('type' => $bundle));;
+      }
+      else {
+        $contractor_contact = lb_registration_application_company_primary_contact($contractor);
+      }
+      $storage[$bundle]['#entity'] =& $contractor_contact;
+    }
+    else {
+      $contractor_contact =& $storage[$bundle]['#entity'];
+    }
+    $storage[$bundle]['#entity_type'] = $entity_type;
+    $storage[$bundle]['#bundle'] = $bundle;
+
+    // Field 'contact_name'.
+    $field_name = 'contact_name';
+    $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+    $parents = array($contractors, $i, $bundle, $field_name);
+    $field_widget = array('#parents' => $parents);
+    $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $contractor_contact, $field_widget, $form_state, array('default' => TRUE));
+    $element[$field_name]['#parents'] = $parents;
+    $element[$field_name]['#weight'] = 2;
+    // Setting more appropriate element title.
+    $element[$field_name][LANGUAGE_NONE][0]['#title'] = '';
+    $element[$field_name][LANGUAGE_NONE][0]['#components']['given']['title'] .= '<span class="form-required" title="This field is required.">*</span>';
+    $element[$field_name][LANGUAGE_NONE][0]['#components']['family']['title'] .= '<span class="form-required" title="This field is required.">*</span>';
+    $wrapper_name = $bundle . '_' . $field_name;
+    $contractor_form[$wrapper_name] = array('#type' => 'container', '#weight' => 2);
+    $contractor_form[$wrapper_name] += $element;
+
+    // Field 'field_ao_email_address'.
+    $field_name = 'field_ao_email_address';
+    $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+    $parents = array($contractors, $i, $bundle, $field_name);
+    $field_widget = array('#parents' => $parents);
+    $element = ctools_field_invoke_field($field_instance, 'form', $entity_type, $contractor_contact, $field_widget, $form_state, array('default' => TRUE));
+    $element[$field_name]['#parents'] = $parents;
+    $element[$field_name]['#weight'] = 3;
+    $wrapper_name = $bundle . '_' . $field_name;
+    $contractor_form[$wrapper_name] = array('#type' => 'container', '#weight' => 3);
+    $contractor_form[$wrapper_name] += $element;
+    // Contractor primary contact ends.
+
+    $step_name = 'Next';
+    if (!empty($form_state['build_info']['form_id'])) {
+      $form_name = $form_state['build_info']['form_id'];
+      if ($form_name == 'lb_user_suppliers_form' || $form_name == 'lb_user_manufacturers_form') {
+        $step_name = 'Submit';
+      }
+    }
+    $field_name = 'send_email';
+    $wrapper_name = $bundle . '_' . $field_name;
+    $contractor_form[$wrapper_name] = array('#type' => 'container', '#weight' => -2,
+      '#attributes' => array('class' => array('inline-checkbox')),);
+    $contractor_form[$wrapper_name][$field_name] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Collect declarations by emailing @contractors a Declaration Form (e-mail will not be sent until hitting "@step_name" at the bottom of the screen)', array('@contractor' => $contractor_type, '@step_name' => $step_name)),
+      '#weight' => -2,
+      '#parents' => array($contractors, $i, $field_name),
+    );
+
+    $field_name = 'enter_text';
+    $wrapper_name = $bundle . '_' . $field_name;
+    $contractor_form[$wrapper_name] = array('#type' => 'container', '#weight' => -1);
+    $contractor_form[$wrapper_name][$field_name] = array(
+      '#prefix' => '<div class="' . $contractor_type . 's-enter-description" >',
+      '#suffix' => '</div>',
+      '#markup' => t('Enter @contractor-type details in the form below, inviting them to complete the Declaration of @source Compliance', array('@source' => $desc_source, '@contractor-type' => $contractor_type)),
+      '#weight' => -1,
+      '#parents' => array($contractors, $i, $field_name),
+    );
+
+    // Remove button.
+    $contractor_form['remove'] = array(
+      '#type' => 'button',
+      '#value' => t('Remove'),
+      '#limit_validation_errors' => array(),
+      '#ajax' => array(
+        'callback' => 'lb_registration_ajax_remove_contractor',
+      ),
+      '#contractor-id' => $i,
+      '#contractor-type' => $contractor_type,
+      '#name' => 'remove-' . $contractor_type . '-' . $i,
+      '#weight' => 7,
+    );
+
+    // Clear links.
+    unset($contractor);
+    unset($contractor_contact);
+  }
+}
+
+/**
+ * AJAX callback.
+ */
+function lb_registration_ajax_add_brand($form, $form_state) {
+  $commands = array();
+  $commands[] = ajax_command_append('#brands', render($form['brands'][$form_state['storage']['brands']]));
+
+  return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+/**
+ * AJAX callback.
+ */
+function lb_registration_ajax_remove_brand($form, &$form_state) {
+  $commands = array();
+  $brand_id = $form_state['triggering_element']['#brand-id'];
+  $commands[] = ajax_command_remove('#brand-' . $brand_id);
+
+  return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+/**
+ * Term reference fields for section F.
+ */
+function _lb_registration_section_f_fields() {
+  return array(
+    'field_ao_website',
+    'field_lb_upc',
+    'field_lb_description',
+    'field_lb_logo',
+    'field_lb_product_types',
+    'field_lb_cosmetics',
+    'field_lb_animal_care',
+    'field_lb_personal_care',
+    'field_lb_household_products',
+    'field_lb_distributor_list',
+    'field_lb_countries',
+    'field_lb_certifications',
+    'field_lb_animal_ingredients',
+  );
+}
+
+/**
+ * Submit handler.
+ */
+function lb_registration_application_section_a_submit_handler($form, &$form_state) {
+  $entity_type = 'crm_core_contact';
+  $company =& $form_state[$entity_type];
+  if (!empty($form_state['values']['recommitment'])) {
+    foreach (_lb_registration_company_fields_2_update_on_recommitment() as $field_name) {
+      $form_state['values'][$field_name] = $form_state['input'][$field_name];
+    }
+    // Fields attached by section A profile stopped storing values after
+    // attaching company registration profile. We need to handle them ourselves.
+    // Processing established date field. format 2014-10-16 12:09:11
+    if ($form_state['input']['field_lb_date_established'][LANGUAGE_NONE][0]['value']['date']) {
+      $date = new DateObject($form_state['input']['field_lb_date_established'][LANGUAGE_NONE][0]['value']['date']);
+      $date->addGranularity('hour');
+      $date->addGranularity('minute');
+      $date->addGranularity('second');
+      $form_state['values']['field_lb_date_established'][LANGUAGE_NONE][0]['value'] = $date->format('Y-m-d H:i:s');
+    }
+    field_attach_submit($entity_type, $company, $form, $form_state);
+    // Processing primary contact.
+    $registration_form = 'registration_form';
+    lb_registration_registration_submit_handler($form[$registration_form], $form_state);
+  }
+
+  // Processing application activity.
+  $entity_type = 'crm_core_activity';
+  $bundle = 'lb_application';
+  $parents = array($entity_type, $bundle);
+  $application =& $form_state[$entity_type];
+  field_attach_submit($entity_type, $application, array('#parents' => $parents), $form_state);
+  $app_fields = array(
+    'field_lb_manufactures_own',
+    'field_lb_manufactures_other',
+    'field_lb_contracts_manufacturing',
+  );
+
+  foreach ($app_fields as $field_name) {
+    $company->{$field_name} = $application->{$field_name};
+  }
+  $company->save();
+  $application->save();
+
+  $form_state['redirect'] = 'company/' . $company->contact_id . '/application_section_b';
+  // Ensures that initiate activity exists.
+  lb_registration_application_initiated_check($company);
+}
+
+/**
+ * Submit handler.
+ *
+ * Fills individual contact fields with submitted values, saves it and creates
+ * the 'primary contact' relationship.
+ */
+function lb_registration_application_section_b_submit_handler($form, &$form_state) {
+  $form_state['redirect'] = 'company/' . $form_state['crm_core_contact']->contact_id . '/application_section_c';
+  lb_registration_application_initiated_check($form_state['crm_core_contact']);
+  // Set variable that section b was submitted.
+  // @TODO might be improved. Uses in the lb_user/plugins/content_types/company_status.inc
+  variable_set('lb_registration_section_b_submitted_' . $form_state['crm_core_contact']->contact_id, TRUE);
+}
+
+/**
+ * Submit handler.
+ *
+ * Fills individual contact fields with submitted values, saves it and creates
+ * the 'primary contact' relationship.
+ */
+function lb_registration_application_section_c_submit_handler($form, &$form_state) {
+  $form_state['redirect'] = 'company/' . $form_state['crm_core_contact']->contact_id . '/application_section_d';
+  lb_registration_application_initiated_check($form_state['crm_core_contact']);
+}
+
+/**
+ * Section D submit handler.
+ *
+ * Creates:
+ *  - 2 contacts: contractor and its primary contact
+ *  - 2 relationships: contractor and primary contact
+ */
+function lb_registration_application_section_d_form_submit($form, &$form_state) {
+  $company =& $form_state['storage']['applicant_company'];
+  $company_wrapper = entity_metadata_wrapper('crm_core_contact', $company);
+  $form_state['redirect'] = 'company/' . $company->contact_id . '/application_section_e';
+  // Saving activity data.
+  $entity_type = 'crm_core_activity';
+  $bundle = 'lb_application';
+  if (empty($form_state['storage']['custom_call_form'])) {
+    $activity =& $form[$bundle]['#entity'];
+    field_attach_submit($entity_type, $activity, $form[$bundle], $form_state);
+    crm_core_activity_save($activity);
+  }
+
+  $contractor_types = array(
+    'supplier' => array(
+      'contractors' => 'suppliers',
+      'wrapper' => 'suppliers_wrapper',
+    ),
+    'manufacturer' => array(
+      'contractors' => 'manufacturers',
+      'wrapper' => 'manufacturers_wrapper',
+    ),
+  );
+  foreach ($contractor_types as $contractor_type) {
+    if (isset($form_state['values'][$contractor_type['contractors']])) {
+      foreach (array_keys($form_state['values'][$contractor_type['contractors']]) as $key) {
+        $relation_type = $form_state['storage'][$contractor_type['contractors']][$key]['#relation_type'];
+        unset($form_state['storage'][$contractor_type['contractors']][$key]['#relation_type']);
+        foreach ($form_state['storage'][$contractor_type['contractors']][$key] as $contact) {
+          // Core assumes that we can handle only one entity fields on
+          // one form level, silly...
+          // @see modules/field/field.default.inc:36
+          $form_section = $form[$contractor_type['wrapper']][$contractor_type['contractors']][$key];
+          $form_section['#parents'][] = $contact['#bundle'];
+          $entity =& $form_state['storage'][$contractor_type['contractors']][$key][$contact['#bundle']]['#entity'];
+          field_attach_submit($contact['#entity_type'], $entity, $form_section, $form_state);
+          if ($contact['#bundle'] == 'company') {
+            $contractor =& $entity;
+            // Generate activity and relation only for new entities.
+            $new_entity = FALSE;
+            if (empty($contractor->contact_id)) {
+              $new_entity = TRUE;
+            }
+            // @todo: do we need a dedupe check here for when contractor name
+            // matches an existing contractor name? especially if it matches company?
+            crm_core_contact_save($contractor);
+            if (!empty($contractor->contact_id)) {
+              $contractor_wrapper = entity_metadata_wrapper('crm_core_contact', $contractor);
+              // set field_lb_contractor_type
+              $current_contractor_type = $contractor_wrapper->field_lb_contractor_type->value();
+              $target_value = $current_contractor_type;
+              $target_value[] = $relation_type;
+              if (empty($current_contractor_type) || !in_array($relation_type, $current_contractor_type)) {
+                $contractor_wrapper->field_lb_contractor_type = $target_value;
+                $contractor_wrapper->save();
+              }
+              if ($new_entity) {
+                // Creating 'contractor' relationship.
+                $relationship = entity_create('relation', array('relation_type' => $relation_type));
+                $relationship_wrapper = entity_metadata_wrapper('relation', $relationship);
+                $relationship_wrapper->endpoints = array($contractor_wrapper, $company_wrapper);
+                $relationship_wrapper->crm_core_relationship_status = TRUE;
+                $relationship_wrapper->save();
+                // Invoke rules for manufacturer listed.
+                rules_invoke_component(
+                  'rules_lb_manufacturer_supplier_listed',
+                  $company->contact_id,
+                  $contractor->contact_id
+                );
+                // Create the init activity.
+                $activity_fields = array(
+                  'field_activity_participants' => array(
+                    $contractor->contact_id,
+                  ),
+                  'field_lb_company' => $company->contact_id,
+                  'field_lb_manufacturer_ref' => $contractor->contact_id,
+                );
+                lb_application_report_create_activity('lb_manufacturer_supplier_listed', $activity_fields);
+              }
+            }
+          }
+          else {
+            $contractor_contact =& $entity;
+            crm_core_contact_save($contractor_contact);
+          }
+        }
+
+        if (!empty($contractor_contact->contact_id) && !empty($contractor->contact_id)) {
+          $parents = $form_section['#parents'];
+          array_pop($parents);
+          $parents[] = 'send_email';
+          $send_email = drupal_array_get_nested_value($form_state['values'], $parents);
+          if ($send_email) {
+            switch ($relation_type) {
+              case 'lb_supplier':
+                $path = 'company/raw_material_compliance/'
+                  . $contractor->contact_id
+                  . '/'
+                  . $company_wrapper->contact_id->value();
+                $declaration_form_link_path = url($path, array('absolute' => TRUE));
+                $cut_off_date_stamp = $company_wrapper->field_lb_cutoff_date->value();
+
+                rules_invoke_component('rules_lb_registration_supplier_contact_notification', $company, $contractor, $contractor_contact, $declaration_form_link_path, format_date($cut_off_date_stamp, 'custom', 'm/d/Y'));
+                break;
+
+              case 'lb_manufacturer':
+                $path = 'company/product_compliance_form/'
+                  . $contractor->contact_id
+                  . '/'
+                  . $company_wrapper->contact_id->value();
+                $product_declaration_form_path = url($path, array('absolute' => TRUE));
+                // Declaration of Raw Material Compliance PDF link.
+                $declarations = variable_get('lb_registration_section_d_declarations', array());
+                $material_declaration_file_path = '';
+                if (!empty($declarations['declaration_product'])) {
+                  $pdf_file = file_load($declarations['declaration_material']);
+                  if (!empty($pdf_file)) {
+                    $material_declaration_file_path = file_create_url($pdf_file->uri);
+                  }
+                }
+                $cut_off_date_stamp = $company_wrapper->field_lb_cutoff_date->value();
+
+                rules_invoke_component('rules_lb_registration_manufacturer_contact_notification', $company, $contractor, $contractor_contact, $product_declaration_form_path, $material_declaration_file_path, format_date($cut_off_date_stamp, 'custom', 'm/d/Y'));
+                break;
+            }
+          }
+
+          // Creating 'primary contact' relationship.
+          $contractor_wrapper = entity_metadata_wrapper('crm_core_contact', $contractor);
+          $contractor_contact_wrapper = entity_metadata_wrapper('crm_core_contact', $contractor_contact);
+          $relationship = entity_create('relation', array('relation_type' => 'lb_primary_contact'));
+          $relationship_wrapper = entity_metadata_wrapper('relation', $relationship);
+          $relationship_wrapper->endpoints = array($contractor_contact_wrapper, $contractor_wrapper);
+          $relationship_wrapper->crm_core_relationship_status = TRUE;
+          $relationship_wrapper->save();
+        }
+      }
+    }
+  }
+
+  // Trigger on pdf upload.
+  if (isset($form_state['values']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0]['value']) &&
+      $form_state['values']['lb_application']['field_lb_suppliers_option'][LANGUAGE_NONE][0]['value'] == 'amend') {
+    // Set trigger if pdf has been uploaded.
+    $original_fid = (isset($form_state['input']['lb_application']['field_lb_sample_purchase_order'][LANGUAGE_NONE][0]['fid'])) ? $form_state['input']['lb_application']['field_lb_sample_purchase_order'][LANGUAGE_NONE][0]['fid'] : NULL;
+    $new_fid = (isset($form_state['values']['lb_application']['field_lb_sample_purchase_order'][LANGUAGE_NONE][0]['fid'])) ? $form_state['values']['lb_application']['field_lb_sample_purchase_order'][LANGUAGE_NONE][0]['fid'] : NULL;
+    if ($original_fid != NULL && $new_fid != NULL && $new_fid != 0) {
+      rules_invoke_component('lb_registration_supplier_sample_purchase_order', $company);
+    }
+  }
+
+  lb_registration_application_initiated_check($company);
+}
+
+/**
+ * Section E submit handler.
+ *
+ * Stores activity field data and updates company "field_lb_distributors"
+ * field from activity.
+ */
+function lb_registration_application_section_e_form_submit($form, &$form_state) {
+  $company = $form_state['storage']['applicant_company'];
+  $form_state['redirect'] = 'company/' . $company->contact_id . '/application_section_f';
+  lb_registration_application_initiated_check($company);
+  // Saving activity data.
+  $activity =& $form['#entity'];
+  field_attach_submit('crm_core_activity', $activity, $form, $form_state);
+  $activity->save();
+  // Updating company data from activity.
+  $company->field_lb_distributors = $activity->field_lb_distributors;
+  $company->save();
+}
+
+/**
+ * Section F submit handler.
+ */
+function lb_registration_application_section_f_form_submit($form, &$form_state) {
+  $brands = array();
+  foreach (element_children($form['brands']) as $i) {
+    $form_section = $form['brands'][$i];
+    $entity_type = 'node';
+    $bundle = 'brand';
+    // Generate activity only for new entities.
+    $new_entity = FALSE;
+    if (empty($form_section[$bundle]['#entity']->nid)) {
+      $new_entity = TRUE;
+    }
+    field_attach_submit($entity_type, $form_section[$bundle]['#entity'], $form_section[$bundle], $form_state);
+    $form_section[$bundle]['#entity']->uid = $GLOBALS['user']->uid;
+    $form_section[$bundle]['#entity']->title = $form_state['values']['brands'][$i][$bundle]['title'];
+    $wrapper = entity_metadata_wrapper('node', $form_section[$bundle]['#entity']);
+    $wrapper->field_lb_brand_company = $form_state['crm_core_contact']->contact_id;
+    node_save($form_section[$bundle]['#entity']);
+    $brands[] = $form_section[$bundle]['#entity'];
+
+    if ($new_entity) {
+      $activity_fields = array(
+        'field_activity_participants' => array($form_state['crm_core_contact']->contact_id),
+        'field_lb_company' => $form_state['crm_core_contact']->contact_id,
+        'field_lb_brand_ref' => $form_section[$bundle]['#entity']->nid,
+      );
+      lb_application_report_create_activity('lb_brand_listed', $activity_fields);
+    }
+  }
+
+  // Saving reference to brands created.
+  if (!empty($brands)) {
+    $company_wrapper = entity_metadata_wrapper('crm_core_contact', $form_state['crm_core_contact']);
+    $company_wrapper->field_lb_brands = $brands;
+    $company_wrapper->save();
+  }
+
+  $form_state['redirect'] = 'company/' . $form_state['crm_core_contact']->contact_id . '/application_section_g';
+}
+
+/**
+ * Add supplier AJAX callback.
+ */
+function _lb_registration_section_d_ajax_add_supplier_callback($form, $form_state) {
+  return _lb_registration_section_d_ajax_add_contractor_callback($form, $form_state, 'suppliers', 'suppliers_wrapper');
+}
+
+/**
+ * Add supplier AJAX callback.
+ */
+function _lb_registration_section_d_ajax_add_manufacturer_callback($form, $form_state) {
+  return _lb_registration_section_d_ajax_add_contractor_callback($form, $form_state, 'manufacturers', 'manufacturers_wrapper');
+}
+
+/**
+ * Add supplier AJAX callback.
+ */
+function _lb_registration_section_d_ajax_add_contractor_callback($form, $form_state, $contractors, $contractors_wrapper) {
+  $commands = array();
+  $commands[] = ajax_command_append('#' . $contractors, render($form[$contractors_wrapper][$contractors][$form_state['storage'][$contractors . '_count']]));
+
+  return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+function _lb_registration_section_d_ajax_options_callback($form, &$form_state) {
+  $commands = array();
+  if (!empty($form_state['storage']['supplier_option']) && $form_state['storage']['supplier_option'] == 'collect') {
+    $commands[] = ajax_command_remove('#description');
+    $commands[] = ajax_command_remove('#edit-lb-application-field-lb-sample-purchase-order');
+    $commands[] = ajax_command_append('#suppliers-wrapper', render($form['suppliers_wrapper']['suppliers']));
+    // Add button needs to be added only once.
+    if ($form_state['storage']['suppliers_count']) {
+      $commands[] = ajax_command_append('#suppliers-wrapper', render($form['suppliers_wrapper']['add_supplier']));
+    }
+  }
+  elseif (!empty($form_state['storage']['supplier_option']) && $form_state['storage']['supplier_option'] == 'amend') {
+    $commands[] = ajax_command_remove('#suppliers');
+    $commands[] = ajax_command_remove('#edit-add-supplier');
+    $commands[] = ajax_command_append('#suppliers-wrapper', render($form['suppliers_wrapper']['description']));
+    $commands[] = ajax_command_append('#suppliers-wrapper', render($form['suppliers_wrapper']['field_lb_sample_purchase_order']));
+  }
+
+  return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+/**
+ * Ajax callback for contractor remove button.
+ */
+function lb_registration_ajax_remove_contractor($form, $form_state) {
+  $commands = array();
+
+  $contractor_id = $form_state['triggering_element']['#contractor-id'];
+  $contractor_type = $form_state['triggering_element']['#contractor-type'];
+  $commands[] = ajax_command_remove('#' . $contractor_type . '-' . $contractor_id);
+
+  return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+/**
+ * Section G submit handler.
+ *
+ * Updates some application activity fields.
+ */
+function lb_registration_application_section_g_form_submit($form, &$form_state) {
+  $entity_type = 'crm_core_activity';
+  $bundle = 'lb_application';
+  $application =& $form[$bundle]['#entity'];
+
+  $company = $form_state['build_info']['args'][0];
+  $approvement = lb_application_report_get_activity_by_company('lb_company_application_approved', $company);
+  // This is recommitment if approvement exist.
+  if ($approvement) {
+    $type = 'lb_recommitment_submitted';
+    $title = t('Recommitment submitted');
+  }
+  else {
+    $type = 'lb_company_application_submitted';
+    $title = t('Application submitted');
+  }
+  $activity = entity_create($entity_type, array('type' => $type, 'title' => $title));
+  $activity_wrapper = entity_metadata_wrapper($entity_type, $activity);
+  $participants = array();
+  $participants[] = $company->contact_id;
+  // Get primary contact.
+  if ($individual = lb_registration_application_company_primary_contact($company)) {
+    $participants[] = $individual->contact_id;
+    $activity_wrapper->field_lb_primary_contact->set($individual->contact_id);
+  }
+
+  $activity_wrapper->field_lb_application->set($application->activity_id);
+  $activity_wrapper->field_activity_participants->set($participants);
+  $activity_wrapper->field_lb_company->set($company->contact_id);
+  $activity_wrapper->save();
+
+  // Saving activity data.
+  field_attach_submit($entity_type, $application, $form[$bundle], $form_state);
+  $application_wrapper = entity_metadata_wrapper($entity_type, $application);
+  $application_wrapper->field_lb_application_submitted = $activity;
+  $application_wrapper->field_lb_application_outcome = $activity;
+  $application_wrapper->field_lb_application_status = 'submitted';
+  $application_wrapper->save();
+
+  global $user;
+  $form_state['redirect'] = 'user/' . $user->uid;
+  drupal_set_message(t('Application successfully submitted.'));
+}
+
+/**
+ * Ensures that initiate activity exists.
+ *
+ * @param object $company
+ *   CRM Core Contact company object.
+ */
+function lb_registration_application_initiated_check($company) {
+  $activity = FALSE;
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'crm_core_activity')
+    ->entityCondition('bundle', 'lb_company_application_initiated')
+    ->fieldCondition('field_activity_participants', 'target_id', $company->contact_id);
+  $result = $query->execute();
+  if (isset($result['crm_core_activity'])) {
+    $activity = entity_load_single('crm_core_activity', key($result['crm_core_activity']));
+  }
+
+  if (!$activity) {
+    $primary_contact = relation_get_related_entity('crm_core_contact', $company->contact_id, 'lb_primary_contact');
+    // Invoke rules for application initialization.
+    rules_invoke_component('rules_lb_company_application_initiated', $company->contact_id, $primary_contact->contact_id);
+    // Create the init activity.
+    $activity_fields = array(
+      'field_activity_participants' => array($company->contact_id),
+    );
+    lb_application_report_create_activity('lb_company_application_initiated', $activity_fields);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function lb_registration_crm_core_activity_presave($activity) {
+  // Replace application request label with more correct.
+  if ($activity->type == 'lb_application_request_approved') {
+    $activity->title = t('Approved');
+  }
+  if ($activity->type == 'lb_application_request_denied') {
+    $activity->title = t('Denied');
+  }
+  // If initial approved date changing we must change recommitment
+  // date accordingly.
+  if ($activity->type == 'lb_company_application_approved' && $activity->is_new === FALSE) {
+    $wrapper = entity_metadata_wrapper('crm_core_activity', $activity);
+    $original_wrapper = entity_metadata_wrapper('crm_core_activity', $activity->original);
+    if ($wrapper->field_activity_date->value() != $original_wrapper->field_activity_date->value()) {
+      $wrapper->field_lb_recommitment_date = $wrapper->field_activity_date->value() + 365 * 24 * 60 * 60;
+    }
+  }
+}
+
+/**
+ * Prepare lb_application activity.
+ */
+function _lb_registration_application_prepare_lb_application($company) {
+  $activity = entity_create('crm_core_activity', array('type' => 'lb_application', 'title' => 'Application for certification'));
+  $activity_wrapper = entity_metadata_wrapper('crm_core_activity', $activity);
+  $participants = array();
+  $participants[] = $company->contact_id;
+
+  // Get primary contact.
+  if ($individual = lb_registration_application_company_primary_contact($company)) {
+    $participants[] = $individual->contact_id;
+    $activity_wrapper->field_lb_primary_contact->set($individual->contact_id);
+  }
+
+  // Get application request.
+  if ($request = lb_registration_application_company_application_request($company)) {
+    $activity_wrapper->field_lb_application_request->set($request->activity_id);
+  }
+
+  $activity_wrapper->field_activity_participants->set($participants);
+  $activity_wrapper->field_lb_company->set($company->contact_id);
+  return $activity;
+}
+
+/**
+ * Returns primary contact for company.
+ */
+function lb_registration_application_company_primary_contact($company) {
+  if ($individual = relation_get_related_entity('crm_core_contact', $company->contact_id, 'lb_primary_contact')) {
+    return $individual;
+  }
+  return FALSE;
+}
+
+/**
+ * Returns application request contact for company.
+ */
+function lb_registration_application_company_application_request($company) {
+  $efq = new EntityFieldQuery();
+  $results = $efq->entityCondition('entity_type', 'crm_core_activity')
+    ->entityCondition('bundle', 'lb_application_request')
+    ->fieldCondition('field_activity_participants', 'target_id', $company->contact_id)
+    ->execute();
+  if (!empty($results['crm_core_activity'])) {
+    return reset($results['crm_core_activity']);
+  }
+  return FALSE;
+}
+
+/**
+ * Attach navigation buttons.
+ */
+function _lb_registration_attach_prev_button(&$form, $prev_path) {
+  $form['actions']['previous'] = array(
+    '#type' => 'submit',
+    '#value' => t('Previous'),
+    '#id' => 'button-previous',
+    '#weight' => -1,
+    '#limit_validation_errors' => array(),
+    '#submit' => array('_lb_registration_previous_button_callback'),
+    '#prev_path' => $prev_path,
+  );
+  $form['actions']['submit']['#value'] = t('Next');
+}
+
+function _lb_registration_previous_button_callback($form, &$form_state) {
+  $triggered_element = $form_state['triggering_element'];
+  if (!empty($triggered_element['#id']) && $triggered_element['#id'] == 'button-previous') {
+    $form_state['redirect'] = $triggered_element['#prev_path'];
+  }
+}
+
+/**
+ * Returns related entities.
+ * @param $entity_type
+ * @param $entity_id
+ * @param $relation_types
+ * @return array
+ */
+function _lb_registration_get_contractors($entity_type, $entity_id, $relation_types) {
+
+  $query = relation_query($entity_type, $entity_id)
+    ->entityCondition('bundle', $relation_types, 'IN');
+
+  $rids = array_keys($query->execute());
+
+  $entities_ids = array();
+  if (!$rids) {
+    return $entities_ids;
+  }
+
+  $target_entity_type = $entity_type;
+  $rmap = array();
+
+  foreach (relation_load_multiple($rids) as $relation) {
+    $data = array();
+    foreach ($relation->endpoints[LANGUAGE_NONE] as $endpoint) {
+      $data[$endpoint['entity_type']] = $endpoint['entity_id'];
+      break;
+    }
+    $entities_ids[] = $data[$target_entity_type];
+    $rmap[$data[$target_entity_type]] = $data[$entity_type];
+  }
+
+  $entities = entity_load($target_entity_type, $entities_ids);
+
+  $targets = array();
+
+  foreach ($entities as $entity_id => $entity) {
+    $targets[] = $entity;
+  }
+
+  return $targets;
+}
+
+/**
+ * Replaces field title with description.
+ *
+ * @param string $element_key
+ *   Element key to operate on.
+ * @param array $form
+ *   Form array.
+ * @param string $parent
+ *   Parent form element.
+ */
+function _lb_registration_replace_title_with_desc($element_key, &$form, $parent = NULL) {
+  if (isset($parent)) {
+    $form[$parent][$element_key][LANGUAGE_NONE]['#title'] = $form[$parent][$element_key][LANGUAGE_NONE]['#description'];
+    unset($form[$parent][$element_key][LANGUAGE_NONE]['#description']);
+  }
+  else {
+    $form[$element_key][LANGUAGE_NONE]['#title'] = $form[$element_key][LANGUAGE_NONE]['#description'];
+    unset($form[$element_key][LANGUAGE_NONE]['#description']);
+  }
+}
+
+/**
+ * Adds prefix to field.
+ *
+ * Used to add numbers to question for easy referencing when talking
+ * to applicants.
+ *
+ * @param string $element_key
+ *   Element key to operate on.
+ * @param array $form
+ *   Form array.
+ * @param int $index
+ *   Index of the question.
+ * @param string $parent
+ *   Parent form element.
+ */
+function _lb_registration_add_num_prefix($element_key, &$form, $index, $parent = NULL) {
+  if (isset($parent)) {
+    $form[$parent][$element_key][LANGUAGE_NONE]['#prefix'] = '<div class="question-number">' . $index . '.</div>';
+  }
+  else {
+    $form[$element_key][LANGUAGE_NONE]['#prefix'] = '<div class="question-number">' . $index . '.</div>';
+  }
+}
+
+/**
+ * Reverses options order.
+ *
+ * Intended to work with field types that have options.
+ *
+ * @param string $element_key
+ *   Element key to operate on.
+ * @param array $form
+ *   Form array.
+ * @param string $parent
+ *   Parent form element.
+ */
+function _lb_registration_reverse_options($element_key, &$form, $parent = NULL) {
+  if (isset($parent)) {
+    $form[$parent][$element_key][LANGUAGE_NONE]['#options'] = array_reverse($form[$parent][$element_key][LANGUAGE_NONE]['#options'], TRUE);
+  }
+  else {
+    $form[$element_key][LANGUAGE_NONE]['#options'] = array_reverse($form[$element_key][LANGUAGE_NONE]['#options'], TRUE);
+  }
+}
+
+/**
+ * Checks that if it's time to company to recommit.
+ *
+ * @param int $company_id
+ *   Company ID.
+ *
+ * @return bool
+ *   TRUE if company must recommit.
+ */
+function lb_registration_company_must_recommit($company_id) {
+  $lb_registration_recommit = variable_get('lb_registration_recommit', array());
+  $recommit_state = !empty($lb_registration_recommit[$company_id]);
+  $company = crm_core_contact_load($company_id);
+  $lb_registration_recommit[$company_id] = FALSE;
+  $approval = lb_application_report_get_activity_by_company('lb_company_application_approved', $company);
+  // Application approved.
+  if ($approval) {
+    $approval_wrapper = entity_metadata_wrapper('crm_core_activity', $approval);
+    $recommitment_date = $approval_wrapper->field_lb_recommitment_date->value();
+    // Recommitment date past.
+    if (!empty($recommitment_date) && time() >= $recommitment_date) {
+      // Settings flag that company must recommit.
+      // Do not set flag if company is closed or canceled.
+      $current_status = lb_user_company_status_value_key($company);
+      if ($current_status == 'lb_recommitment_due' || $current_status == 'lb_company_application_approved') {
+        $lb_registration_recommit[$company_id] = TRUE;
+        // Notify the company again if the state has been changed.
+        if (!$recommit_state) {
+          $recommit_notice = variable_get('lb_registration_recommit_notice', array());
+          $recommit_notice[$company_id] = TRUE;
+          variable_set('lb_registration_recommit_notice', $recommit_notice);
+        }
+      }
+    }
+    variable_set('lb_registration_recommit', $lb_registration_recommit);
+  }
+
+  return $lb_registration_recommit[$company_id];
+}
+
+function lb_registration_company_mark_for_recommitment($company_id) {
+  $company = crm_core_contact_load($company_id);
+  $application = lb_application_report_get_activity_by_company('lb_application', $company);
+  // @todo Put email rule in place.
+  // Creating recommitement due activity.
+
+  // Don't create another activity if there is already a recommitment due activity.
+  $current_status = lb_user_company_status_value_key($company);
+  if($current_status != 'lb_recommitment_due') {
+    $activity_fields = array(
+      'field_activity_participants' => array($company_id),
+      'field_lb_company' => $company_id,
+      'field_lb_application' => $application->activity_id,
+    );
+    $primary_contact = relation_get_related_entity('crm_core_contact', $company_id, 'lb_primary_contact');
+    if ($primary_contact) {
+      $activity_fields['field_activity_participants'][] = $primary_contact->contact_id;
+      $activity_fields['field_lb_primary_contact'] = $primary_contact->contact_id;
+    }
+    $due = lb_application_report_create_activity('lb_recommitment_due', $activity_fields);
+    // Setting application outcome.
+    $application_wrapper = entity_metadata_wrapper('crm_core_activity', $application);
+    $application_wrapper->field_lb_application_outcome = $due;
+    $application_wrapper->save();
+  }
+
+  $recommit_notice = variable_get('lb_registration_recommit_notice', array());
+
+  // Invoke rules for recommitment due.
+
+  if (!empty($recommit_notice[$company_id])) {
+    rules_invoke_component('lb_registration_lb_application_recommitment_due', $company->contact_id, $primary_contact->contact_id);
+    rules_invoke_component('rules_lb_schedule_recommitment_due_tasks', $primary_contact, $company);
+    $recommit_notice[$company_id] = FALSE;
+    variable_set('lb_registration_recommit_notice', $recommit_notice);
+  }
+
+}
+
+function lb_registration_cron_queue_callback($company_id) {
+  if (lb_registration_company_must_recommit($company_id)) {
+    lb_registration_company_mark_for_recommitment($company_id);
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Check all existing companies for recommitment once a day.
+ */
+function lb_registration_cron() {
+  $time_2_run = FALSE;
+  $queue = _lb_registration_queue_create();
+  $items = $queue->numberOfItems();
+
+  // Lets run once a day.
+  $interval = variable_get('lb_registration_cron_interval', 24 * 60 * 60);
+  if (time() >= variable_get('lb_registration_cron_next_execution', 0)) {
+    $time_2_run = TRUE;
+  }
+
+  if ($time_2_run && empty($items)) {
+    $companies = db_select('crm_core_contact', 'c')
+      ->fields('c', array('contact_id'))
+      ->condition('type', 'company')
+      ->execute()
+      ->fetchCol();
+
+    foreach ($companies as $company_id) {
+      $queue->createItem($company_id);
+    }
+    // Setting next execution time.
+    variable_set('lb_registration_cron_next_execution', time() + $interval);
+  }
+}
+
+/**
+ * Implements hook_cron_queue_info().
+ */
+function lb_registration_cron_queue_info() {
+  $queues[LB_REGISTRATION_QUEUE_NAME] = array(
+    'worker callback' => 'lb_registration_cron_queue_callback',
+  );
+
+  return $queues;
+}
+
+/**
+ * Creates queue to check companies.
+ *
+ * @return SystemQueue
+ *   Queue object.
+ */
+function _lb_registration_queue_create() {
+  $queue = DrupalQueue::get(LB_REGISTRATION_QUEUE_NAME);
+  $queue->createQueue();
+
+  return $queue;
+}
+
+/**
+ * Helper to define if company application is editable.
+ *
+ * @param CRMCoreContactEntity $company
+ *   Company object.
+ *
+ * @return bool
+ *   Indicates that application is editable.
+ */
+function _lb_registration_application_editable($company) {
+  $editable = TRUE;
+  $application = lb_application_report_get_activity_by_company('lb_application', $company);
+  if ($application) {
+    $application_wrapper = entity_metadata_wrapper('crm_core_activity', $application);
+    $status = $application_wrapper->field_lb_application_status->value();
+    if (!empty($status) && $status == 'approved') {
+      $editable = FALSE;
+    }
+  }
+
+  return $editable;
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function lb_registration_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'content_types') {
+    return 'plugins/' . $plugin_type;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function lb_registration_theme() {
+  return array(
+    'lb_registration_application_actions' => array(
+      'variables' => array('label' => NULL, 'activity_id' => NULL),
+      'template' => 'lb-registration-application-actions',
+    ),
+  );
+}
+
+/**
+ * Implements hook_preprocess_lb_registration_application_actions().
+ */
+function lb_registration_preprocess_lb_registration_application_actions(&$vars) {
+  $actions = _lb_registration_application_get_actions();
+  $vars['links'] = array();
+
+  foreach ($actions as $key => $action) {
+    $path = 'lb-registration/application/' . $vars['activity_id'] . '/' . $key;
+    $options = array('query' => array('destination' => $_GET['q']));
+    $vars['links'][] = array(
+      'href' => url($path, $options),
+      'label' => $action['label'],
+    );
+  }
+}
+
+/**
+ * Page callback for application action.
+ *
+ * @param CRMCoreActivityEntity $application
+ *   Application activity object.
+ * @param string $action
+ *   Action key to call.
+ *
+ * @see _lb_registration_application_get_actions()
+ */
+function _lb_registration_application_action($application, $action) {
+  $actions = _lb_registration_application_get_actions();
+  if (in_array($action, array_keys($actions))) {
+    $action_callback = $actions[$action]['callback'];
+    if (function_exists($action_callback)) {
+      $action_callback($application, array());
+      $destination = drupal_get_destination();
+      drupal_goto($destination);
+    }
+    else {
+      module_load_include('inc', 'lb_registration', 'lb_registration.actions');
+      $action_callback($application, array());
+      $destination = drupal_get_destination();
+      drupal_goto($destination);
+    }
+  }
+}
+
+/**
+ * Implements hook_hook_info().
+ */
+function lb_registration_hook_info() {
+  $hooks['action_info'] = array(
+    'group' => 'actions',
+  );
+
+  return $hooks;
+}
+/**
+ * Returns available application actions.
+ *
+ * @return array
+ *   Array of registered application actions keyed short action name.
+ *  Inner array contains:
+ * - callback: Action callback name.
+ * - label: Action label.
+ */
+function _lb_registration_application_get_actions() {
+  return array(
+    'approve' => array('callback' => 'lb_application_report_approve_application', 'label' => t('Approve')),
+    'recommit' => array('callback' => 'lb_application_report_recommitment_due', 'label' => t('Recommitment Due')),
+    // 'deny' => array('callback' => 'lb_application_report_deny_application', 'label' => t('Deny')),
+    'close' => array('callback' => 'lb_registration_application_close', 'label' => t('Close')),
+    'cancel' => array('callback' => 'lb_registration_application_cancel', 'label' => t('Remove')),
+  );
+}
+
+/**
+ * Company telephone validate handler.
+ *
+ * The real validation is done in _form_validate(), but because the 'number'
+ * column of 'phone_number' field doesn't have '#title' property no message
+ * get produced to the user and filling in this gap.
+ */
+function _lb_registration_phone_number_validate(&$element, &$form_state) {
+  if (empty($element['#value']['number'])) {
+    drupal_set_message(t('Company Telephone field is required.'), 'error');
+  }
+}
+
+/**
+ * Ensures that email used for primary contact is unique.
+ */
+function _lb_registration_validate_primary_contact_email($element, &$form_state, $form) {
+  $email = trim($element['#value']);
+  if (!empty($email)) {
+    $efq = new EntityFieldQuery();
+    $result = $efq->entityCondition('entity_type', 'crm_core_contact')
+      ->entityCondition('bundle', 'individual')
+      ->fieldCondition('field_ao_email_address', 'email', $email)
+      ->execute();
+    if (!empty($result['crm_core_contact'])) {
+      $link = l(t('Have you forgotten your password?'), 'user/password', array('query' => array('name' => $email)));
+      form_error($element, t('It appears you already have a Leaping Bunny account associated with this email. Please use a unique email for registering a new company. !link', array('!link' => $link)));
+    }
+  }
+}
+
+/**
+ * Helper containing list of fields from register_company profile.
+ */
+function _lb_registration_company_fields_2_update_on_recommitment() {
+  return array(
+    'contact_name',
+    'field_ao_business_address',
+    'field_ao_primary_telephone',
+    'field_lb_fax',
+    'field_lb_toll_free_telephone',
+    'field_ao_website',
+    'field_lb_parent_company',
+    'field_lb_referred_by',
+  );
+}

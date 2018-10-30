@@ -1,0 +1,53 @@
+/**
+ * @file
+ * Styles are organized using the SMACSS technique. @see http://smacss.com/book/
+ *
+ * When you turn on CSS aggregation at admin/config/development/performance, all
+ * of these @include files will be combined into a single file.
+ */
+
+/* Import Sass mixins, variables, Compass modules, etc. */
+@import "init";
+
+/* HTML element (SMACSS base) rules */
+@import "normalize";
+
+/* Layout rules */
+@import "layouts/responsive";
+
+/* Component (SMACSS module) rules */
+@import "components/misc";
+@import "components/fontography";
+
+// this creates a set of font styles for use in the theme
+// doing this here to ensure styles are available to other mixins
+@import "ao-init-fonts";
+
+@import "components/transitions";
+@import "components/buttons";
+@import "components/regions";
+@import "components/menus";
+@import "components/hero";
+@import "components/forms";
+@import "components/grids";
+@import "components/node";
+@import "components/block";
+
+// these components still need mixins...
+@import "components/user_profiles";
+@import "components/activities";
+@import "components/identity-blocks";
+
+// Optionally, add your own components here.
+@import "print";
+// this is a second set of variables, created after all the mixins are defined
+@import "ao-init";
+
+/* SMACSS theme rules */
+// this is the basic display for ableorganizer
+@import "themes/ableorganizer"; 
+
+// this is a set of styles just for the sample content
+// this should be removed / replaced when you are creating your own theme
+@import "themes/sample-content"; 
+  

@@ -1,0 +1,85 @@
+/**
+ * @file
+ * AbleOrganizer Initialization
+ *
+ * Provides default values for mixins used in AbleOrganizer
+ * Variables are organized by category
+ */
+ 
+/**
+ * DROP DOWN MENUS
+ * Variables controlling the default appearance of drop down menus
+ */
+$ao-menu-trigger-style: '.ao-menu-default-trigger-style';
+$ao-menu-menu-style: '.ao-menu-default-menu-style';
+$ao-menu-element-style: '.ao-menu-default-element-style';
+$ao-menu-border-radius:  0em 0em 0.5em 0.5em;
+
+/**
+ * DROP DOWN MENU DEFAULTS
+ * TRIGGER< MENU AND ELEMENT STYLES
+ * These styles apply to drop down menus by default.
+ * They can be removed or replaced using default values for the mixin.
+ */
+.ao-menu-default-trigger-style {
+  @include border-radius(.5em);
+  @include box-sizing(border-box);
+  @include ao-fontography($ao-fonto-style: button-blue, $ao-fonto-color: White);
+  
+  background-color: $ao_blue;
+  border: 0;
+  display: inline-block;
+  cursor: pointer;  
+} 
+.ao-menu-default-menu-style {
+  background-color: $ao_blue;
+  white-space: nowrap;
+  margin: 0em;
+  padding: 0em;
+  overflow: hidden;
+  z-index: 1000;
+} 
+.ao-menu-default-element-style {
+  list-style-type: none;
+  list-style-image: none;
+  padding: rhythm(.25) rhythm(.5);
+  margin: 0em;
+  &:hover {
+    background-color: darken($ao_blue, 5%);
+  }
+  A {
+    margin: 0em;
+    padding: 0em;
+    text-decoration: none;
+    @include ao-fontography($ao-fonto-style: normal, $ao-fonto-color: White);
+  }
+} 
+
+/**
+ * BUTTONS
+ * Variables controlling the default appearance of buttons
+ */
+$ao-button-hover-bg-color:  #e1e1e1;
+
+/**
+ * DEFAULT BUTTONS
+ * Variables controlling the default appearance of buttons
+ */
+.small-grey-button {
+  @include ao-button();
+  @include ao-transition();
+  @include ao-fontography($ao-fonto-style: button-default);
+}
+.red-button {
+  @include ao-transition();
+  @include ao-button (
+    // $ao-button-margin:          false !default; 
+    $ao-button-padding:         rhythm(.25) rhythm(.5),
+    $ao-button-border:          none,
+    $ao-button-border-radius:   0.5em,
+    $ao-button-color:           White,
+    $ao-button-bg-color:        $base-red
+  );
+}
+
+

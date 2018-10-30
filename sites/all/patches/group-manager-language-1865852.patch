@@ -1,0 +1,13 @@
+diff --git a/og.module b/og.module
+index dac0ab7..1c12a01 100755
+--- a/og.module
++++ b/og.module
+@@ -782,7 +782,7 @@ function og_form_group_manager_validate($form, &$form_state) {
+     return;
+   }
+   $entity = $form_state[$entity_type];
+-  $langcode = $form_state['values']['language'];
++  $language = isset($form_state['values']['language']) ? $form_state['values']['language'] : LANGUAGE_NONE;
+ 
+   if (!isset($form_state['values']['uid']) || !isset($entity->uid)) {
+     // There is no user ID property on the entity.

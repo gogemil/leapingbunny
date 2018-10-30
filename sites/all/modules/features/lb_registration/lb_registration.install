@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Lb registration module.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function lb_registration_uninstall() {
+  variable_get('lb_registration_recommit_notice');
+}

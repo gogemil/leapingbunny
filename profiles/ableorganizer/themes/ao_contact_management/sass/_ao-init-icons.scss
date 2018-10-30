@@ -1,0 +1,558 @@
+/**
+ * @file
+ * Controls the appearance of icons available for AbleOrganizer.
+ *
+ */
+
+/**
+ * ICON FONTS AND DEFAULT STYLES
+ * Add fonts used for the icons
+ */
+// STATIC FONT STYLES
+// These are from the tool we used to make the fonts
+// These will need to go away
+// Replace with font styles
+@font-face {
+  font-family: "ao-icons";
+  src:url("../fonts/ao-icons.eot");
+  src:url("../fonts/ao-icons.eot?#iefix") format("embedded-opentype"),
+    url("../fonts/ao-icons.woff") format("woff"),
+    url("../fonts/ao-icons.ttf") format("truetype"),
+    url("../fonts/ao-icons.svg#ao-icons") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+[data-icon]:before {
+  font-family: "ao-icons" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+[class^="ao-icon-"]:before,
+[class*=" ao-icon-"]:before {
+  font-family: "ao-icons" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/**
+ * ICONS
+ * Icons used by AbleOrganizer
+ */
+// default
+.ao-icon-zap:before {
+  content: "o";
+}
+
+// GENERAL ICON STYLE
+// this is the basic style applied to icons
+// it is important to have this set
+$general: ao-set-icon(
+  $ao-icon-title: general,
+  $ao-icon-background: $ao_orange,
+  $ao-icon-color: White,
+  $ao-icon-before: "o"
+);
+
+// CONTACT ICONS
+// individual
+$contact-individual: ao-set-icon(
+  $ao-icon-title: contact-individual,
+  $ao-icon-background: #CCC,
+  $ao-icon-before: "p"
+);
+// organization
+$contact-org: ao-set-icon(
+  $ao-icon-title: contact-org,
+  $ao-icon-background: #CCC,
+  $ao-icon-before: "u"
+);
+// household
+$contact-household: ao-set-icon(
+  $ao-icon-title: contact-household,
+  $ao-icon-background: #CCC,
+  $ao-icon-before: "!"
+);
+
+// ACTIVITY ICONS
+// donations
+$dollar: ao-set-icon(
+  $ao-icon-title: dollar,
+  $ao-icon-background: #CCC,
+  $ao-icon-before: "C"
+);
+// events
+$event: ao-set-icon(
+  $ao-icon-title: event,
+  $ao-icon-background: #CCC,
+  $ao-icon-before: "b"
+);
+// petitions
+$petition: ao-set-icon(
+  $ao-icon-title: petition,
+  $ao-icon-background: #CCC,
+  $ao-icon-before: "E"
+);
+// volunteer activity
+$volunteer: ao-set-icon(
+  $ao-icon-title: volunteer,
+  $ao-icon-background: #CCC,
+  $ao-icon-before: "m"
+);
+
+// INTERFACE ICONS
+// home, household
+$home: ao-set-icon(
+  $ao-icon-title: home,
+  $ao-icon-background: #CCC,
+  $ao-icon-before: "!"
+);
+// dashboard
+$home: ao-set-icon(
+  $ao-icon-title: dashboard,
+  $ao-icon-background: #CCC,
+  $ao-icon-before: "c"
+);
+// contacts
+$home: ao-set-icon(
+  $ao-icon-title: contacts,
+  $ao-icon-background: #CCC,
+  $ao-icon-before: "t"
+);
+// reports
+$reports: ao-set-icon(
+  $ao-icon-title: reports,
+  $ao-icon-background: #CCC,
+  $ao-icon-before: "t"
+);
+
+// OTHER
+// these are legacy items that can probably go away
+// individual, contacts
+$individual: ao-set-icon(
+  $ao-icon-title: individual,
+  $ao-icon-background: #CCC,
+  $ao-icon-before: "p"
+);
+// organization
+$organization: ao-set-icon(
+  $ao-icon-title: organization,
+  $ao-icon-background: #CCC,
+  $ao-icon-before: "t"
+);
+
+
+/**
+ * SPRITE GENERATION
+ * Create icons used by AbleOrganizer in different situations
+ */
+// DEFAULT ICONS FOR ACTIVITY TYPES
+// Needs to be reconciled with icon settings
+// Should really be:
+// - code
+// - color
+// There should also be
+// - selectors, this should be run for any selectors we are using besides the standard ones.
+
+/* ACTIVITY TYPES */
+// donations
+@include ao-icon-generate-style(
+  $selector-1: ".cmcd_donation",
+  $selector-2: ".crm-core-activity-icon",
+  $color: $donation-color,
+  $code: "\e00b"
+);
+// events
+@include ao-icon-generate-style(
+  $selector-1: ".cmcev_event_registration",
+  $selector-2: ".crm-core-activity-icon",
+  $color: $event-color,
+  $code: "b"
+);
+// petitions
+@include ao-icon-generate-style(
+  $selector-1: ".cmcp_petition_signature",
+  $selector-2: ".crm-core-activity-icon",
+  $color: $petition-color,
+  $code: "E"
+);
+// volunteer
+@include ao-icon-generate-style(
+  $selector-1: ".cmcv_volunteer_commitment",
+  $selector-2: ".crm-core-activity-icon",
+  $color: $volunteer-color,
+  $code: "("
+);
+
+/* CONTACT TYPES */
+/* Icons for contact types appearing in tables */
+// individual
+@include ao-icon-generate-style(
+  $selector-1: "TD",
+  $selector-2: ".ao_contact_icon.ao_contact_household",
+  $color: transparent,
+  $code: "p"
+);
+// household
+@include ao-icon-generate-style(
+  $selector-1: "TD",
+  $selector-2: ".ao_contact_icon.ao_contact_household",
+  $color: transparent,
+  $code: "!"
+);
+// organization
+@include ao-icon-generate-style(
+  $selector-1: "TD",
+  $selector-2: ".ao_contact_icon.ao_contact_organization",
+  $color: transparent,
+  $code: "t"
+);
+
+/* MAIN MENU */
+// dashboard
+@include ao-icon-generate-style(
+  $selector-1: "#main-menu LI.ao_dashboard",
+  $selector-2: ".nav_menu_icon",
+  $color: transparent,
+  $code: "c"
+);
+@include ao-icon-generate-style(
+  $selector-1: "#main-menu LI.ao_contacts",
+  $selector-2: ".nav_menu_icon",
+  $color: transparent,
+  $code: "t"
+);
+@include ao-icon-generate-style(
+  $selector-1: "#main-menu LI.ao_reports",
+  $selector-2: ".nav_menu_icon",
+  $color: transparent,
+  $code: "."
+);
+
+/**
+ * DEFAULT SPRITES
+ * Sprites used by AbleOrganizer
+ * This is where we do the default sizing and colors
+ */
+.ao_contact_icon {
+  // default icon
+  @include ao-get-icon(
+    $ao-icon-name: contact-individual,
+    $ao-icon-size: 35px,
+    $ao-icon-padding: .25em 0em 0em,
+    $ao-icon-background: transparent,
+    $ao-icon-margin: 0em auto,
+    $ao-icon-height: 35px,
+    $ao-icon-width: 35px,
+    $ao-icon-color: #3c7489
+  );
+}
+
+nav#main-menu {
+  LI {
+    .nav_menu_icon {
+      // default icon
+      @include ao-get-icon(
+        $ao-icon-name: contact-individual,
+        $ao-icon-size: 45px,
+        $ao-icon-padding: .25em 0em 0em,
+        $ao-icon-background: transparent,
+        $ao-icon-margin: 0em auto,
+        $ao-icon-height: 45px,
+        $ao-icon-width: 45px,
+        $ao-icon-color: White
+      );
+    }
+  }
+}
+
+/**
+ * MORE DEFUALT SPRITES
+ * For people who just want to extend, here's a way
+ * These can probably go away
+ */
+ .ao-icon-clipboard-pencil:before {
+  content: "E";
+}
+.ao-icon-location:before {
+  content: "b";
+}
+.ao-icon-dollar:before {
+  content: "C";
+}
+.ao-icon-heart:before {
+  content: "m";
+}
+.ao-icon-torso:before {
+  content: "p";
+}
+.ao-icon-torsos-all:before {
+  content: "t";
+}
+.ao-icon-home:before {
+  content: "!";
+}
+.ao-icon-dashboard:before {
+  content: "c";
+}
+.ao-icon-graph-bar:before {
+  content: "-";
+}
+.ao-icon-star:before {
+  content: "a";
+}
+.ao-icon-location:before {
+  content: "b";
+}
+.ao-icon-dashboard:before {
+  content: "c";
+}
+.ao-icon-gear:before {
+  content: "d";
+}
+.ao-icon-pencil:before {
+  content: "e";
+}
+.ao-icon-code:before {
+  content: "f";
+}
+.ao-icon-chevron-down:before {
+  content: "g";
+}
+.ao-icon-chevron-left:before {
+  content: "h";
+}
+.ao-icon-chevron-right:before {
+  content: "i";
+}
+.ao-icon-chevron-up:before {
+  content: "j";
+}
+.ao-icon-comment:before {
+  content: "k";
+}
+.ao-icon-comment-discussion:before {
+  content: "l";
+}
+.ao-icon-heart:before {
+  content: "m";
+}
+.ao-icon-flame:before {
+  content: "n";
+}
+.ao-icon-zap:before {
+  content: "o";
+}
+.ao-icon-torso:before {
+  content: "p";
+}
+.ao-icon-torso-business:before {
+  content: "q";
+}
+.ao-icon-torso-female:before {
+  content: "r";
+}
+.ao-icon-torsos:before {
+  content: "s";
+}
+.ao-icon-torsos-all:before {
+  content: "t";
+}
+.ao-icon-torsos-all-female:before {
+  content: "u";
+}
+.ao-icon-torsos-female-male:before {
+  content: "v";
+}
+.ao-icon-torsos-male-female:before {
+  content: "w";
+}
+.ao-icon-wrench:before {
+  content: "x";
+}
+.ao-icon-x:before {
+  content: "y";
+}
+.ao-icon-social-facebook:before {
+  content: "z";
+}
+.ao-icon-social-evernote:before {
+  content: "A";
+}
+.ao-icon-print:before {
+  content: "B";
+}
+.ao-icon-dollar:before {
+  content: "C";
+}
+.ao-icon-euro:before {
+  content: "D";
+}
+.ao-icon-clipboard-pencil:before {
+  content: "E";
+}
+.ao-icon-check:before {
+  content: "F";
+}
+.ao-icon-yen:before {
+  content: "G";
+}
+.ao-icon-bitcoin:before {
+  content: "H";
+}
+.ao-icon-bullhorn:before {
+  content: "I";
+}
+.ao-icon-briefcase-case-two:before {
+  content: "J";
+}
+.ao-icon-gears-setting:before {
+  content: "K";
+}
+.ao-icon-twitter:before {
+  content: "L";
+}
+.ao-icon-twitter-square:before {
+  content: "M";
+}
+.ao-icon-pinterest-square:before {
+  content: "N";
+}
+.ao-icon-pinterest:before {
+  content: "O";
+}
+.ao-icon-instagram:before {
+  content: "P";
+}
+.ao-icon-facebook-square:before {
+  content: "Q";
+}
+.ao-icon-facebook:before {
+  content: "R";
+}
+.ao-icon-google-plus:before {
+  content: "S";
+}
+.ao-icon-google-plus-1:before {
+  content: "T";
+}
+.ao-icon-cc:before {
+  content: "U";
+}
+.ao-icon-cc-nc:before {
+  content: "V";
+}
+.ao-icon-cc-nc-eu:before {
+  content: "W";
+}
+.ao-icon-cc-nc-jp:before {
+  content: "X";
+}
+.ao-icon-cc-pd:before {
+  content: "Y";
+}
+.ao-icon-pinterest-circled:before {
+  content: "Z";
+}
+.ao-icon-pinterest-1:before {
+  content: "0";
+}
+.ao-icon-linkedin-alt:before {
+  content: "1";
+}
+.ao-icon-linkedin:before {
+  content: "2";
+}
+.ao-icon-vimeo:before {
+  content: "3";
+}
+.ao-icon-virb:before {
+  content: "4";
+}
+.ao-icon-alert:before {
+  content: "5";
+}
+.ao-icon-check-1:before {
+  content: "6";
+}
+.ao-icon-circle-slash:before {
+  content: "7";
+}
+.ao-icon-device-camera:before {
+  content: "8";
+}
+.ao-icon-globe:before {
+  content: "9";
+}
+.ao-icon-home:before {
+  content: "!";
+}
+.ao-icon-megaphone:before {
+  content: "\"";
+}
+.ao-icon-tools:before {
+  content: "#";
+}
+.ao-icon-x-1:before {
+  content: "$";
+}
+.ao-icon-repo:before {
+  content: "%";
+}
+.ao-icon-calendar:before {
+  content: "&";
+}
+.ao-icon-checkbox:before {
+  content: "'";
+}
+.ao-icon-heart-1:before {
+  content: "(";
+}
+.ao-icon-flag:before {
+  content: ")";
+}
+.ao-icon-filter:before {
+  content: "*";
+}
+.ao-icon-graph-pie:before {
+  content: "+";
+}
+.ao-icon-graph-horizontal:before {
+  content: ",";
+}
+.ao-icon-graph-bar:before {
+  content: "-";
+}
+.ao-icon-graph-trend:before {
+  content: ".";
+}
+.ao-icon-mail:before {
+  content: "/";
+}
+.ao-icon-tag-2:before {
+  content: ":";
+}
+.ao-icon-tags:before {
+  content: ";";
+}
+.ao-icon-tachometer:before {
+  content: "<";
+}
+.ao-icon-youtube-square:before {
+  content: "=";
+}
+.ao-icon-youtube:before {
+  content: ">";
+}

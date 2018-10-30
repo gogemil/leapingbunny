@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the LB Mobile navigation feature.
+ */
+
+include_once 'lb_mobile_navigation.features.inc';

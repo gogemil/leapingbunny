@@ -1,0 +1,147 @@
+#block-search-form {
+  float: right;
+  margin-top: 12px;
+  .container-inline div, .container-inline label {
+    display: inline;
+    float: left;
+    margin: 0;
+  }
+  .form-text {
+    font-size: 14px;
+    height: 21px;
+    line-height: 21px;
+    border: 1px solid $light-gray3;
+    @include border-radius(10px);
+    padding: 0 10px;
+    width: 185px;
+  }
+  .form-submit {
+    width: 16px;
+    height: 16px;
+    border: 0;
+    background: url(../images/search-icon.png) no-repeat center center transparent;
+    text-indent: -9999px;
+    margin-left: 5px;
+    position: relative;
+    top: 2px;
+  }
+}
+
+#block-boxes-footer-1 {
+  float: left;
+}
+
+#block-boxes-footer-2 {
+  float: right;
+  p {
+    text-align: right;
+  }
+}
+
+#block-boxes-copyright {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  color: $white;
+  text-align: right;
+  font-size: 14px;
+  a {
+    color: $white;
+    text-decoration: underline;
+  }
+  .social-icons {
+    @extend %social-icons;
+  }
+  @media #{$mobile} {
+    position: static;
+    text-align: center;
+    .social-icons {
+      @include social-icons-big;
+    }
+  }
+}
+
+#block-views-6272a61fcdb5cc46ffe2834494bea39e {
+  .block-title {
+    color: $light-gray1;
+    font-family: $verdana;
+  }
+}
+
+#block-menu-crm-core-menu {
+  display: inline-block;
+  float: right;
+  margin: rhythm(.25) 0 0 rhythm(1);
+
+  H2.block-title {
+    @include border-radius(5px);
+    background: $dark;
+    border: 1px solid White;
+    white-space: nowrap;
+    display: inline-block;
+    @include lb_standard_fonts(button);
+    padding: 6px 10px;
+    color: $white;
+  }
+  UL.menu {
+    border: 1px solid #CCC;
+    background-color: $white;
+
+    LI {
+      border-bottom: 1px solid #CCC;
+      padding: rhythm(.3) rhythm(.5);
+      @include lb_standard_fonts();
+      @include transition-property(all);
+      @include transition-duration(.2s);
+      @include transition-timing-function(ease-in-out);
+      &:hover {
+        background-color: #e1e1e1;
+      }
+      A {
+      }
+    }
+  }
+
+  @include ao-drop-down-menu(
+    $align: right
+  );
+}
+
+#block-lb-core-logout {
+  float: right;
+  margin-top: 15px;
+  margin-left: 15px;
+
+  a {
+    font-weight: bold;
+    color: #ffffff;
+  }
+  @media #{$mobile} {
+    position: absolute;
+    right: 180px;
+    z-index: 10;
+  }
+}
+
+#block-boxes-lb-blog-about-box,
+#block-tagclouds-1,
+#block-lb-blog-lb-date-navigation {
+  @include lb_blog_container();
+  
+  @media #{$mobile} {
+    display: none;
+  }
+}
+
+
+#block-tagclouds-1 {
+  h2 {
+    margin-bottom: 10px; 
+  }
+}
+
+#block-lb-blog-lb-accordions {
+  h2 {
+    display: none;
+  }
+}

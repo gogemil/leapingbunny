@@ -1,0 +1,13 @@
+diff --git a/sites/all/modules/contrib/maxlength/js/maxlength.js b/sites/all/modules/contrib/maxlength/js/maxlength.js
+index 584642c..f53c636 100644
+--- a/sites/all/modules/contrib/maxlength/js/maxlength.js
++++ b/sites/all/modules/contrib/maxlength/js/maxlength.js
+@@ -13,7 +13,7 @@
+             ml[editor]();
+           }
+         });
+-      } else if (Drupal.settings.ckeditor != undefined) {
++      } else if (Drupal.settings.ckeditor != undefined && typeof(CKEDITOR) !== 'undefined') {
+         ml.ckeditor();
+       }
+ 

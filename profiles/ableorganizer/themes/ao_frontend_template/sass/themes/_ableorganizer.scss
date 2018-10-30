@@ -1,0 +1,254 @@
+/**
+ * @file
+ * Buttons
+ *
+ * Defines the basic appearance of elements in the theme.
+ */
+
+.happy {
+  border-bottom: 1px solid #CCC;
+}
+/* DEFAULTS */
+/* BUTTONS */
+
+
+/* REGIONS */
+div#main,
+footer#footer,
+section#main,
+section#main-navigation,
+section#above-content-one, 
+section#above-content-two, 
+section#above-content-three, 
+section#below-content-one, 
+section#below-content-two, 
+section#below-content-three {
+  @include ao-horizontal-region(
+    $ao-horiz-region-padding: 0em .5em
+  );
+}
+header#header {
+  @include ao-horizontal-region(
+    $ao-horiz-region-style: '.happy',
+    $ao-horiz-region-padding: 2em .5em
+  );
+}
+section#main-navigation {
+  @include ao-horizontal-region(
+    $ao-horiz-region-style: '.happy',
+    $ao-horiz-region-padding: 1em .5em
+  );
+}
+
+/**
+ * BLOCKS
+ */
+// standard block display for the right region
+.region-sidebar-second {
+  .block {
+    H2.block__title {
+      @include ao-fontography($ao-fonto-style: block-title);
+    }
+  }
+}
+
+/* BREADCRUMBS */
+nav.breadcrumb {
+  padding: .5em 0em 0em;
+  @include ao-fontography($ao-fonto-style: breadcrumb);
+}
+
+/* HEADER / NAVIGATION */
+/* controls the layout of the navigation */
+section#main-navigation {
+  font-size: $h3-font-size;
+  font-weight: 400;
+}
+/* controls the display of the secondary links in the header */
+.header__secondary-menu {
+  .inline LI {
+    margin: 0em;
+    padding: 0em;
+    A {
+      @extend .small-grey-button;
+    }
+  }
+}
+
+/* FONTS */
+P {
+  @include ao-fontography($ao-fonto-style: regular);
+}
+
+
+/**
+ * HEADER
+ */
+#block-menu-crm-core-menu {
+  H2 {
+    @include ao-fontography($ao-fonto-style: button-blue, $ao-fonto-color: White);
+  }
+}
+
+
+
+/* controls the appearance of navigation elements in the page */
+.header-region, .navigation-region {  
+  border-bottom: 1px solid #CCC;
+}
+
+
+
+/* controls the appearance of a single region within the template */ 
+.page-region {
+  border: 1px solid transparent;
+  .section-wrapper {
+    border: 1px solid transparent;  
+  }
+}
+
+/* controls the appearance of header elements in the page */
+.header-region {
+  padding: 2em 0em;
+}
+/* controls the appearance of navigation elements in the page */
+.navigation-region {
+  padding: 1em 0em;
+  border-bottom: 1px solid #CCC;
+}
+
+
+
+
+
+/* LAYOUT MODIFICATIONS */
+
+
+
+
+
+/* controls the display of the CRM Core menu in the header */
+#block-menu-crm-core-menu {
+  @include ao-drop-down();
+}
+
+
+
+/* FOOTER */
+footer#footer {
+  background-color: $gray-3;
+  min-height: 200px;
+}
+
+/* VIEWS - NO RESULTS */
+.ao-no-results {
+  margin: .5em;
+  text-align: center;
+  @include border-radius(.5em);
+  background-color: #f1f1f1;
+  padding: .5em;
+}
+
+/* FRONTPAGE */
+/* move to theme */
+.hero_text {
+  @extend .hero-element;
+} 
+
+/* FORMS */
+/* applies styles to forms in the second sidebar */
+.region-sidebar-second {
+  FORM {
+    @extend .ao-sidebar-2-form;
+  }
+}
+section#main {
+  FORM {
+    @extend .ao-main-content-form;
+  }
+}
+
+/* FIRST SIDEBAR LINKS */
+.region-sidebar-first {
+  .block-menu {
+    H2 {
+      font-size: 1.2em;
+    }
+    UL.menu {
+      margin: 0em;
+      padding: 0em;
+      font-size: 0.9em;
+      LI {
+        list-style-type: none;
+        list-style-image: none;
+        margin: 0em;
+        padding: 0em;
+      }
+    }
+  }
+}
+
+/* USER PROFILE PAGE */
+BODY.page-user .panel-pane {
+  position: relative;
+}
+.pane-menu-menu-user-profile-links {
+  H2 {
+    margin: 0em;
+    float: right;
+    position: absolute;
+    z-index: 999;
+  }
+}
+#block-menu-crm-core-menu {
+  margin: 0em;
+  position: absolute;
+  bottom: -20px;
+  right: 0em;
+  z-index: 999;
+}
+
+/* USER PROFILE */
+BODY.page-user {
+  .panel-pane {
+    @extend .user-profile-pane;
+    @extend .views-link-header-button;
+  }
+  .pane-user-picture {
+    @extend .user-profile-pane-no-title;
+    text-align: center;
+  }
+  DL {
+    @extend .user-dl;
+  }
+  .pane-ao-user-profile-contact-info {
+    @extend .user-profile-display-contact-info;
+  }
+}
+/* controls the display of the edit links in user profile */
+BODY.page-user .pane-menu-menu-user-profile-links {
+  
+  @include ao-drop-down(
+    $ao-menu-justify: right,
+    $ao-menu-border-radius: 0.5em 0em 0.5em 0.5em
+  );
+  
+  H2 {
+    font-size: $h5-font-size;
+  }
+}
+/* user summary data */
+.user-profile-summary-data {
+  @extend .ao-up-summary-data;
+}
+/* user profiles, with data they can edit */
+BODY.page-user-user-profile {
+  FORM#crm-core-profile-entry-form {
+    @extend .ao-profile-entry-form;
+  }
+}
+/* various lists on the user profile page (event, volunteer) */
+.view-ableorganizer-user-event-registration,
+.view-ableorganizer-user-volunteer-registration {
+  @extend .ao-short-list;
+}

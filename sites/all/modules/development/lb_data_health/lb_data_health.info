@@ -1,0 +1,6 @@
+name = LB Data Health
+description = The goal of the module to verify on the fly that updated crm core data is consistence and catch the cases when something looks wrong.
+core = 7.x
+package = LB
+
+dependencies[] = lb_debug

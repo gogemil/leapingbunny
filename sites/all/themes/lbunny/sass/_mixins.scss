@@ -1,0 +1,1946 @@
+// @file
+// Custom sass mixins
+//
+// Define the custom mixins for your project here.
+// http://sass-lang.com/docs/yardoc/file.SASS_REFERENCE.html#defining_a_mixin
+
+// Makes an element visually hidden, but accessible.
+// @see http://snook.ca/archives/html_and_css/hiding-content-for-accessibility
+@mixin element-invisible {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  @if $legacy-support-for-ie6 or $legacy-support-for-ie7 {
+    clip: rect(1px 1px 1px 1px); // IE6 and IE7 use the wrong syntax.
+  }
+  clip: rect(1px, 1px, 1px, 1px);
+}
+
+// Turns off the element-invisible effect.
+@mixin element-invisible-off {
+  position: static !important;
+  clip: auto;
+  height: auto;
+  width: auto;
+  overflow: auto;
+}
+
+// Makes an element visually hidden by default, but visible when focused.
+@mixin element-focusable {
+  @include element-invisible;
+
+  &:active,
+  &:focus {
+    @include element-invisible-off;
+  }
+}
+
+// Headings
+@mixin headings($from: 1, $to: 6) {
+    @for $i from $from through $to{
+      h#{$i}{
+        @content
+      }
+    }
+}
+
+@mixin actions {
+  .form-actions {
+    margin-top: 1em;
+
+    .form-submit {
+      margin-right: 1em;
+    }
+  }
+}
+
+// Page title
+@mixin page-title($type: normal) {
+  color: $green;
+  font-family: 'source_sans_problack', $verdana;
+  font-size: 36px;
+  text-transform: uppercase;
+  @if $type == mobile {
+    font-size: 31px;
+    line-height: 1;
+  }
+}
+
+/**
+ * Leaping Bunny Standard Fonts
+ * Supplies some standard fonts used in the theme
+ * Used in the user profile page
+ */
+@mixin lb_standard_fonts($type: text) {
+
+  @if $type == heading-two {
+    @include adjust-font-size-to($h2-font-size);
+    @include leader(1, $h2-font-size);
+    @include trailer(1, $h2-font-size);
+    font-family: 'source_sans_prosemibold', $verdana;
+    color: $light-gray1;
+    @media #{$mobile} {
+      font-size: 21px;
+      line-height: 1.2;
+    }
+  }
+  @if $type == heading-three {
+    @include adjust-font-size-to($h3-font-size);
+    @include leader(1, $h3-font-size);
+    @include trailer(1, $h3-font-size);
+    font-family: $verdana;
+    color: $dark;
+    line-height: 1.2;
+  }
+  @if $type == heading-four {
+    @include adjust-font-size-to($h4-font-size);
+    @include leader(1, $h4-font-size);
+    @include trailer(1, $h4-font-size);
+    font-family: $verdana;
+    color: $green;
+    text-transform: uppercase;
+  }
+  @if $type == heading-five {
+    @include adjust-font-size-to($h5-font-size);
+    @include leader(1, $h5-font-size);
+    @include trailer(1, $h5-font-size);
+  }
+  @if $type == heading-six {
+    @include adjust-font-size-to($h6-font-size);
+    @include leader(1, $h6-font-size);
+    @include trailer(1, $h6-font-size);
+  }
+  @if $type == glossary-letter {
+    color: $green;
+    font-family: 'source_sans_prolight', $verdana;
+    font-size: 72px;
+  }
+  @if $type == number {
+    color: $green;
+    font-size: 50px;
+    line-height: 50px;
+    @media #{$mobile} {
+      font-size: 42px;
+      line-height: 42px;
+    }
+  }
+  @if $type == content-text {
+    color: $dark;
+    line-height: $base-line-height;
+  }
+  @if $type == block-title {
+    color: $white;
+    font-family: 'source_sans_prosemibold', $verdana;
+    padding: 5px 0;
+  }
+  @if $type == block-title-mobile {
+    font-size: 18px;
+    color: $white;
+    font-family: 'source_sans_prosemibold', $verdana;
+    padding: 5px 0;
+  }
+  @if $type == text {
+    color: $gray;
+    font-size: 90%;
+  }
+  @if $type == form-description {
+    font-size: 16px;
+    font-weight: normal;
+    font-style: italic;
+    line-height: $base-line-height;
+  }
+  @if $type == form-error {
+    color: $white;
+    font-size: 16px;
+    font-weight: normal;
+  }
+  @if $type == form-label {
+    color: $black;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: 'Source Sans Pro', $verdana;
+  }
+  @if $type == header {
+    color: $light-gray1;
+    text-transform: uppercase;
+    font-family: $alt-font-style;
+    font-size: 18px;
+    margin: 0;
+  }
+  @if $type == button {
+    color: $light-gray1;
+    text-transform: uppercase;
+    font-family: $alt-font-style;
+    font-size: 16px;
+  }
+  @if $type == petition-counter {
+    font-size: 180%;
+    font-weight: bold;
+  }
+  @if $type == footer-text {
+    color: $white;
+    font-size: 21px;
+    font-family: 'source_sans_prolight', $verdana;
+  }
+
+}
+
+
+
+/**
+ * Themes a fieldset within a vertical form
+ */
+@mixin vertical-form-fieldset(){
+  fieldset.form-wrapper { //:not(.filter-wrapper) {
+    border: none;
+    LEGEND {
+      display: none;
+    }
+    padding: 0em;
+  }
+}
+
+
+/**
+ * Themes a form item within a vertical form
+ */
+@mixin vertical-form-item (
+  $label-margin: 20%,
+  $element-width: 300px,
+  $mobile-element-width: 100%,
+  $include-padding: true,
+  $set-element-width: true,
+  $bottom-padding: true,
+  $hide-description: false,
+  $desc-postion: left,
+  $remove-embedded-margins: false,
+  $handle-radios: true,
+  $handle-checkboxes: false,
+  $handle-inline-tables: false,
+  $checkbox-margin: false,
+  $handle-vertical-tabs: true
+){
+
+  // make each form item it's own box
+  position: relative;
+  margin: 0em;
+
+  @if $include-padding == true {
+    padding: rhythm(.5) 0 rhythm(.5) 0;
+  }
+
+  // place the label, control the width
+  // @TODO remove font mixin, this should be it\'s own thing
+  label {
+    position: absolute;
+    top: rhythm(.75);
+    left: 0px;
+    width: $label-margin;
+    text-align: right;
+    //padding-right: rhythm(.25);
+    display: block;
+    &:after {
+      margin: 0;
+      padding: 0;
+    }
+    @include box-sizing(border-box);
+    @include lb_standard_fonts($type: form-label);
+    @media #{$mobile} {
+      position: static;
+      width: 100%;
+      text-align: left;
+      padding-bottom: rhythm(.25);
+    }
+  }
+
+  // set the width of the input element
+  @if $set-element-width == true {
+    input, select, textarea {
+      width: $element-width;
+      @media #{$mobile} {
+        width: $mobile-element-width;
+      }
+    }
+  }
+  &.form-type-managed-file input {
+    width: auto;
+  }
+
+  // remove the bottom padding when it\'s called for
+  @if $bottom-padding != false {
+    padding-bottom: 0em;
+  }
+  &.form-type-textarea {
+    padding-bottom: 0em;
+  }
+
+  // place the form controls
+  .form-element-wrapper {
+    margin-left: $label-margin + 1%;
+    @media #{$mobile} {
+      margin-left: 0;
+      width: $mobile-element-width;
+    }
+    &.error {
+      padding: 0;
+      @include lb_standard_fonts($type: form-error);
+    }
+  }
+
+  // do the description
+  .description {
+    @if $hide-description == true {
+      display: none;
+    }
+    @else {
+      @include lb_standard_fonts(form-description);
+      @include vertical-forms-place-desc($desc-postion: $desc-postion);
+    }
+  }
+
+  // embedded margins
+  // handle margins on elements embedded within other fields
+  @if $remove-embedded-margins == true {
+    .form-item {
+      margin: 0em;
+    }
+    .form-element-wrapper {
+      .form-item {
+        padding: 0em;
+        .form-element-wrapper {
+          margin: 0em;
+        }
+      }
+    }
+  }
+
+  // handle checkboxes
+  @if $handle-checkboxes == true {
+    .form-type-checkboxes {
+      margin: 0em;
+    }
+    margin: 0em;
+    .form-checkboxes {
+      .form-type-checkbox {
+        position: relative;
+        display: inline-block;
+        vertical-align: top;
+
+        @if $checkbox-margin != false {
+          margin: $checkbox-margin;
+        }
+
+        INPUT {
+          display: inline-block;
+          vertical-align: top;
+          width: auto;
+        }
+        .form-element-wrapper {
+          margin: 0em;
+          LABEL.option {
+            position: relative;
+            top: auto;
+            left: auto;
+            width: auto;
+            display: inline-block;
+            vertical-align: top;
+            text-align: left;
+            margin-left: 0;
+          }
+        }
+      }
+    }
+  }
+
+  // handle radio buttons
+  @if $handle-radios == true {
+    .form-element-wrapper > .form-radios {
+      .form-type-radio {
+        position: relative;
+        display: inline-block;
+        vertical-align: top;
+        margin-right: rhythm(.5);
+        INPUT {
+          display: inline-block;
+          vertical-align: top;
+          width: auto;
+        }
+        .form-element-wrapper {
+          margin: 0em;
+          LABEL.option {
+            position: relative;
+            top: auto;
+            left: auto;
+            width: auto;
+            display: inline-block;
+            vertical-align: top;
+            text-align: left;
+          }
+        }
+      }
+    }
+  }
+
+  // handle inline tables
+  @if $handle-inline-tables == true {
+
+    .field-add-more-submit,
+    .tabledrag-toggle-weight-wrapper {
+      margin-left: $label-margin + 1%;
+      width: 100% - $label-margin;
+    }
+
+    .field-multiple-table {
+      margin-top: -rhythm(.5);
+      margin-left: $label-margin;
+      width: 100% - $label-margin;
+      padding: rhythm(.5);
+      @include box-sizing(border-box);
+    }
+
+  }
+
+  // textareas
+  .form-textarea-wrapper > TEXTAREA {
+    width: 100%;
+  }
+
+  // single radio button
+  &.form-type-radio {
+    .form-element-wrapper {
+      margin-left: 0px;
+    }
+    INPUT {
+      width: auto;
+      display: inline-block;
+    }
+    LABEL {
+      position: relative;
+      display: inline-block;
+      margin-left: 0px;
+      top: 0px;
+      width: auto;
+    }
+  }
+
+  // checkboxes
+  &.form-type-checkboxes {
+    margin: 0em;
+
+    .form-type-checkbox {
+      display: inline-block;
+      .form-element-wrapper {
+        margin: 0em 0em 0em rhythm(.5);
+        LABEL {
+          width: auto;
+          position: relative;
+          top: 0px;
+          left: 0px;
+        }
+      }
+      INPUT {
+        width: auto;
+        display: inline-block;
+      }
+    }
+  }
+
+  @if $handle-vertical-tabs == true {
+    @include vertical-forms-theme-vertical-tabs();
+  }
+
+  .form-type-radios {
+    margin-top: 10px;
+    >.form-element-wrapper {
+      padding-left: 10px;
+    }
+  }
+}
+
+/**
+ * Places the description in a form item
+ */
+@mixin vertical-forms-place-desc (
+  $desc-postion: left,
+  $label-margin: 20%
+) {
+  @if $desc-postion == left {
+    position: absolute;
+    top: rhythm(.75);
+    left: 0px;
+    display: block;
+    margin-top: rhythm(1.5);
+    //width: $label-margin;
+    text-align: right;
+    padding-right: rhythm(.25);
+    display: block;
+    @include box-sizing(border-box);
+  }
+  @if $desc-postion == right {
+    position: absolute;
+    top: rhythm(.75);
+    right: 0px;
+    display: block;
+    @include box-sizing(border-box);
+  }
+  @if $desc-postion == none {
+    margin-left: $label-margin;
+    display: block;
+    //margin-top: -1em;
+    @include box-sizing(border-box);
+    text-align: left;
+  }
+}
+
+@mixin vertical-forms-theme-vertical-tabs (
+  $label-margin: 20%
+) {
+
+  // vertical tabs
+  DIV.vertical-tabs {
+
+    width: 100% - $label-margin;
+    margin: 0em 0em 0em $label-margin;
+
+    // list of items
+    .vertical-tabs-list {
+      margin: 0em;
+    }
+
+    // labels
+    .description {
+      font-weight: normal;
+    }
+
+    .description,
+    LABEL {
+      position: relative;
+      width: auto;
+      text-align: left;
+      top: 0px;
+    }
+    // element wrappers
+    .form-element-wrapper {
+      margin-left: 0em;
+      vertical-align: top;
+      LABEL {
+        position: relative;
+        top: 0px;
+      }
+
+    }
+    // form items
+    .form-item {
+      input {
+        width: auto;
+        display: inline-block;
+        vertical-align: top;
+      }
+    }
+    // input, #partnership-node-form .form-item select, #partnership-node-form .form-item textarea
+  }
+
+}
+
+// Radios.
+@mixin lb-radios () {
+  clear: both;
+  margin-bottom: 60px;
+
+  label {
+    @include lb_standard_fonts($type: form-label);
+  }
+
+  .form-element-wrapper {
+    margin: 15px 0;
+
+    .form-radios {
+      .form-type-radio {
+        float: left;
+        margin: 0 15px 0 0;
+
+        .form-radio {
+          float: left;
+          margin: 0;
+        }
+        .form-element-wrapper {
+          bottom: 4px;
+          float: left;
+          margin: 0 0 0 5px;
+          position: relative;
+        }
+      }
+    }
+  }
+
+  .help-text {
+    clear: both;
+  }
+}
+
+/**
+ * Leaping Bunny Forms
+ * Vertical form - creates a form where all form fields line up in a single column
+ * $label-margin: distance from the left side
+ * $element-width: how wide to make text fields and whatnot
+ * $hide-name-label: whether or not to hide the first label found in a name field
+ *
+ */
+@mixin lb-vertical-form(
+  $label-margin: 20%,
+  $element-width: 300px,
+  $mobile-element-width: 100%,
+  $hide-name-label: false
+){
+
+  label {
+    &:after {
+      margin: 0;
+      padding: 0;
+    }
+    @include lb_standard_fonts($type: form-label);
+    @media #{$mobile} {
+      position: static;
+      width: 100%;
+      text-align: left;
+    }
+  }
+
+  // CKEditor Links
+  .filter-wrapper,
+  .ckeditor_links {
+    margin-left: $label-margin + .75%;
+    width: 100% - $label-margin - 1.75%;
+    padding: rhythm(.5);
+    @include box-sizing(border-box);
+    .form-item {
+      margin: 0em;
+      padding: 1em;
+    }
+    .form-item > LABEL {
+      width: auto;
+      display: inline-block;
+      position: relative;
+      top: auto;
+    }
+    .form-item > .form-element-wrapper {
+      margin-left: 0em;
+    }
+  }
+
+  // general form items
+  .form-item {
+    // generic form items used throughout the site
+    &.form-field-type-taxonomy-term-reference,
+    &.form-type-textarea,
+    &.form-type-textfield,
+    &.form-type-select,
+    &.form-type-name-element {
+      @include vertical-form-item( $bottom-padding: false, $remove-embedded-margins: true );
+    }
+
+    &.form-type-name-element,
+    &.form-type-select {
+      padding: rhythm(.5) 0;
+      margin: 0;
+    }
+
+    &.form-type-name-element {
+      @media #{$mobile} {
+        margin-top: 20px;
+        margin-bottom: -20px;
+      }
+      .name-given-wrapper,
+      .name-family-wrapper {
+        padding: rhythm(.5) 0;
+        .description {
+          @include lb_standard_fonts($type: form-label);
+          top: rhythm(.25);
+        }
+        @media #{$mobile} {
+          margin-top: -20px!important;
+          .description {
+            position: relative;
+            width: 100%;
+            text-align: left;
+            top: -55px;
+          }
+        }
+      }
+      .name-family-wrapper {
+        padding-bottom: 0;
+      }
+    }
+
+    &.form-type-phone-number {
+      clear: both;
+      overflow: hidden;
+      .form-phone-number {
+        > .form-type-select {
+          display: none;
+        }
+        div.form-type-textfield {
+          float: left;
+          input[type=text] {
+            width: 215px;
+          }
+          label {
+            width: 33px;
+            padding: 0;
+          }
+          &:nth-child(n+2) {
+            padding-left: 26px;
+            @media #{$mobile} {
+              margin-top: -10px;
+            }
+          }
+          .form-element-wrapper {
+            input[type=text] {
+              width: 58px;
+            }
+          }
+        }
+      }
+    }
+
+    // Single on/off checkboxes.
+    &.form-type-checkbox {
+      input[type=checkbox] {
+        float: left;
+        margin-top: 3px;
+      }
+      label {
+        margin-left: $label-margin;
+        text-align: left;
+        width: 100% - $label-margin;
+      }
+    }
+    // Select boxes.
+    &.form-type-select {
+      label {
+        width: $label-margin;
+        text-align: right;
+        position: absolute;
+        &:after {
+          margin: 0;
+          padding: 0;
+        }
+        @media #{$mobile} {
+          width: $mobile-element-width;
+          text-align: left;
+          position: static;
+        }
+      }
+      .form-element-wrapper {
+        margin-left: $label-margin + 1%;
+        @media #{$mobile} {
+          margin-left: 0;
+          width: $mobile-element-width;
+        }
+      }
+    }
+  }
+  // images
+  .form-field-type-image {
+    @include vertical-form-item();
+    input {
+      width: 200px !important;
+    }
+    .form-type-managed-file > .form-element-wrapper {
+      margin-left: $label-margin + 2%;
+      margin-top: -1%;
+    }
+  }
+  // taxonomy terms
+  .field-type-taxonomy-term-reference,
+  .form-field-type-taxonomy-term-reference {
+    @include vertical-form-item(
+      $desc-postion: none,
+      $handle-checkboxes: true,
+      $checkbox-margin: rhythm(.25) rhythm(.5)
+    );
+  }
+
+  // links
+  .field-type-link-field,
+  .form-field-type-link-field {
+    @include vertical-form-item( $remove-embedded-margins: true);
+  }
+
+  // radios
+  .field-type-list-boolean,
+  .form-field-type-list-boolean {
+    @include lb-radios();
+  }
+  // entity references
+  .field-type-entityreference {
+    fieldset.form-wrapper {
+      // @TODO: sort this
+      LEGEND {
+        display: block !important;
+      }
+      .form-type-select {
+        @include vertical-form-item();
+      }
+      DIV[id*=og-group-ref-add-more-wrapper] {
+        @include vertical-form-item( $handle-inline-tables: true, $remove-embedded-margins: true );
+      }
+    }
+  }
+  // Actions.
+  @include actions;
+
+  // files / images
+  .field-type-image {
+    @include vertical-form-item($desc-postion: right);
+    input {
+      width: 200px !important;
+    }
+    .description {
+      font-size: 80%;
+    }
+  }
+
+
+  // drag and drop tables
+  .form-field-type-entityreference {
+
+    .field-add-more-submit,
+    .tabledrag-toggle-weight-wrapper {
+      margin-left: $label-margin;
+      width: 100% - $label-margin;
+    }
+
+    .field-multiple-table {
+      margin-top: -rhythm(.5);
+      margin-left: $label-margin;
+      width: 100% - $label-margin;
+      padding: rhythm(.5);
+      @include box-sizing(border-box);
+    }
+
+  }
+
+  // fieldsets
+  @include vertical-form-fieldset();
+
+  .form-item {
+
+    // specific field types
+    // name
+    &.form-type-name-element {
+      .clearfix {
+        display: block;
+      }
+      @if $hide-name-label == true {
+        LABEL {
+          display: none;
+        }
+        .clearfix {
+          &:after {
+            content: '';
+          }
+        }
+      }
+
+      .description {
+        font-style: normal;
+        font-weight: bold;
+        font-size: 100%;
+        margin-top: 0;
+        width: 20%;
+      }
+
+      // theme name wrapper
+      .form-element-wrapper {
+        margin: 0em;
+        width: auto;
+        display: block;
+        position: relative;
+        .name-given-wrapper,
+        .name-family-wrapper {
+          float: none !important;
+          margin: 0em !important;
+          @include box-sizing(border-box);
+          .form-element-wrapper {
+            margin-left: $label-margin + 1%;
+            @media #{$mobile} {
+              margin-left: 0;
+              width: $mobile-element-width;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  .show-this {
+    .form-item.form-type-name-element {
+      LABEL {
+        display: block;
+      }
+      .form-element-wrapper LABEL {
+        display: none;
+      }
+    }
+  }
+
+  // Dates.
+  .field-type-datetime {
+    .form-wrapper {
+      legend {
+        @include lb_standard_fonts($type: form-label);
+        display: block!important;
+        position: absolute;
+        left: 0;
+        width: $label-margin;
+        text-align: right;
+        margin-top: 1em;
+      }
+
+      .form-item {
+        display: block;
+
+        .date-padding {
+          float: none;
+          padding: 0;
+
+          .form-type-textfield {
+            margin-left: $label-margin + 1.5%;
+            padding: 0;
+
+            label.element-invisible {
+              display: none;
+            }
+
+            .form-element-wrapper {
+              margin: 0;
+            }
+
+            .description {
+              position: static;
+              margin: 0;
+              text-align: left;
+            }
+          }
+        }
+      }
+    }
+    @media #{$mobile} {
+      .form-wrapper {
+        legend {
+          position: relative;
+          width: auto;
+          text-align: left;
+        }
+        .form-item {
+          .date-padding {
+            .form-type-textfield {
+              margin-left: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // files
+  .form-type-managed-file {
+    margin-bottom: rhythm(1);
+    padding-right: rhythm(1);
+    margin-top: 0;
+    .description {
+      font-weight: normal;
+      font-size: 90%;
+      @include vertical-form-description-right();
+    }
+  }
+
+
+
+  // phone number fields
+  .field-type-phone-number {
+    position: relative;
+    padding: rhythm(.5) 0;
+    .form-item {
+      margin: 0;
+      > label {
+        position: absolute;
+        top: rhythm(.4);
+        left: 0px;
+        float: left;
+        width: $label-margin;
+        text-align: right;
+        @media #{$mobile} {
+          position: static;
+          width: 100%;
+          text-align: left;
+          padding-bottom: rhythm(.25);
+        }
+      }
+    }
+    .form-element-wrapper {
+      margin-left: $label-margin + 1%;
+      display: block;
+      @media #{$mobile} {
+        margin-left: 0;
+        width: $mobile-element-width;
+      }
+    }
+    .form-phone-number {
+      .form-item {
+        padding: 0;
+      }
+      .form-type-textfield {
+        &:nth-child(n+2){
+          padding-left: rhythm(1);
+        }
+        label {
+          text-align: center;
+          padding: 0em;
+          margin: 0em;
+          margin-top: -10px;
+        }
+        input[type=text] {
+          width: $element-width;
+        }
+      }
+    }
+  }
+
+  // address fields
+  .field-type-addressfield {
+    padding: 0em;
+    .form-element-wrapper {
+      margin-left: $label-margin + 1%;
+      @media #{$mobile} {
+        margin-left: 0;
+        width: $mobile-element-width;
+      }
+    }
+    fieldset {
+      border: none;
+      margin: 0em;
+      padding: 0em;
+      LEGEND {
+        display: none;
+      }
+      .form-item {
+        display: block;
+      }
+      .addressfield-container-inline {
+        .form-item {
+          display: block;
+          float: none;
+        }
+      }
+    }
+  }
+}
+
+
+/**
+ * Leaping Bunny Box
+ * Creates a box that contains some specific information, typically used in a grid
+ * Used in the user profile page
+ */
+@mixin lb_box($fields-as-table: false){
+  border: 1px solid #CCC;
+  padding: rhythm(1);
+  position: relative;
+  @include box-sizing(border-box);
+  margin-bottom: rhythm(.5);
+  @include lb_standard_fonts();
+
+  H2.pane-title {
+    @include lb_standard_fonts(header);
+    margin-bottom: rhythm(.5);
+  }
+
+  @if $fields-as-table == true {
+
+    .view-content {
+      .views-row {
+        display: table;
+        width: 100%;
+      }
+      .views-field {
+        display: table-row;
+
+        .views-label {
+          font-weight: 600;
+        }
+        .views-label,
+        .field-content {
+          display: table-cell;
+        }
+
+      }
+    }
+  }
+}
+
+
+// positions a description to the right
+@mixin vertical-form-description-right () {
+  position: absolute;
+  right: 0em;
+  width: auto;
+}
+
+
+
+/**
+ * GRID ITEM: this is an item appearing in a grid
+ */
+@mixin lb_grid_item($cols: 0, $parent_cols: 0, $gutter-method: padding, $gutter: 30px) {
+
+  padding: rhythm(1);
+  position: relative;
+
+  $zen-gutter-width: 10%;
+  $zen-grid-width: 100%;
+  $zen-gutter-width: $gutter;
+  @include zen-grid-flow-item(
+    $column-span: $cols,
+    $alpha-gutter: false,
+    $omega-gutter: false,
+    // $parent-column-count: 3.055,
+    $column-count: $parent_cols,
+    $gutter-width: $zen-gutter-width,
+    $grid-width: $zen-grid-width,
+    $auto-include-flow-item-base: true
+  );
+
+  &:nth-child(#{$parent_cols}n) {
+  }
+}
+
+/**
+ * Leaping Bunny Box Button
+ * Creates a button appearing in the header next to the title of an LB box
+ * Used in the user profile page
+ */
+@mixin lb_box_button($position: 'normal', $topoffset: 0px, $bottomoffset: 0px, $leftoffset: 0px, $rightoffset: 0px ) {
+
+  @include border-radius(5px);
+  background: $dark;
+  color: $white;
+  border: 1px solid $white;
+  white-space: nowrap;
+  display: inline-block;
+  @include lb_standard_fonts(button);
+  padding: 6px 10px;
+
+  @if $position == 'topright' {
+    position: absolute;
+    top: $topoffset;
+    right: $rightoffset;
+  }
+  @if $position == 'topleft' {
+    position: absolute;
+    top: $topoffset;
+    left: $leftoffset;
+  }
+
+  A {
+    color: White;
+  }
+
+}
+
+/**
+ * Leaping Bunny User Table
+ * Styles tables appearing on the frontend
+ * Used in the user profile page
+ */
+@mixin lb_user_table($header-style: none){
+
+  width: 100%;
+  @include lb_standard_fonts();
+
+  // default cell styles
+  TH {
+    text-align: left;
+    text-transform: uppercase;
+    border-bottom: 1px solid #CCC;
+    font-size: 0.85em;
+  }
+  TR {
+    background-color: transparent;
+  }
+  TD {
+    padding: rhythm(.5) 0em;
+    font-weight: 600;
+  }
+
+  // flying headers
+  @if $header-style == 'flying' {
+    TH {
+      border-top: 1px solid Black;
+      border-bottom: 1px solid Black;
+      text-align: center;
+      padding: rhythm(.5) 0em;
+    }
+    TD {
+      text-align: center;
+    }
+  }
+}
+
+/**
+ * Leaping Bunny Header Button
+ * Styles a button that appears next to the title of a block on the user profile page
+ * Used in the user profile page
+ */
+@mixin lb_header_button($position: 'normal', $topoffset: 0px, $bottomoffset: 0px, $leftoffset: 0px, $rightoffset: 0px ){
+
+  @include border-radius(5px);
+  white-space: nowrap;
+  display: inline-block;
+  @include lb_standard_fonts(button);
+
+  @if $position == 'full' {
+    position: relative;
+    margin-bottom: rhythm(.5);
+    font-size: 120%;
+  }
+  @if $position == 'topright' {
+    position: absolute;
+    top: $topoffset;
+    right: $rightoffset;
+    z-index: 9999;
+  }
+  @if $position == 'topleft' {
+    position: absolute;
+    top: $topoffset;
+    left: $leftoffset;
+  }
+  @extend %black-button;
+}
+
+/**
+ * Leaping Bunny Brand Grid
+ * Displays brands in a grid
+ * Apply this to the container around the grid
+ * Used in the user profile page
+ */
+@mixin lb_brand_grid(){
+}
+
+/**
+ * Leaping Bunny Activity List
+ * Displays a list of activities on the frontend of the site
+ * Used in the user profile page
+ */
+@mixin lb_activity_list(){
+  .views-row {
+    margin-bottom: rhythm(.75);
+  }
+  .views-row-last {
+    margin-bottom: 0em;
+  }
+  .views-field-activity-string {
+    margin-left: 40px;
+  }
+  .views-field-created {
+    margin-top: rhythm(.25);
+    margin-left: 40px;
+  }
+  .ao-activity-icon {
+    background: url("../images/ao-backend-icons.png") no-repeat scroll -120px -30px #ffb533;
+    border-radius: 5px;
+    display: block;
+    float: left;
+    height: 30px;
+    width: 30px;
+  }
+}
+
+
+/**
+ * Leaping Bunny Application Box
+ * Styles the sections of an application for the frontend
+ * Used in the Application page
+ */
+@mixin lb_app_box($fields-as-table: false){
+  border: 1px solid #CCC;
+  padding: rhythm(1);
+  position: relative;
+  @include box-sizing(border-box);
+  margin-bottom: rhythm(.5);
+  @include lb_standard_fonts();
+
+  H2.pane-title {
+    @include lb_standard_fonts(header);
+    margin-bottom: rhythm(.5);
+  }
+
+  @if $fields-as-table == true {
+
+    .view-content {
+      .views-row {
+        display: table;
+        width: 100%;
+      }
+      .views-field {
+        display: table-row;
+
+        .views-label {
+          font-weight: 600;
+        }
+        .views-label,
+        .field-content {
+          display: table-cell;
+        }
+        .views-label {
+          width: 40%;
+        }
+
+      }
+    }
+  }
+}
+
+/**
+ * Provides better styles for tables with multiple values
+ */
+@mixin ao-table-dragger () {
+  width: 100%;
+  TBODY {
+    .form-item {
+      LABEL {
+        display: inline-block;
+      }
+      .form-element-wrapper {
+        display: inline-block;
+      }
+    }
+  }
+}
+/**
+ * Provides better styles for date fields
+ */
+@mixin ao-date-field-cleanup ($stacked: false) {
+  .container-inline-date {
+    display: inline-block;
+    @if $stacked == true {
+      display: block;
+    }
+    width: auto;
+    .ao-field-help {
+      display: none;
+    }
+    .form-element-wrapper {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    &.end-date-wrapper  {
+      .form-type-date-popup > label {
+        display: inline-block;
+        @if $stacked == true {
+          display: block;
+        }
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+/**
+ * Provides better styles for radios
+ */
+@mixin ao-horizontal-radios() {
+  .form-type-radio {
+    margin: rhythm(.25) rhythm(1) rhythm(.25) 0em;
+    display: inline-block;
+
+    .form-element-wrapper,
+    INPUT,
+    LABEL {
+      display: inline-block;
+    }
+  }
+}
+
+
+/**
+ * Filter Wrapper: wraps input filters in a special style
+ * $wrapper-bg-color: Background color for the wrapper. Defaults to #F5F1E9
+ * $wrapper-border-color: Border color for the wrapper. Defaults to #CCC
+ * $button-bg-color: Background color for the buttons. Defaults to #CCC
+ * $button-text-color: Text color for the buttons. Defaults to Black
+ * $button-active-bg-color: Background color for the buttons when selected. Defaults to #555
+ * $button-active-text-color: Text color for the buttons when selected. Defaults to White
+ */
+@mixin ao-filter-wrapper(
+  $wrapper-bg-color: #F5F1E9,
+  $wrapper-border-color: #CCC,
+  $button-bg-color: #CCC,
+  $button-text-color: Black,
+  $button-active-bg-color: #555,
+  $button-active-text-color: White
+) {
+  @include user-select(none);
+  background-color: $wrapper-bg-color;
+  border: 1px solid $wrapper-border-color;
+  margin-bottom: rhythm(1);
+  @include border-radius(0em 0em rhythm(1) rhythm(1));
+  @include box-sizing(border-box);
+  .form-item {
+    margin: 0em;
+    LABEL {
+      display: inline-block;
+      margin-right: rhythm(.25);
+    }
+    .form-element-wrapper {
+      display: inline-block;
+      margin-right: rhythm(.5);
+    }
+  }
+
+  // more information about text formats
+  .filter-help {
+    padding-top: 0.5em;
+  }
+  .form-type-select {
+    margin: 0em 0em 0em rhythm(1);
+    padding: 0em;
+  }
+  // this handles the buttons
+  .ao-input-format-select {
+    background-color: $button-bg-color;
+    color: $button-text-color;
+    margin-right: .3em;
+    @include border-radius(rhythm(.5));
+    padding: rhythm(.1) rhythm(.3);
+    cursor: pointer;
+    display: inline-block;
+
+    &.active-val {
+      background-color: $button-active-bg-color;
+      color: $button-active-text-color;
+    }
+  }
+  .filter-guidelines {
+    display: none;
+  }
+
+}
+
+/**
+ * Cleans up the links for CKEditor
+ */
+@mixin ao-ckeditor-styles(
+ $bg-color: #F5F1E9,
+ $borders: 1px solid #CCC
+) {
+  background-color: $bg-color;
+  border-left: $borders;
+  border-right: $borders;
+  display: block;
+  padding: rhythm(.25);
+  font-size: 90%;
+  width: 100%;
+  @include box-sizing(border-box);
+  text-align: center;
+}
+
+/**
+ * Formats callouts and help text used on input filters
+ */
+@mixin ao-callout(
+  $width: 240px,
+  $font-size: 12px,
+  $bg-color: Blue
+) {
+
+  width: $width;
+  font-size: $h6-font-size;
+  @include adjust-font-size-to($font-size);
+  @include border-radius(8px);
+  color: White;
+  background-color: $bg-color;
+  padding: 0.5em 0.8em;
+  position: absolute;
+  display: block;
+
+  H3 {
+    display: block;
+    text-align: center;
+    margin: 0em;
+  }
+
+  UL {
+    margin: 0em;
+    padding: 0em;
+    LI {
+      list-style-type: none;
+    }
+  }
+
+  &:after {
+    position: absolute;
+    display: block;
+    top: 100%;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    pointer-events: none;
+    border-top-color: $bg-color;
+    border-width: 15px;
+    margin-left: -15px;
+  }
+}
+
+
+/**
+ * MENUS
+ * Creates a drop down menu that expands on mouseover
+ */
+/**
+ * turns a block or a panel page containing a menu into a drop down
+ *
+ * $border-radius - Valid border radius value. Should be a single value.
+ * $font-size - the size of the font for the button.
+ * $base-color - valid color for the button and the background of the menu.
+ * $secondary-color - valid color for the button and the background of the menu when hovered.
+ * $option-color - The color of links in the button.
+ * $option-font-size - The font size of links in the menu.
+ * $option-width - 'full' to make the menu expand to the width of the container. Use an empty string for auto width.
+ **/
+@mixin ao-drop-down-menu ($align: left) {
+
+  position: relative;
+  z-index: 100;
+
+  UL.menu {
+    display: none;
+    position: absolute;
+    z-index: 9999;
+    margin: 0px;
+    padding: 0px;
+    LI {
+      list-style-type: none;
+    }
+    A {
+      display: block;
+    }
+  }
+
+  &:hover {
+    UL.menu {
+      display: block;
+      padding: 0;
+      top: 100%;
+
+      @if $align == left {
+        left: 0px;
+      }
+      @if $align == right {
+        right: 0px;
+      }
+
+      LI {
+        float: none;
+        position: relative;
+        A {
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Button styles.
+ */
+@mixin lb_button($color, $border-color, $bg-color, $hover-color, $hover-border, $hover-bg, $active-color, $active-border, $active-bg) {
+  @include border-radius(10px);
+  border: 2px solid $border-color;
+  background-color: $bg-color;
+  color: $color;
+  font-size: 14px;
+  display: inline-block;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-family: 'source_sans_prosemibold', $verdana;
+  &:hover {
+    cursor: pointer;
+    color: $hover-color;
+    background-color: $hover-bg;
+    border-color: $hover-border;
+    a {
+      color: $hover-color;
+    }
+  }
+  &:active {
+    cursor: pointer;
+    color: $active-color;
+    background-color: $active-bg;
+    border-color: $active-border;
+    a {
+      color: $active-color;
+    }
+  }
+  a {
+    color: $color;
+    text-decoration: none;
+    padding: 10px;
+    display: block;
+  }
+}
+
+@mixin lb_content_number_list() {
+  margin-top: 30px;
+  .item {
+    border-bottom: 1px solid $green;
+    padding: 20px 0;
+    .number {
+      @include lb_standard_fonts(number);
+      display: block;
+      float: left;
+      margin-left: 5px;
+    }
+    .list-item {
+      margin-left: 80px;
+      @media #{$mobile} {
+        margin-left: 50px;
+      }
+    }
+    &:after {
+      clear: both;
+      content: "";
+      display: table;
+    }
+    &:nth-child(even) {
+      background: #eef6f1;
+    }
+  }
+}
+
+@mixin lb_content_title_list() {
+  margin-top: 30px;
+  .item {
+    margin-bottom: 25px;
+    h2 {
+      @include lb_standard_fonts(heading-two);
+      color: $dark;
+      margin: 0;
+      margin-bottom: 5px;
+    }
+    &.green {
+      @include lb_content_green_text();
+    }
+  }
+}
+
+@mixin lb_content_right_list($background-image) {
+  margin-top: 20px;
+  $zen-column-count: 12;
+  @include zen-grid-container();
+  .image-wrapper {
+    @include zen-grid-item(3, 1);
+    .image-title {
+      font-size: 24px;
+      font-family: 'source_sans_prosemibold', $verdana;
+      color: $green;
+      margin-bottom: 30px;
+    }
+    .image {
+      background: url($background-image) no-repeat center center transparent;
+      width: 162px;
+      height: 218px;
+      max-width: 100%;
+    }
+  }
+
+  .list-wrapper {
+    @include zen-grid-item(8, 4);
+    .item {
+      color: $green;
+      border-bottom: 1px solid #deede3;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      &:last-child {
+        border: none;
+      }
+    }
+  }
+
+  @media #{$mobile} {
+    .image-wrapper {
+      @include zen-grid-item(12, 1);
+      @include zen-clear();
+      .image {
+        display: none;
+      }
+    }
+    .list-wrapper {
+      @include zen-grid-item(12, 1);
+      @include zen-clear();
+    }
+  }
+}
+
+@mixin lb_content_green_text() {
+  color: $green;
+  margin-top: 40px;
+  margin-bottom: 40px;
+  p {
+    color: $green !important;
+    margin: 0;
+  }
+  h2 {
+    color: $green;
+    font-size: 20px;
+    margin-bottom: 5px;
+  }
+}
+
+@mixin lb_content_articles() {
+  $zen-column-count: 3;
+  @include zen-grid-container();
+  .article-item {
+    @include zen-float(left);
+    @include zen-grid-flow-item(1);
+    margin: 0 0 20px 0;
+    text-align: center;
+    .title {
+      a {
+        color: $light-gray1;
+        font-family: 'source_sans_prosemibold', $verdana;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+    .source {
+      font-size: 12px;
+    }
+    @media #{$mobile} {
+      @include zen-grid-flow-item(3);
+      @include zen-clear();
+    }
+  }
+}
+
+@mixin lb_content_logos_grid() {
+  margin-bottom: 50px;
+  $zen-column-count: 3;
+  @include zen-grid-container();
+  .item {
+    @include zen-float(left);
+    @include zen-grid-flow-item(1);
+    margin: 0;
+    height: 140px;
+    text-align: center;
+  }
+  @media #{$mobile} {
+    .item {
+      @include zen-grid-flow-item(3);
+      @include zen-clear();
+    }
+  }
+}
+
+
+@mixin lb_content_two_column_table() {
+  .item {
+    $zen-column-count: 5;
+    @include zen-grid-container();
+    border-bottom: 1px solid #d8d8d8;
+    .left {
+      @include zen-grid-item(2, 1);
+      font-size: 20px;
+      color: $green;
+      font-family: 'source_sans_prosemibold', $verdana;
+      .content {
+        padding: 20px 30px 20px 0;
+        @media #{$mobile} {
+          padding-left: 10px;
+        }
+      }
+    }
+    .right {
+      @include zen-grid-item(3, 3);
+      .content {
+        padding: 20px 10px;
+      }
+    }
+    &:last-child {
+      border: none;
+    }
+    @media #{$mobile} {
+      .left, .right {
+        @include zen-grid-item(5, 1);
+        @include zen-clear();
+      }
+    }
+  }
+}
+
+@mixin lb_content_table_header() {
+  // Desktop headers
+  &:first-child {
+    border: none;
+    .left,
+    .right {
+      background: $green;
+      color: $white;
+      font-size: 24px;
+      text-transform: uppercase;
+      .content {
+        padding: 20px 10px;
+        display: block;
+      }
+    }
+    .left {
+      background: $green;
+    }
+    .right {
+      background: $dark;
+    }
+  }
+  // Myths and Facts, @TODO: is there a way to not dup it?
+  & {
+    .myths,
+    .facts {
+      background: $green;
+      color: $white;
+      font-size: 24px;
+      text-transform: uppercase;
+      .content {
+        padding: 20px 10px;
+        display: block;
+      }
+    }
+    .myths {
+      background: $green;
+    }
+    .facts {
+      background: $dark;
+    }
+  }
+}
+
+@mixin lb_content_faq() {
+  .questions {
+    margin-bottom: 50px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid $light-gray;
+    a {
+      @include lb_standard_fonts(heading-three);
+      color: $light-gray1;
+      margin: 20px 0;
+      display: block;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+  .answers {
+    .title {
+      color: $green;
+      font-family: 'source_sans_prosemibold', $verdana;
+    }
+    .back-top {
+      margin-top: 5px;
+      margin-bottom: 40px;
+      display: block;
+      text-align: right;
+      font-size: 14px;
+      color: #999990;
+    }
+  }
+}
+
+@mixin lb_download() {
+  .view-content {
+    $zen-column-count: 4;
+    $zen-gutter-width: 30px;
+    @include zen-grid-container;
+  }
+  .views-row {
+    @include lb_grid_item($cols: 1, $parent_cols: 4);
+    @include zen-float();
+    padding: rhythm(.5);
+    text-align: center;
+    margin-right: 0;
+    @media #{$mobile} {
+      @include lb_grid_item($cols: 4, $parent_cols: 4);
+    }
+  }
+}
+
+@mixin lb_three_columns() {
+  .view-content {
+    $zen-column-count: 3;
+    $zen-gutter-width: 30px;
+    @include zen-grid-container;
+  }
+  .views-row {
+    @include lb_grid_item($cols: 1, $parent_cols: 3);
+    @include zen-float();
+    padding: rhythm(.5);
+    text-align: center;
+    margin-right: 0;
+    @media #{$mobile} {
+      @include lb_grid_item($cols: 3, $parent_cols: 3);
+    }
+
+    &:nth-child(3n+1) {
+      @include zen-clear(left);
+    }
+  }
+}
+
+
+// Keep narrow settings together
+$lb_narrow_gap: 13%;
+@mixin lb_narrow_content() {
+  #content {
+    .content-inner {
+      margin: 0 $lb_narrow_gap;
+    }
+  }
+}
+@media #{$mobile} {
+  #footer.region {
+    padding: 0;
+    h2.block-title {
+      padding-left: $lb_narrow_gap;
+      padding-right: $lb_narrow_gap;
+      padding-top: 15px;
+      padding-bottom: 15px;
+    }
+  }
+  div.region-basement {
+    div.block {
+      padding-left: $lb_narrow_gap;
+      padding-right: $lb_narrow_gap;
+    }
+  }
+}
+
+
+@mixin lb_blog_container(
+  $title_selector: 'h2',
+  $padding: 10px
+) {
+
+  border: solid 2px $green;
+  padding: $padding;
+  margin-bottom: 0;
+  @if $title_selector != false {
+    #{$title_selector} {
+      background: $green;
+      @include lb_standard_fonts(heading-four);
+      color: $white;
+      margin: (-$padding) (-$padding) 0 (-$padding);
+      padding: ($padding/2) $padding;
+    }
+  }
+}

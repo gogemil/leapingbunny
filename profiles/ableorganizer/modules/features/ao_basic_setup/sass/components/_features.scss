@@ -1,0 +1,148 @@
+/**
+ * @file
+ * Components for displaying features of AO
+ */
+
+
+/* displays a feature listing as a bubble */
+.features-bubble {
+  display: inline-block;
+  vertical-align: top;
+  padding: 0em .5em;
+  text-align: center;
+  
+  H3 {
+    color: $ao_blue2;
+    text-align: center;
+    font-weight: normal;
+    text-transform: uppercase;
+    margin-top: 0.25em;
+    margin-bottom: 0px;
+    font-family: $font-titles;
+    font-size: $h4-font-size;
+  }
+  P {
+    margin: .5em 0em;
+    font-size: $h5-font-size;
+  }
+
+  .ao_profeat_icon_outer {
+    height: 140px;
+    width: 140px;
+    @include border-radius(50%);
+    background-color: transparent;
+    margin: 0em auto .25em;
+    cursor: pointer;
+    border: 1px solid White;
+    position: relative;
+    vertical-align: middle;
+    @include transition-property(all);
+    @include transition-duration(.2s);
+    @include transition-timing-function(ease-in-out);  
+    
+    &:hover {
+      border: 1px solid #CCC;
+    }
+  }
+  
+  .ao_profeat_icon {
+    height: 110px;
+    width: 110px;
+    @include border-radius(50%);
+    background-color: #8f95Ae;
+    margin: 0em auto;
+    cursor: pointer;
+    position:absolute;
+    left: 15px;
+    top: 15px;
+    @include transition-property(all);
+    @include transition-duration(.2s);
+    @include transition-timing-function(ease-in-out);  
+    
+    SPAN {
+      background-image: url('../images/ao-frontend-icons.png');
+      height: 60px;
+      width: 60px;
+      display: inline-block;
+      margin: 24px auto 0px;
+    }
+  }
+
+  .ao_profeat_button {
+  
+    @include sassy-button("flat", .5em, $h4-font-size, $ao_blue, $ao_blue2, White, "Raised");
+    @include sassy-button-structure(.5em, $h4-font-size, 0.25em 1em);
+    margin-top: .5em;
+    margin-left: auto;
+    margin-right: auto;
+  }  
+
+}
+
+/*displays the marquee for showing features */
+.features-marquee {
+  width: 100%;
+  margin: 0em;
+  
+  /* make the features listings into bubbles */
+  .ao_profeat {
+    @extend .features-bubble;
+    width: 23%;
+    
+    
+    &.ao_profeat_donation .ao_profeat_icon {
+      &:hover {
+        background-color: #399B19;
+      }
+      SPAN {
+        background-position: -60px -120px;
+      }
+    }
+    
+    &.ao_profeat_event .ao_profeat_icon {
+      &:hover {
+        background-color: #1A6099;
+      }
+      SPAN {
+        background-position: -120px -120px;
+      }
+    }
+
+    &.ao_profeat_petition .ao_profeat_icon {
+      &:hover {
+        background-color: #e26427;
+      }
+      SPAN {
+        background-position: -180px -120px;
+      }
+    }
+
+    &.ao_profeat_volunteer .ao_profeat_icon {
+      &:hover {
+        background-color: #D12424;
+      }
+      SPAN {
+        background-position: 0px -120px;
+      }
+    }
+    
+  }
+  
+  .ao_profeat_dialog_content {
+    display: none;
+  }
+  
+}
+
+/**
+ * Use 5 grid columns for smaller screens.
+ */
+@media all and (min-width: 480px) and (max-width: 959px) {
+}
+
+/**
+ * Use 7 grid columns for larger screens.
+ */
+@media all and (min-width: 960px) {
+}
+

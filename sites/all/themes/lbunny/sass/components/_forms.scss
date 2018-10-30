@@ -1,0 +1,558 @@
+#block-crm-core-profile-ccp-mailing-list-signup {
+  form {
+    .form-item {
+      margin: 0;
+    }
+    .form-element-wrapper {
+      display: inline;
+    }
+    .form-required {
+      display: none;
+    }
+    label {
+      display: none;
+    }
+  }
+
+  input[type=text] {
+    border: 0;
+    background: $dark-green;
+    color: $white;
+    padding: 7px 10px;
+  }
+
+  input[type=submit] {
+    @include border-radius(5px);
+    background: $dark;
+    color: $white;
+    border: 1px solid $white;
+    font-family: 'source_sans_prosemibold', $verdana;
+    padding: 6px 10px;
+    white-space: nowrap;
+  }
+
+  .views-exposed-form .views-exposed-widget .form-submit {
+    margin-top: 0;
+  }
+}
+
+#lbunny-brands-form {
+  .header {
+    margin: 30px 0;
+  }
+  .content {
+    border-bottom: 5px solid $dark;
+    position: relative;
+    .inner {
+      padding: 30px 50px;
+      border: 6px solid $green;
+      border-bottom: 40px solid $green;
+      position: relative;
+
+      h3 {
+        color: $light-gray1;
+        text-transform: uppercase;
+        font-family: 'source_sans_prosemibold', $verdana;
+        font-size: 150%;
+      }
+
+      h4 {
+        margin: 0;
+        margin-bottom: 5px;
+        font-family: 'source_sans_probold', $verdana;
+        color: $green;
+        text-transform: uppercase;
+        font-size: 100%;
+      }
+
+      ul {
+        margin: 0;
+        margin-bottom: 20px;
+        padding-left: 0;
+        li {
+          list-style: none;
+          padding-left: 0;
+          color: $gray;
+          font-size: 90%;
+          a {
+            color: $gray;
+            font-family: $verdana;
+            font-weight: normal;
+            &.filter-active {
+              color: $white;
+              background: $blue1;
+              padding: 2px 5px;
+            }
+          }
+        }
+      }
+
+      @media #{$narrow} {
+        $zen-column-count: 20;
+        @include zen-grid-container();
+
+        .left {
+          @include zen-grid-item(12, 1);
+          border-right: 2px solid $dark;
+        }
+        .right {
+          @include zen-grid-item(7, 14);
+        }
+      }
+    }
+    .left {
+      .form-type-select {
+        display: none;
+      }
+    }
+  }
+  .display-mode-wrapper {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    .display-mode-button {
+      display: inline-block;
+      a {
+        font-size: 10px;
+        text-transform: uppercase;
+        color: $dark;
+      }
+      &.active {
+        a {
+          color: $white;
+        }
+      }
+      &.grid {
+        width: 115px;
+        padding-left: 25px;
+        background: url(../images/tab-grid.png) no-repeat left center transparent;
+        &.active {
+          background: url(../images/black-tab-grid1.png) no-repeat left center transparent;
+        }
+      }
+      &.list {
+        width: 100px;
+        padding-left: 25px;
+        background: url(../images/tab-list.png) no-repeat left center transparent;
+        &.active {
+          background: url(../images/black-tab-list1.png) no-repeat left center transparent;
+        }
+      }
+    }
+  }
+  .title {
+    display: inline-block;
+    position: relative;
+    width: 50%;
+    margin-left: 5%;
+    .form-item {
+      margin: 0;
+      width: 100%;
+      input {
+        width: 100%;
+        height: 36px;
+        padding: 2px 40px 2px 10px;
+      }
+    }
+    .form-submit {
+      border: 0;
+      position: absolute;
+      right: 2px;
+      top: 2px;
+      height: 32px;
+      width: 32px;
+      @include border-radius(5px);
+    }
+  }
+  .letters {
+    $zen-column-count: 14;
+    @include zen-grid-container();
+    a {
+      @include zen-float(left);
+      @include zen-grid-flow-item(1, 14, false);
+      margin-right: 0;
+      color: $light-gray1;
+    }
+  }
+  .europe-companies {
+    margin-top: 40px;
+    line-height: 1.2;
+    a {
+      color: $light-gray1;
+    }
+  }
+  .key-info {
+    width: 50%;
+    margin-left: 5%;
+    h4 {
+      color: $dark;
+      border-bottom: 2px solid $dark;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    ul {
+      margin: 0;
+      padding: 0;
+      li {
+        list-style: none;
+        border-bottom: 1px solid $light-gray4;
+        padding-left: 30px;
+        padding-bottom: 2px;
+        margin-bottom: 2px;
+        background: url(../images/legend-icons.png) no-repeat left top transparent;
+        &.first {
+
+        }
+        &.second {
+          background-position: left -88px;
+        }
+        &.third {
+          background-position: left -170px;
+          border-bottom: 0;
+        }
+      }
+    }
+  }
+  .narrow-by {
+    .label {
+      display: inline-block;
+      background: url(../images/green-tab.png) no-repeat center center transparent;
+      width: 119px;
+      height: 30px;
+      color: $white;
+      font-family: 'source_sans_probold', $verdana;
+      font-size: 80%;
+      text-transform: uppercase;
+      span {
+        position: relative;
+        top: 9px;
+        left: 30px;
+        &.mobile {
+          display: none;
+        }
+      }
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+  .application {
+    margin-right: 5%;
+  }
+  @media #{$mobile} {
+    .content {
+      border-top: 5px solid #3D3D3D;
+      border-bottom: 0;
+      z-index: 100;
+    }
+    .narrow-by {
+      .label {
+        @include lb_standard_fonts(heading-three);
+        font-weight: bold;
+        background: $green;
+        padding: 15px;
+        display: block;
+        width: auto;
+        margin-bottom: 0;
+        color: $white;
+        line-height: 35px;
+        span {
+          background: url(../images/green-tab.png) no-repeat left -1px $green;
+          padding-left: 35px;
+          display: none;
+          position: static;
+          &.mobile {
+            display: block;
+          }
+        }
+      }
+    }
+    .display-mode-wrapper {
+      position: static;
+      .display-mode-button {
+        display: inline-block;
+        text-align: center;
+        a {
+          @include lb_standard_fonts(heading-three);
+          font-size: 1.1em;
+          text-transform: uppercase;
+          color: $white;
+          padding-left: 25px;
+          line-height: 2;
+        }
+        &.grid,
+        &.list {
+          width: 46%;
+          padding: 2%;
+          float: left;
+          background: $dark;
+          &.active {
+            background: $white;
+            a {
+              color: $dark;
+            }
+          }
+        }
+        &.grid {
+          a {
+            background: url(../images/tab-grid-white.png) no-repeat -5px center $dark;
+          }
+          &.active {
+            a {
+              background: url(../images/tab-grid.png) no-repeat -5px center $white;
+            }
+          }
+        }
+        &.list {
+          a {
+            background: url(../images/tab-list-white.png) no-repeat left center $dark;
+          }
+          &.active {
+            a {
+              background: url(../images/tab-list.png) no-repeat left center $white;
+            }
+          }
+        }
+      }
+    }
+    .title,
+    .key-info {
+      width: 100%;
+      margin-left: 0;
+    }
+    .application {
+      width: 100%;
+      margin-right: 0;
+      margin-bottom: 10px;
+      img {
+        display: none;
+      }
+    }
+  }
+}
+
+#block-crm-core-profile-ccp-mailing-list-signup {
+  @media #{$mobile} {
+    form>div>.form-item, .field-type-email {
+      margin-bottom: 10px;
+      text-align: center;
+      padding: 0 23%;
+    }
+    form {
+      position: relative;
+    }
+    .form-actions {
+      padding: 0 23%;
+    }
+  }
+  @media #{$narrow} {
+    $zen-column-count: 25;
+    @include zen-grid-container();
+
+    form>div>.form-item, .field-type-email {
+      @include zen-float(left);
+      @include zen-grid-flow-item(7, 25);
+    }
+
+    .form-actions {
+      @include zen-float(right);
+      @include zen-grid-flow-item(3, 25);
+    }
+  }
+}
+
+#views-exposed-form-lb-brands-page,
+#views-exposed-form-lb-brands-page-1 {
+  input[type=text] {
+    background: $white;
+    border: 1px solid $dark;
+    color: $dark;
+    padding-right: 50px;
+    @include border-radius(7px);
+  }
+  input[type=submit] {
+    background: url(../images/search-button-icon.png) no-repeat center center $dark;
+    text-align: left;
+    text-indent: -9999px;
+    width: 35px;
+  }
+  .views-exposed-widgets {
+    display: inline-block;
+    position: relative;
+    .views-exposed-widget  {
+      padding: 0;
+    }
+    .views-submit-button {
+      position: absolute;
+      right: 1px;
+      top: 1px;
+      bottom: 2px;
+      overflow: hidden;
+      @include border-radius(7px);
+    }
+  }
+}
+
+#user-login,
+#user-pass {
+  @extend %gray-container;
+  @include border-radius(10px);
+  padding: 20px 80px 40px 80px;
+  margin: 30px 25%;
+  > div {
+    overflow: hidden;
+  }
+  .form-required {
+    display: none;
+  }
+  .form-text {
+    width: 100%;
+  }
+  .form-submit {
+    background: $white;
+    color: $blue;
+  }
+  label {
+    color: $white;
+  }
+  .user-forgot {
+    font-size: $h5-font-size;
+    float: right;
+    margin-top: -20px;
+    color: $white;
+    text-decoration: underline;
+  }
+  @media #{$mobile} {
+    padding: 0 20px 20px;
+    margin: 10px 0;
+  }
+}
+
+#crm-core-profile-entry-form-register-company {
+  h2 {
+    border-top: 1px solid $gray;
+    padding-top: 30px;
+    margin-top: 30px;
+  }
+  @extend %middle-align-form;
+}
+
+#crm-core-profile-entry-form-contact-us {
+  @include lb-vertical-form(  $hide-name-label: true );
+  position: relative;
+  @extend %middle-align-form;
+  .form-item-crm-core-contact-individual-contact-name-given,
+  .form-item-crm-core-contact-individual-contact-name-family {
+    label {
+      &:after {
+        content: "";
+      }
+    }
+  }
+  .form-element-wrapper {
+    textarea {
+      width: 340px;
+    }
+  }
+  .form-actions {
+    margin-left: 20%;
+    padding-left: 5px;
+  }
+}
+
+html.js input.form-autocomplete {
+  background-position: 100% 9px;
+}
+
+#brand-node-form,
+#lb-user-brands-form {
+  .form-field-name-field-lb-animal-ingredients,
+  .field-name-field-lb-animal-ingredients {
+    .form-type-radios {
+      > label {
+        width: 20%;
+        text-align: right;
+        position: absolute;
+        color: $gray;
+      }
+      >.form-element-wrapper {
+        padding-top: 20px;
+        margin-left: 20.75% !important;
+      }
+    }
+  }
+
+  .cosmetics-label,
+  .countries-label {
+    font-style: italic;
+    margin-left: 21.75%;
+    margin-top: 0.5em;
+    @media #{$mobile} {
+      margin-left: 0;
+    }
+  }
+
+  .form-field-name-field-lb-cosmetics,
+  .field-name-field-lb-cosmetics {
+    padding-top: 0!important;
+  }
+
+  .field-name-field-lb-certifications,
+  .form-field-name-field-lb-certifications {
+    input {
+      margin-top: 25px;
+      margin-bottom: 40px;
+    }
+  }
+
+  input[type=submit] {
+    margin-top: 20px;
+    margin-left: 20.75%;
+  }
+}
+ 
+#suppliers-wrapper, #manufacturers-wrapper {
+  margin-top: 20px;
+
+  legend {
+    display: block !important;
+    text-transform: uppercase;
+    padding: 10px 0;
+    font-size: 24px;
+  }
+
+  .field-name-field-lb-suppliers-option {
+    label {
+      font-weight: normal !important;
+    }
+  }
+
+  .field-name-contact-name { 
+    margin-bottom: 0 !important; 
+    .form-type-name-element {
+      padding-bottom: 0 !important;
+    }
+  }
+
+
+  .field-name-field-ao-email-address {
+    .text-full-wrapper {
+      .form-type-textfield {
+        padding-top: 0.25em !important;
+      }
+      > div {
+        padding-top: 10px !important
+      }
+    }
+
+    label {
+      top: 0.5em !important;
+    }
+  }
+}
+
+#suppliers-wrapper .field-name-contact-name label { padding-top: 8px }
+
+#edit-brands-1-brand-field-lb-distributor-list {
+  clear: both;
+}

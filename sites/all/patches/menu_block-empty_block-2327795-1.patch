@@ -1,0 +1,55 @@
+diff --git a/menu_block.admin.inc b/menu_block.admin.inc
+index 992a0cc..4873e9f 100644
+--- a/menu_block.admin.inc
++++ b/menu_block.admin.inc
+@@ -379,6 +379,12 @@ function menu_block_configure_form($form, &$form_state) {
+     '#description' => t('If the active menu item is deeper than the level specified above, the starting level will follow the active menu item. Otherwise, the starting level of the tree will remain fixed.'),
+     '#element_validate' => array('menu_block_configure_form_follow_validate'),
+   );
++  $form['display_empty'] = array(
++    '#type' => 'checkbox',
++    '#title' => t('Display empty block'),
++    '#description' => t('Display block if block content is empty.'),
++    '#default_value' => $config['display_empty'],
++  );
+   $form['follow_parent'] = array(
+     '#type' => 'select',
+     '#title' => t('Starting level will be'),
+@@ -484,6 +490,7 @@ function _menu_block_block_save($delta = '', $edit = array()) {
+       variable_set("menu_block_{$delta}_parent", $edit['parent']);
+       variable_set("menu_block_{$delta}_level", $edit['level']);
+       variable_set("menu_block_{$delta}_follow", $edit['follow']);
++      variable_set("menu_block_{$delta}_display_empty", $edit['display_empty']);
+       variable_set("menu_block_{$delta}_depth", $edit['depth']);
+       variable_set("menu_block_{$delta}_expanded", $edit['expanded']);
+       variable_set("menu_block_{$delta}_sort", $edit['sort']);
+diff --git a/menu_block.module b/menu_block.module
+index f27659b..e7d3fe4 100644
+--- a/menu_block.module
++++ b/menu_block.module
+@@ -146,6 +146,9 @@ function menu_block_block_view($delta = '') {
+       $data['content']['#contextual_links']['menu_block'] = array('admin/content/book', array($node));
+     }
+   }
++  elseif ($config['display_empty']) {
++    $data['content'] = '&nbsp;';
++  }
+   return $data;
+ }
+ 
+@@ -214,6 +217,7 @@ function menu_block_get_config($delta = NULL) {
+     'admin_title' => '',
+     'level'       => 1,
+     'follow'      => 0,
++    'display_empty' => 0,
+     'depth'       => 0,
+     'expanded'    => 0,
+     'sort'        => 0,
+@@ -238,6 +242,7 @@ function menu_block_get_config($delta = NULL) {
+     $config['admin_title'] = variable_get("menu_block_{$delta}_admin_title", $config['admin_title']);
+     $config['level']       = variable_get("menu_block_{$delta}_level",       $config['level']);
+     $config['follow']      = variable_get("menu_block_{$delta}_follow",      $config['follow']);
++    $config['display_empty']      = variable_get("menu_block_{$delta}_display_empty",      $config['display_empty']);
+     $config['depth']       = variable_get("menu_block_{$delta}_depth",       $config['depth']);
+     $config['expanded']    = variable_get("menu_block_{$delta}_expanded",    $config['expanded']);
+     $config['sort']        = variable_get("menu_block_{$delta}_sort",        $config['sort']);

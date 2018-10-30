@@ -1,0 +1,58 @@
+diff --git a/sites/all/modules/contrib/addthis/classes/AddThis.php b/sites/all/modules/contrib/addthis/classes/AddThis.php
+index c558a8e..d88b26c 100644
+--- a/sites/all/modules/contrib/addthis/classes/AddThis.php
++++ b/sites/all/modules/contrib/addthis/classes/AddThis.php
+@@ -56,10 +56,10 @@ class AddThis {
+   const TWITTER_TEMPLATE_DEFAULT = '{{title}} {{url}} via @AddThis';
+ 
+   // External resources.
+-  const DEFAULT_BOOKMARK_URL = 'http://www.addthis.com/bookmark.php?v=300';
+-  const DEFAULT_SERVICES_CSS_URL = 'http://cache.addthiscdn.com/icons/v1/sprites/services.css';
+-  const DEFAULT_SERVICES_JSON_URL = 'http://cache.addthiscdn.com/services/v1/sharing.en.json';
+-  const DEFAULT_WIDGET_JS_URL = 'http://s7.addthis.com/js/300/addthis_widget.js';
++  const DEFAULT_BOOKMARK_URL = '//www.addthis.com/bookmark.php?v=300';
++  const DEFAULT_SERVICES_CSS_URL = '//cache.addthiscdn.com/icons/v1/sprites/services.css';
++  const DEFAULT_SERVICES_JSON_URL = '//cache.addthiscdn.com/services/v1/sharing.en.json';
++  const DEFAULT_WIDGET_JS_URL = '//s7.addthis.com/js/300/addthis_widget.js';
+   const DEFAULT_WIDGET_JS_LOAD_TYPE = 'async';
+ 
+   // Internal resources.
+@@ -394,11 +394,11 @@ class AddThis {
+   }
+ 
+   public function getServicesCssUrl() {
+-    return check_url(variable_get(AddThis::SERVICES_CSS_URL_KEY, self::DEFAULT_SERVICES_CSS_URL));
++    return check_url($this->prefixUrlScheme(variable_get(AddThis::SERVICES_CSS_URL_KEY, self::DEFAULT_SERVICES_CSS_URL)));
+   }
+ 
+   public function getServicesJsonUrl() {
+-    return check_url(variable_get(AddThis::SERVICES_JSON_URL_KEY, self::DEFAULT_SERVICES_JSON_URL));
++    return check_url($this->prefixUrlScheme(variable_get(AddThis::SERVICES_JSON_URL_KEY, self::DEFAULT_SERVICES_JSON_URL)));
+   }
+ 
+   public function getEnabledServices() {
+@@ -452,11 +452,11 @@ class AddThis {
+   }
+ 
+   public function getBaseWidgetJsUrl() {
+-    return check_url(variable_get(self::WIDGET_JS_URL_KEY, self::DEFAULT_WIDGET_JS_URL));
++    return check_url($this->prefixUrlScheme(variable_get(self::WIDGET_JS_URL_KEY, self::DEFAULT_WIDGET_JS_URL)));
+   }
+ 
+   public function getBaseBookmarkUrl() {
+-    return check_url(variable_get(self::BOOKMARK_URL_KEY, self::DEFAULT_BOOKMARK_URL));
++    return check_url($this->prefixUrlScheme(variable_get(self::BOOKMARK_URL_KEY, self::DEFAULT_BOOKMARK_URL)));
+   }
+ 
+   public function getCoBrand() {
+@@ -580,4 +580,10 @@ class AddThis {
+     }
+     return $url;
+   }
++
++  public function prefixUrlScheme($url) {
++    global $is_https;
++
++    return ($is_https ? 'https:' : 'http:') . $url;
++  }
+ }

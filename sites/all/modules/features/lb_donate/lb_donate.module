@@ -1,0 +1,21 @@
+<?php
+/**
+ * @file
+ * Code for the LB Donate feature.
+ */
+
+include_once 'lb_donate.features.inc';
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function lb_donate_form_crm_core_profile_entry_form_donate_alter(&$form, &$form_state) {
+  // Improve submit text for donate form.
+  $form['actions']['submit']['#value'] = t('Donate now');
+
+  // Alter labels.
+  $label = $form['commerce_amount_single']['#title'];
+  $prefix = str_replace('<div class="amounts">', '<div class="amounts"><label>' . $label . '</label>', $form['commerce_amount_single']['#prefix']);
+  $form['commerce_amount_single']['#prefix'] = $prefix;
+  $form['commerce_amount_single']['#title'] = t('Other amount');
+}

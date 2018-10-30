@@ -1,0 +1,393 @@
+/**
+ * @file
+ * Menus
+ *
+ * Mixin for storing fonts in AbleOrganizer
+ */
+
+/**
+ * DEFAULT VARIABLES
+ * Default settings for fontography.
+ * See mixin documentation for explanations.
+ */
+
+// FONTOGRAPY
+// This is the main style registry
+$ao-fontography:                  () !default;
+
+// FONTOGRAPY MIXIN
+$ao-fonto-style:                  normal !default;
+$ao-fonto-color:                  false !default;
+$ao-fonto-debug:                  false !default;
+
+// REGISTER STYLES
+$ao-fonto-style-name:                     false !default;
+$ao-fonto-style-color:                    false !default;
+$ao-fonto-style-size:                     false !default;
+$ao-fonto-style-lines:                    false !default;
+$ao-fonto-style-family:                   false !default;
+$ao-fonto-style-weight:                   false !default;
+$ao-fonto-style-text-decoration:          false !default;
+$ao-fonto-style-text-transform:           false !default;
+$ao-fonto-style-font-style:               false !default;
+$ao-fonto-style-padding:                  false !default;
+$ao-fonto-style-margin:                   false !default;
+$ao-fonto-style-text-align:               false !default;
+$ao-fonto-style-text-shadow:              false !default;
+$ao-fonto-style-border-top:               false !default;
+$ao-fonto-style-border-bottom:            false !default;
+$ao-fonto-style-border-left:              false !default;
+$ao-fonto-style-border-right:             false !default;
+$ao-fonto-style-hover-color:              false !default;
+$ao-fonto-style-hover-font-style:         false !default;
+$ao-fonto-style-hover-padding:            false !default;
+$ao-fonto-style-hover-margin:             false !default;
+$ao-fonto-style-hover-text-decoration:    false !default;
+$ao-fonto-style-hover-text-shadow:        false !default;
+$ao-fonto-style-active-color:             false !default;
+$ao-fonto-style-active-weight:            false !default;
+$ao-fonto-style-active-font-style:        false !default;
+$ao-fonto-style-active-padding:           false !default;
+$ao-fonto-style-active-margin:            false !default;
+$ao-fonto-style-active-text-decoration:   false !default;
+$ao-fonto-style-active-text-shadow:       false !default;
+$ao-fonto-style-focus-color:              false !default;
+$ao-fonto-style-focus-weight:             false !default;
+$ao-fonto-style-focus-font-style:         false !default;
+$ao-fonto-style-focus-padding:            false !default;
+$ao-fonto-style-focus-margin:             false !default;
+$ao-fonto-style-focus-text-decoration:    false !default;
+$ao-fonto-style-focus-text-shadow:        false !default;
+  
+/**
+ * AO FONTOGRAPHY
+ *
+ * Displays registered fonts.
+ * 
+ * @variables:
+ * $ao-fonto-style: Required. Name of the font style. Defaults to normal.
+ * $ao-fonto-color: Color for the font. Overrides any font colors declared for the style. Defaults to false.
+ * $ao-fonto-debug: Prints an invalid CSS style called 'font-style-name' for use in debugging. Does not print if false. Defaults to false.
+ * 
+ */  
+@mixin ao-fontography (
+  $ao-fonto-style: $ao-fonto-style,
+  $ao-fonto-color: $ao-fonto-color,
+  $ao-fonto-debug: $ao-fonto-debug
+) {
+
+  @if $ao-fonto-debug != false {
+    font-style-name: $ao-fonto-style;
+  }
+
+  @if map-has-key($ao-fontography, $ao-fonto-style){
+    
+    // get the key
+    $style: map-get($ao-fontography, $ao-fonto-style);
+    
+    // get the font values
+    $color: map-get($style, 'color');
+    $size: map-get($style, 'size');
+    $family: map-get($style, 'family');
+    $set-lines: map-get($style, 'lines');
+    $weight: map-get($style, 'weight');
+    $font-style: map-get($style, 'font-style');
+    $padding: map-get($style, 'padding');
+    $margin: map-get($style, 'margin');
+    $text-align: map-get($style, 'text-align');
+    $text-decoration: map-get($style, 'text-decoration');
+    $text-shadow: map-get($style, 'text-shadow');
+    $text-transform: map-get($style, 'text-transform');
+    $border-top: map-get($style, 'border-top');
+    $border-bottom: map-get($style, 'border-bottom');
+    $border-left: map-get($style, 'border-left');
+    $border-right: map-get($style, 'border-right');
+    $hover-color: map-get($style, 'hover-color');
+    $hover-weight: map-get($style, 'hover-color');
+    $hover-font-style: map-get($style, 'hover-font-style');
+    $hover-padding: map-get($style, 'hover-padding');
+    $hover-margin: map-get($style, 'hover-margin');
+    $hover-text-decoration: map-get($style, 'hover-text-decoration');
+    $hover-text-shadow: map-get($style, 'hover-text-shadow');
+    $active-color: map-get($style, 'active-color');
+    $active-weight: map-get($style, 'active-weight');
+    $active-font-style: map-get($style, 'active-font-style');
+    $active-padding: map-get($style, 'active-padding');
+    $active-margin: map-get($style, 'active-margin');
+    $active-text-decoration: map-get($style, 'active-text-decoration');
+    $active-text-shadow: map-get($style, 'active-text-shadow');
+    $focus-color: map-get($style, 'focus-color');
+    $focus-weight: map-get($style, 'focus-weight');
+    $focus-font-style: map-get($style, 'focus-font-style');
+    $focus-padding: map-get($style, 'focus-padding');
+    $focus-margin: map-get($style, 'focus-margin');
+    $focus-text-decoration: map-get($style, 'focus-text-decoration');
+    $focus-text-shadow: map-get($style, 'focus-text-shadow');
+    
+    // font color
+    // allow colors to be overridden
+    @if $color != false and $color != null and $ao-fonto-color == false {
+      color: $color;
+    }
+    @if $ao-fonto-color != false {
+      color: $ao-fonto-color;
+    }
+    // font family
+    @if $family != false and  $family != null {
+      font-family: $family;
+    }
+    // font weight
+    @if $weight != false and  $weight != null {
+      font-weight: $weight;
+    }
+    // font size
+    @if $size != false and $size != null {
+      @if $set-lines == false {
+        $set-lines: 1;
+      }
+      @include adjust-font-size-to($size, $lines: $set-lines);
+    }
+    // font-style
+    @if $font-style != false and  $font-style != null {
+      font-style: $font-style;
+    }
+    // padding
+    @if $padding != false and  $padding != null {
+      padding: $padding;
+    }
+    // margin
+    @if $margin != false and  $margin != null {
+      margin: $margin;
+    }
+    // text-align
+    @if $text-align != false and  $text-align != null {
+      text-align: $text-align;
+    }
+    // text-decoration
+    @if $text-decoration != false and  $text-decoration != null {
+      text-decoration: $text-decoration;
+    }
+    // text-shadow
+    @if $text-shadow != false and  $text-shadow != null {
+      @include text-shadow($text-shadow);
+    }
+    // text transform
+    @if $text-transform != false and $text-transform != null {
+      text-transform: $text-transform;
+    }
+    // borders
+    @if $border-top != false and $border-top != null {
+      border-bottom: $border-top;
+    }
+    @if $border-bottom != false and $border-bottom != null {
+      border-bottom: $border-bottom;
+    }
+    @if $border-top != false and $border-top != null {
+      border-left: $border-left;
+    }
+    @if $border-right != false and $border-right != null {
+      border-top: $border-right;
+    }
+    
+    // hover styles
+    @if $hover-color != false or $hover-weight != false or $hover-font-style != false or $hover-padding != false or $hover-margin != false or $hover-text-decoration != false or $hover-text-shadow != false {
+      &:hover {
+        // font color
+        @if $hover-color != false and $hover-color != null {
+          color: $hover-color;
+        }
+        // font weight
+        @if $hover-weight != false and  $hover-weight != null {
+          font-weight: $hover-weight;
+        }
+        // font-style
+        @if $hover-font-style != false and  $hover-font-style != null {
+          font-style: $hover-font-style;
+        }
+        // padding
+        @if $hover-padding != false and  $hover-padding != null {
+          padding: $hover-padding;
+        }
+        // margin
+        @if $hover-margin != false and  $hover-margin != null {
+          margin: $hover-margin;
+        }
+        // text-decoration
+        @if $hover-text-decoration != false and  $hover-text-decoration != null {
+          text-decoration: $hover-text-decoration;
+        }
+        // text-shadow
+        @if $hover-text-shadow != false and  $hover-text-shadow != null {
+          @include text-shadow($hover-text-shadow);
+        }
+      }
+    }
+    
+    // active styles
+    @if $active-color != false or $active-weight != false or $active-font-style != false or $active-padding != false or $active-margin != false or $active-text-decoration != false or $active-text-shadow != false {
+      &:active {
+        // font color
+        @if $active-color != false and $active-color != null {
+          color: $active-color;
+        }
+        // font weight
+        @if $active-weight != false and  $active-weight != null {
+          font-weight: $active-weight;
+        }
+        // font-style
+        @if $active-font-style != false and  $active-font-style != null {
+          font-style: $active-font-style;
+        }
+        // padding
+        @if $active-padding != false and  $active-padding != null {
+          padding: $active-padding;
+        }
+        // margin
+        @if $active-margin != false and  $active-margin != null {
+          margin: $active-margin;
+        }
+        // text-decoration
+        @if $active-text-decoration != false and  $active-text-decoration != null {
+          text-decoration: $active-text-decoration;
+        }
+        // text-shadow
+        @if $active-text-shadow != false and  $active-text-shadow != null {
+          @include text-shadow($active-text-shadow);
+        }
+      }
+    }
+
+    // focus styles
+    @if $focus-color != false or $focus-weight != false or $focus-font-style != false or $focus-padding != false or $focus-margin != false or $focus-text-decoration != false or $focus-text-shadow != false {
+      &:focus {
+        // font color
+        @if $focus-color != false and $focus-color != null {
+          color: $focus-color;
+        }
+        // font weight
+        @if $focus-weight != false and  $focus-weight != null {
+          font-weight: $focus-weight;
+        }
+        // font-style
+        @if $focus-font-style != false and  $focus-font-style != null {
+          font-style: $focus-font-style;
+        }
+        // padding
+        @if $focus-padding != false and  $focus-padding != null {
+          padding: $focus-padding;
+        }
+        // margin
+        @if $focus-margin != false and  $focus-margin != null {
+          margin: $focus-margin;
+        }
+        // text-decoration
+        @if $focus-text-decoration != false and  $focus-text-decoration != null {
+          text-decoration: $focus-text-decoration;
+        }
+        // text-shadow
+        @if $focus-text-shadow != false and  $focus-text-shadow != null {
+          @include text-shadow($focus-text-shadow);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * AO FONTOGRAPHY - REGISTER STYLE
+ *
+ * Registers a style for presenting fonts.
+ * 
+ * @variables:
+ * $ao-fonto-style: Name of the font style.
+ * $ao-fonto-color: Color for the font.
+ * 
+ */  
+@function ao-fontography-register-style (
+  $ao-fonto-style-name:                     $ao-fonto-style-name,
+  $ao-fonto-style-color:                    $ao-fonto-style-color,
+  $ao-fonto-style-size:                     $ao-fonto-style-size,
+  $ao-fonto-style-lines:                    $ao-fonto-style-lines,
+  $ao-fonto-style-family:                   $ao-fonto-style-family,
+  $ao-fonto-style-weight:                   $ao-fonto-style-weight,
+  $ao-fonto-style-text-transform:           $ao-fonto-style-text-transform,
+  $ao-fonto-style-font-style:               $ao-fonto-style-font-style,
+  $ao-fonto-style-padding:                  $ao-fonto-style-padding,
+  $ao-fonto-style-margin:                   $ao-fonto-style-margin,
+  $ao-fonto-style-text-align:               $ao-fonto-style-text-align,
+  $ao-fonto-style-text-decoration:          $ao-fonto-style-text-decoration,
+  $ao-fonto-style-text-shadow:              $ao-fonto-style-text-shadow,
+  $ao-fonto-style-border-top:               $ao-fonto-style-border-top,
+  $ao-fonto-style-border-bottom:            $ao-fonto-style-border-bottom,
+  $ao-fonto-style-border-left:              $ao-fonto-style-border-left,
+  $ao-fonto-style-border-right:             $ao-fonto-style-border-right,
+  $ao-fonto-style-hover-color:              $ao-fonto-style-hover-color,
+  $ao-fonto-style-hover-font-style:         $ao-fonto-style-hover-font-style,
+  $ao-fonto-style-hover-padding:            $ao-fonto-style-hover-padding,
+  $ao-fonto-style-hover-margin:             $ao-fonto-style-hover-margin,
+  $ao-fonto-style-hover-text-decoration:    $ao-fonto-style-hover-text-decoration,
+  $ao-fonto-style-hover-text-shadow:        $ao-fonto-style-hover-text-shadow,
+  $ao-fonto-style-active-color:             $ao-fonto-style-active-color,
+  $ao-fonto-style-active-weight:            $ao-fonto-style-active-weight,
+  $ao-fonto-style-active-font-style:        $ao-fonto-style-active-font-style,
+  $ao-fonto-style-active-padding:           $ao-fonto-style-active-padding,
+  $ao-fonto-style-active-margin:            $ao-fonto-style-active-margin,
+  $ao-fonto-style-active-text-decoration:   $ao-fonto-style-active-text-decoration,
+  $ao-fonto-style-active-text-shadow:       $ao-fonto-style-active-text-shadow,
+  $ao-fonto-style-focus-color:              $ao-fonto-style-focus-color,
+  $ao-fonto-style-focus-weight:             $ao-fonto-style-focus-weight,
+  $ao-fonto-style-focus-font-style:         $ao-fonto-style-focus-font-style,
+  $ao-fonto-style-focus-padding:            $ao-fonto-style-focus-padding,
+  $ao-fonto-style-focus-margin:             $ao-fonto-style-focus-margin,
+  $ao-fonto-style-focus-text-decoration:    $ao-fonto-style-focus-text-decoration,
+  $ao-fonto-style-focus-text-shadow:        $ao-fonto-style-focus-text-shadow
+) {
+  // check that there is a valid name for the style
+  @if $ao-fonto-style-name != false {
+    $newmap: (
+      $ao-fonto-style-name: (
+        color: $ao-fonto-style-color,
+        size: $ao-fonto-style-size,
+        lines: $ao-fonto-style-lines,
+        family: $ao-fonto-style-family,
+        weight: $ao-fonto-style-weight,
+        font-style: $ao-fonto-style-font-style,
+        padding: $ao-fonto-style-padding,
+        margin: $ao-fonto-style-margin,
+        text-align: $ao-fonto-style-text-align,
+        text-transform: $ao-fonto-style-text-transform,
+        text-decoration: $ao-fonto-style-text-decoration,
+        text-shadow: $ao-fonto-style-text-shadow,
+        border-top: $ao-fonto-style-border-top,
+        border-bottom: $ao-fonto-style-border-bottom,
+        border-left: $ao-fonto-style-border-left,
+        border-right: $ao-fonto-style-border-right,
+        
+        hover-color: $ao-fonto-style-hover-color,
+        hover-font-style: $ao-fonto-style-hover-font-style,
+        hover-padding: $ao-fonto-style-hover-padding,
+        hover-margin: $ao-fonto-style-hover-margin,
+        hover-text-decoration: $ao-fonto-style-hover-text-decoration,
+        hover-text-shadow: $ao-fonto-style-hover-text-shadow,
+        active-color: $ao-fonto-style-active-color,
+        active-weight: $ao-fonto-style-active-weight,
+        active-font-style: $ao-fonto-style-active-font-style,
+        active-padding: $ao-fonto-style-active-padding,
+        active-margin: $ao-fonto-style-active-margin,
+        active-text-decoration: $ao-fonto-style-active-text-decoration,
+        active-text-shadow: $ao-fonto-style-active-text-shadow,
+        focus-color: $ao-fonto-style-focus-color,
+        focus-weight: $ao-fonto-style-focus-weight,
+        focus-font-style: $ao-fonto-style-focus-font-style,
+        focus-padding: $ao-fonto-style-focus-padding,
+        focus-margin: $ao-fonto-style-focus-margin,
+        focus-text-decoration: $ao-fonto-style-focus-text-decoration,
+        focus-text-shadow: $ao-fonto-style-focus-text-shadow
+      )
+    );
+    $ao-fontography: map-merge($ao-fontography, $newmap);
+    @return true;
+  }
+  @return false;
+}
+

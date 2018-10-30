@@ -1,0 +1,91 @@
+/**
+ * @file
+ * TABLES
+ *
+ * Predefined table styles used in the theme.
+ */
+/**
+ * DEFAULT VARIABLES
+ */
+$table-border: 1px solid #CCC !default;
+$table-border-light: 1px solid #e1e1e1 !default;
+
+/* ACTION TABLE */
+/* Used for contacts page and others with views bulk operations */
+.ao-action-table {
+  // table
+  @include ao-table (
+    $ao-table-width: 100%,
+    $ao-table-margin: rhythm(.5) 0em 0em,
+    $ao-table-padding: 0em,
+    $ao-table-border-collapse: separate,
+    $ao-table-border-bottom: $table-border,
+    $ao-table-border-radius: 8px 8px 0px 0px,
+    $ao-table-header-border-top: $table-border-light,
+    $ao-table-header-border-bottom: $table-border,
+    $ao-table-row-border-left: $table-border-light,
+    $ao-table-row-border-right: $table-border,
+    $ao-table-row-hover-color: White,
+    $ao-table-cell-border-bottom: $table-border-light,
+    $ao-table-cell-border-left: 1px solid #f9f9f9,
+    $ao-table-cell-border-right: $table-border,
+    $ao-table-cell-background-color: #f7f7f7,
+    $ao-table-cell-background-color-even: #f3f3f3,
+    $ao-table-cell-padding: rhythm(.1) rhythm(.5),
+    $ao-table-header-background-image: linear-gradient(to bottom, #ffffff 31%,#dfe4e6 100%),
+    $ao-table-header-background-color: #ffffff
+  );
+  // set the table header font
+  TR {
+    TH {
+      @include ao-fontography(table-font-header-basic);
+    }
+  }
+  // set the table cell font
+  TR {
+    TD {
+      @include ao-fontography(table-font-basic);
+      &.active {
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+/* SUMMARY TABLE */
+/* Used for summary information on the dashboard */
+.ao-summary-table {
+   @include ao-table (
+    $ao-table-width: 100%,
+    $ao-table-margin: 0em auto,
+    $ao-table-padding: 0em,
+    $ao-table-border-radius: 8px 8px 8px 8px,
+    $ao-table-border-collapse: separate,
+    $ao-table-border-bottom: $table-border,
+    $ao-table-header-border-top: $table-border-light,
+    $ao-table-header-border-bottom: $table-border,
+    $ao-table-row-border-left: $table-border-light,
+    $ao-table-row-border-right: $table-border,
+    $ao-table-row-hover-color: White,
+    $ao-table-cell-background-color: #f7f7f7,
+    $ao-table-cell-background-color-even: #f7f7f7,
+    $ao-table-cell-border-left: false,
+    $ao-table-cell-border-right: false,
+    $ao-table-cell-padding: rhythm(.1) rhythm(.5),
+    $ao-table-header-background-image: linear-gradient(to bottom, #ffffff 31%,#dfe4e6 100%),
+    $ao-table-header-background-color: #ffffff
+  ); 
+  TR {
+    TH {
+      @include ao-fontography(summary-table-header);
+    }
+  }
+  TR {
+    TD {
+      @include ao-fontography(summary-table-data);
+      text-align: center;
+      padding: rhythm(.5) 0em;
+    }
+  }
+}
+

@@ -1,0 +1,275 @@
+<?php
+/**
+ * @file
+ * Code for the LB Core feature.
+ */
+
+include_once 'lb_core.features.inc';
+
+function lb_core_init() {
+
+  if (arg(0) == 'crm-core') {
+    drupal_add_js(
+      drupal_get_path('module', 'lb_core') . '/js/lb_core.js',
+      array('weight' => 1000, 'group' => JS_THEME)
+    );
+  }
+}
+
+function lb_core_form_crm_core_profile_entry_form_alter(&$form, &$form_state, $form_id) {
+  $profile = $form_state['profile'];
+
+  if ($profile->name != 'mailing_list_signup') {
+    return;
+  }
+
+  $form['actions']['submit']['#value'] = t('Sign up');
+}
+
+/**
+ * Invokes hook_libraries_info
+ */
+function lb_core_libraries_info() {
+
+  $libraries = array();
+
+  $libraries['jquery-match-height'] = array(
+    'name' => 'jQuery Match Height',
+    'vendor url' => 'https://github.com/liabru/jquery-match-height',
+    'download url' => 'https://github.com/liabru/jquery-match-height.git',
+    'version callback' => 'lb_core_verion_callback',
+    'files' => array(
+      'js' => array(
+        'jquery.matchHeight-min.js',
+      ),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Short-circuit the version argument.
+ */
+function lb_core_verion_callback() {
+  return TRUE;
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function lb_core_preprocess_html(&$variables) {
+  // Load the matchheights library on every page.
+  libraries_load('jquery-match-height');
+}
+
+/**
+ * Implements hook_menu().
+ */
+function lb_core_menu() {
+  $items = array();
+
+  $items['admin/config/lb/guides'] = array(
+    'title' => 'Guides',
+    'description' => 'This section allows you to upload shopping guides which the users will be able to download at "guide/download".',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_core_guides_form'),
+    'access arguments' => array('administer site configuration'),
+    'weight' => -1,
+  );
+
+  $items['guide/download'] = array(
+    'title' => 'Download the shopping guide',
+    'page callback' => 'lb_core_guides_page',
+    'access arguments' => array('access content'),
+  );
+
+  return $items;
+}
+
+/**
+ * Guides form builder.
+ */
+function lb_core_guides_form($form, &$form_state) {
+  $guides = variable_get('lb_core_guides', array());
+
+  $form['north_american_guide'] = array(
+    '#type' => 'managed_file',
+    '#title' => t('North American Guide'),
+    '#description' => t('Prepared PDF version of North American Shopping Guide.'),
+    '#upload_validators' => array(
+      'file_validate_extensions' => array('pdf'),
+    ),
+    '#required' => TRUE,
+    '#default_value' => empty($guides['north_american_guide']) ? NULL : $guides['north_american_guide'],
+  );
+
+  $form['i18n_guide'] = array(
+    '#type' => 'managed_file',
+    '#title' => t('International Guide'),
+    '#description' => t('Prepared PDF version of International Shopping Guide.'),
+    '#upload_validators' => array(
+      'file_validate_extensions' => array('pdf'),
+    ),
+    '#required' => TRUE,
+    '#default_value' => empty($guides['i18n_guide']) ? NULL : $guides['i18n_guide'],
+  );
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+
+  return $form;
+}
+
+/**
+ * Guides form submit callback.
+ */
+function lb_core_guides_form_submit($form, &$form_state) {
+  $guides_info = array(
+    1 => 'north_american_guide',
+    2 => 'i18n_guide',
+  );
+  $current_guides = variable_get('lb_core_guides', array());
+
+  foreach ($guides_info as $usage_id => $guide_key) {
+    $file = file_load($form_state['values'][$guide_key]);
+    $file = file_move($file, 'public://' . $file->filename, FILE_EXISTS_REPLACE);
+    if ($file) {
+      $file->status = FILE_STATUS_PERMANENT;
+      file_save($file);
+      file_usage_add($file, 'lb_core', 'lb_core_' . $guide_key, $usage_id);
+      // Removing previous guide version.
+      if (!empty($current_guides[$guide_key]) && $current_guides[$guide_key] != $file->fid) {
+        $current_guide = file_load($current_guides[$guide_key]);
+        if ($current_guide) {
+          file_usage_delete($current_guide, 'lb_core', 'lb_core_' . $guide_key, $usage_id);
+          file_delete($current_guide, TRUE);
+        }
+      }
+      $current_guides[$guide_key] = $file->fid;
+    }
+
+  }
+
+  variable_set('lb_core_guides', $current_guides);
+  drupal_set_message(t('Guides were successfully saved.'));
+}
+
+/**
+ * Download the shopping guide page callback.
+ */
+function lb_core_guides_page() {
+  $page = array();
+  $guides = variable_get('lb_core_guides', array());
+  $link_options = array('attributes' => array('class' => 'guide-download-link', 'target' => '_blank'));
+
+  $page['north_american_guide_wrapper'] = array(
+    '#type' => 'container',
+    '#attributes' => array('class' => array('north-american-guide-wrapper', 'guide-wrapper')),
+  );
+
+  $vars = array(
+    'path' => 'sites/all/themes/lbunny/images/shopping-guide.png',
+  );
+  $page['north_american_guide_wrapper']['north_american_guide_image'] = array(
+    '#markup' => theme('image', $vars),
+    '#prefix' => '<div class="north-american-guide-image">',
+    '#suffix' => '</div>',
+  );
+
+  if (!empty($guides['north_american_guide'])) {
+    $file = file_load($guides['north_american_guide']);
+    $url = file_create_url($file->uri);
+    $page['north_american_guide_wrapper']['north_american_guide'] = array(
+      '#markup' => l(t('Download North American Guide (PDF)'), $url, $link_options),
+      '#prefix' => '<div class="north-american-guide">',
+      '#suffix' => '</div>',
+    );
+  }
+
+  $page['i18n_guide_wrapper'] = array(
+    '#type' => 'container',
+    '#attributes' => array('class' => array('i18n-guide-wrapper', 'guide-wrapper')),
+  );
+
+  $vars = array(
+    'path' => 'sites/all/themes/lbunny/images/magazine.png',
+  );
+  $page['i18n_guide_wrapper']['i18n_guide_image'] = array(
+    '#markup' => theme('image', $vars),
+    '#prefix' => '<div class="i18n-guide-image">',
+    '#suffix' => '</div>',
+  );
+
+  if (!empty($guides['i18n_guide'])) {
+    $file = file_load($guides['i18n_guide']);
+    $url = file_create_url($file->uri);
+    $page['i18n_guide_wrapper']['i18n_guide'] = array(
+      '#markup' => l(t('Download International Guide (PDF)'), $url, $link_options),
+      '#prefix' => '<div class="i18n-guide">',
+      '#suffix' => '</div>',
+    );
+  }
+
+  return $page;
+}
+
+/**
+ * Implements hook_crm_core_activity_presave().
+ *
+ * Set field_activity_date value if empty.
+ */
+function lb_core_crm_core_activity_presave($entity) {
+  $wrapper = entity_metadata_wrapper('crm_core_activity', $entity);
+  $date = $wrapper->field_activity_date->value();
+  if (empty($date)) {
+    $wrapper->field_activity_date = time();
+  }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function lb_core_block_info() {
+  $blocks['logout']['info'] = t('User logout');
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function lb_core_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'logout':
+      global $user;
+      // We want to show this block only to 'authenticated user's.
+      if ($user->uid && count($user->roles) === 1 && in_array('authenticated user', $user->roles)) {
+
+        $block['subject'] = '';
+        $block['content'] = l(t('Logout'), 'user/logout');
+      }
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function lb_core_views_pre_render(&$view) {
+  if (strpos($view->name,'rest_api_brand') == 0) {
+    foreach ($view->result as &$row){
+      if (isset($row->field_field_lb_brand_company)) {
+        $tid = $row->_field_data['nid']['entity']->field_lb_brand_company['und'][0]['target_id'];
+        $row->field_field_lb_brand_company[0]['rendered']['#access'] = TRUE;
+        $row->field_field_lb_brand_company[0]['rendered']['#markup'] = $tid;
+      }
+    }
+  }
+}

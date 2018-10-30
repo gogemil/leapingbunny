@@ -1,0 +1,8 @@
+$flags-spacing: 20px;
+$flags-repeat: no-repeat;
+$flags-sprite-dimensions: true;
+
+$disable-magic-sprite-selectors: false;
+
+@import "icons/flags/*.png";
+@include all-flags-sprites;

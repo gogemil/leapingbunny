@@ -1,0 +1,24 @@
+%content-container {
+  @media #{$narrow} {
+  }
+}
+
+%gray-container {
+  background: $dark;
+}
+
+%light-gray2-container {
+  background: $light-gray2;
+}
+
+%white-container {
+  background: $white;
+}
+
+%blue-container {
+  background: $blue;
+}
+
+%green-container {
+  background: $green;
+}

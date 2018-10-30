@@ -1,0 +1,146 @@
+/**
+ * @file
+ * Handles the display of contact records
+ */
+
+
+/* the basic layout for contact records */
+.contact-record-pane {
+  border: 1px solid $e-gray;
+  background-color: White;
+  padding: 1em;
+  margin: 1em 0em;
+}
+
+/* handles general display of panels in a contact record */
+.contact-pane {
+  
+  margin-bottom: 1em;
+  
+  /* pane titles */
+  h2.pane-title {
+    margin: 0em 0em .8em;
+    border-bottom: 1px solid #e1e1e1;
+    padding: 0px;
+    @include ao-fontography(standard-panel-title);
+  }
+
+}
+
+/* displays contact fields as a table */
+.contact-fields {
+  
+  .content {
+    display: table;
+    border: 1px solid $e-gray;
+    width: 100%;
+    
+    .field {
+      display: table-row;
+      
+      .field-label {
+        display: table-cell;
+        padding-right: 20px;
+        text-transform: uppercase;
+        font-weight: normal;
+        border-right: 1px solid $e-gray;
+        border-bottom: 1px solid $e-gray;
+        white-space: nowrap;
+        padding: 4px;
+        font-family: $font-titles;
+        font-size: 0.9em;
+      }
+      .field-items {
+        display: table-cell;
+        border-bottom: 1px solid $e-gray;
+        padding: 4px;
+      }
+    }
+  }
+}
+
+/* summary data for user profiles */
+.user-profile-summary-data {
+  border: 1px solid $e-gray;
+  display: table;
+  width: 100%;
+  .user-profile-summary-data-row {
+    display: table-row;
+    .user-profile-summary-data-item {
+      display: table-cell;
+      .udpi-label {
+        font-size: 0.7em;
+        padding: .5em 0em;
+        text-align: center;
+        font-family: $font-titles;
+        text-transform: uppercase;
+      }
+      .udpi-data-item {
+        text-align: center;
+        font-size: 1.5em;
+        padding: 0em 0em .5em;
+        font-family: $font-titles;
+      }
+    }
+  }
+}
+
+
+/* takes views-headers and puts them on the same line as the pane title */
+.contact-pane-header-buttons {
+  .view-header {
+    position: absolute;
+    top: -75px;
+    right: 0px;
+    
+    A {
+      @extend .btn-blue;
+      @extend .btn-small;
+    }
+  }
+}
+
+/* handles the display of user info in a contact record */
+.contact-user-info-box {
+  background-color: $f-gray;
+  padding: 1em;
+  text-align: center;
+  
+  .contact-user-info {
+    font-size: $h5-font-size;
+    &.nouser {
+      font-style: italic;
+    }
+  }
+}
+
+
+/* TODO: move to theme file */
+
+.entity-crm-core-contact {
+  @extend .contact-record-pane;
+}
+
+BODY.page-crm-core-contact {
+  .panels-flexible-row {
+    &.contact {
+      @extend .contact-record-pane;
+    }
+  }
+  .panel-pane {
+    @extend .contact-pane;
+  }
+}
+.pane-ao-user-picture {
+  @extend .contact-user-info-box;
+}
+.pane-ao-5-recent-activities {
+  @extend .contact-pane-header-buttons;
+}
+.pane-crm-core-contact .entity-crm-core-contact {
+  @extend .contact-fields;
+  font-size: $h5-font-size;
+}
+
+
+

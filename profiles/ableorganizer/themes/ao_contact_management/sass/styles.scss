@@ -1,0 +1,72 @@
+/**
+ * @file
+ * Styles are organized using the SMACSS technique. @see http://smacss.com/book/
+ *
+ * When you turn on CSS aggregation at admin/config/development/performance, all
+ * of these @include files will be combined into a single file.
+ */
+
+/* Import Sass mixins, variables, Compass modules, etc. */
+@import "init";
+
+/* HTML element (SMACSS base) rules */
+@import "normalize";
+
+/* Layout rules */
+@import "layouts/responsive";
+@import "layouts/ui";
+
+/* Component (SMACSS module) rules */
+@import "components/misc";
+@import "components/utilities";
+@import "components/fontography";
+@import "components/icons";
+
+// initialization files needed in the theme
+// fonts and icons are defined here
+// most of the components do not use these, but some still have styles that do
+// move them down to the other init files once we have all the partials cleaned up
+@import "ao-init-fonts";
+@import "ao-init-icons";
+
+// partials that need to be kept in sync with the frontend theme
+// these need to be checked to make sure there are no legacy styles still present
+// many of these need to use the new container plugin
+@import "components/transitions";
+@import "components/buttons";
+@import "components/regions";
+@import "components/menus";
+@import "components/forms"; // still has styles in it
+@import "components/grids";
+@import "components/node";
+@import "components/block";
+@import "components/breadcrumbs";
+@import "components/panels";
+@import "components/tables";
+@import "components/activities";
+
+// partials from original that need to be cleaned up
+@import "components/containers";
+@import "components/titles";
+@import "components/nav";
+@import "components/tabs";
+@import "components/contact";
+
+// Optionally, add your own components here.
+@import "print";
+// this is a second set of variables, created after all the components are defined
+@import "ao-init";
+
+/* SMACSS theme rules */
+@import "themes/panel-styles";
+@import "themes/table-styles";
+@import "themes/menu-styles";
+@import "themes/button-styles";
+@import "themes/contact-management";
+
+// move all of this into mixins in the main theme file
+@import "themes/reports";
+@import "themes/maintenance";
+// @import "themes/global-styles";
+// @import "themes/dashboard";
+// @import "themes/icons";

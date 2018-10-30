@@ -1,0 +1,4 @@
+/* Change icon for reports section */
+.crm_core_report_icon.report-lba {
+  background-position: -120px -60px
+}

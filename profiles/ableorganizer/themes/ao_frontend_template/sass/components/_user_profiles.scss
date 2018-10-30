@@ -1,0 +1,128 @@
+/**
+ * @file
+ * Components for displaying features of AO
+ */
+
+/* basic display of a pane in a user profile */
+.user-profile-pane {
+  margin: 0em 0em 1em;
+  H2, H3 {
+    margin: 0em;
+    font-size: $h3-font-size;
+    position: relative;
+  }
+}
+
+/* for displaying contact information */
+.user-profile-display-contact-info {
+  H2:not(.pane-title) {
+    display: none;
+  }
+  .content {
+    display: table;
+    .field {
+      display: table-row;
+    }
+    .field-label,
+    .field-items {
+      display: table-cell;
+    }
+    .field-label {
+      padding-right: .2em;
+      font-weight: normal;
+    }
+  }
+}
+
+/* for panels that do not include titles */
+.user-profile-pane-no-title {
+  H2, H3 {
+    display: none;
+  }
+}
+
+/* for DL lists in the profile */
+.user-dl {
+  margin: .5em 0em;
+  display: table;
+  DT {
+    display: table-cell;
+    padding-right: .3em;
+  }
+  DD {
+    display: table-cell;
+  }
+}
+
+/* controls the display of user profile data */
+.ao-up-summary-data {
+  border: 1px solid #CCC;
+  display: table;
+  width: 100%;
+  margin-bottom: 1em;
+  
+  .user-profile-summary-data-row {
+    display: table-row;
+    width: 100%;
+  }
+  
+  .user-profile-summary-data-item {
+    display: table-cell;
+    .udpi-label, .udpi-data-item {
+      text-align: center;
+    }
+    .udpi-label {
+      font-size: 0.8em;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .udpi-data-item {
+      font-size: 1.2em;
+      font-weight: 700;
+      padding: .4em 0em;
+    }
+  }
+}
+
+/* for profile entry forms */
+.ao-profile-entry-form {
+  border: 1px solid #CCC;
+  padding: 1em;
+}
+
+/* for short lists of information */
+/* for short lists of things with dates and locations */
+.ao-short-list {
+
+  .views-field-title {
+    font-weight: 700;
+  }
+    
+  .views-row {
+    border-bottom: 1px solid #e1e1e1;
+    margin-bottom: .5em;
+    padding-bottom: .5em;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+  }
+    
+  div[class*=-location],
+  div[class*=-date] {
+  
+    line-height: $base-line-height*0.8;
+    
+    SPAN.views-label {
+      font-weight: 700;
+      font-size: $h5-font-size;
+    }
+  }
+}
+
+
+
+/* move to theme */
+
+

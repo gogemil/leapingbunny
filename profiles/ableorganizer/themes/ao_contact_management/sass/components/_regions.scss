@@ -1,0 +1,150 @@
+/**
+ * @file
+ * Buttons
+ *
+ * Mixin for controlling the appearance of regions
+ */
+
+/**
+ * DEFAULT VARIABLES
+ * Default settings for regions.
+ * See mixin documentation for explanations.
+ */
+// regions 
+$ao-region-background:      false !default;
+$ao-region-margin:          false !default;
+$ao-region-padding:         false !default;
+$ao-region-border-top:      false !default;
+$ao-region-border-bottom:   false !default;
+$ao-region-border-left:     false !default;
+$ao-region-border-right:    false !default;
+ 
+// horizontal regions 
+$ao-horiz-region-padding:               false !default;
+$ao-horiz-region-style:                 false !default;
+$ao-horiz-region-container-selector:    '.section-wrapper' !default;
+$ao-horiz-region-container-position:    center !default;
+$ao-horiz-region-container-height:      false !default;
+$ao-horiz-region-container-width:       1200px !default;
+$ao-horiz-region-container-padding:     false !default;
+$ao-horiz-region-container-overflow:    false !default;
+
+/**
+ * AO REGION
+ * 
+ * Applies basic styles to a region.
+ * 
+ * Variables: All variables can be ignored by passing false as the value, unless otherwise noted.
+ * 
+ * $ao-region-background: The background for the region. Defaults to false.
+ * $ao-region-margin: The margin for the region. Defaults to false.
+ * $ao-region-padding: The padding for the region. Defaults to false.
+ * $ao-region-border-top: The top border for the region. Defaults to false.
+ * $ao-region-border-bottom: The bottom border for the region. Defaults to false.
+ * $ao-region-border-left: The left border for the region. Defaults to false.
+ * $ao-region-border-right: The right border for the region. Defaults to false.
+ */
+@mixin ao-region (
+  $ao-region-background: $ao-region-background,
+  $ao-region-margin: $ao-region-margin,
+  $ao-region-padding: $ao-region-padding,
+  $ao-region-border-top: $ao-region-border-top,
+  $ao-region-border-bottom: $ao-region-border-bottom,
+  $ao-region-border-left: $ao-region-border-left,
+  $ao-region-border-right: $ao-region-border-right
+) {
+  @if $ao-region-background != false {
+    background: $ao-region-background;
+  }
+  @if $ao-region-margin != false {
+    margin: $ao-region-margin;
+  }
+  @if $ao-region-padding != false {
+    padding: $ao-region-padding;
+  }
+  @if $ao-region-border-top != false {
+    border-top: $ao-region-border-top;
+  }
+  @if $ao-region-border-bottom != false {
+    border-bottom: $ao-region-border-bottom;
+  }
+  @if $ao-region-border-left != false {
+    border-left: $ao-region-border-left;
+  }
+  @if $ao-region-border-right != false {
+    border-right: $ao-region-border-right;
+  }
+}
+
+/**
+ * AO HORIZONTAL REGION
+ *
+ * Controls the position and display of horizontal regions.
+ * Regions include any block region that is horizonally aligned.
+ * 
+ * @variables
+ * $ao-horiz-region-container-selector: Container in the region used to hold the content. Defaults to '.section-wrapper'
+ * $ao-region-container-position: Position of the container. Possible values are left, right, center. Defaults to 'center'
+ * $ao-region-container-width: Width of the container in the region. Defaults to 1200px.
+ * $ao-region-padding: Padding to apply to the region. Ignored when value is set to false. Defaults to false.
+ * $ao-region-style: Additional css style to apply to the region. Ignored when value is set to false. Defaults to false.
+ *
+ */
+@mixin ao-horizontal-region (
+  $ao-horiz-region-padding: $ao-horiz-region-padding,
+  $ao-horiz-region-style: $ao-horiz-region-style,
+  $ao-horiz-region-container-selector: $ao-horiz-region-container-selector,
+  $ao-horiz-region-container-position: $ao-horiz-region-container-position,
+  $ao-horiz-region-container-height: $ao-horiz-region-container-height,
+  $ao-horiz-region-container-width: $ao-horiz-region-container-width,
+  $ao-horiz-region-container-padding: $ao-horiz-region-container-padding,
+  $ao-horiz-region-container-overflow: $ao-horiz-region-container-overflow
+) {
+
+  // apply any additional styles to the region
+  @if $ao-horiz-region-style != false {
+    @extend #{$ao-horiz-region-style};
+  }
+
+  // padding
+  @if $ao-horiz-region-padding != false {
+    padding: $ao-horiz-region-padding;
+  }
+    
+  // position the section wrapper
+  #{$ao-horiz-region-container-selector} {
+  
+    // containers should always be position relative
+    // to account for absolutely positioned elements inside
+    position: relative;
+    
+    // padding
+    @if $ao-horiz-region-container-padding != false {
+      padding: $ao-horiz-region-container-padding;
+    }
+    
+    // height
+    @if $ao-horiz-region-container-height != false {
+      height: $ao-horiz-region-container-height;
+    }
+    
+    // margins
+    // we really just want to center these things most of the time
+    @if $ao-horiz-region-container-position == center {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    @if $ao-horiz-region-container-position == left {
+    }
+    @if $ao-horiz-region-container-position == right {
+      margin-left: auto;
+    }
+    @if $ao-horiz-region-container-width != false {
+      max-width: $ao-horiz-region-container-width;
+    }
+    @if $ao-horiz-region-container-overflow != false {
+      overflow: $ao-horiz-region-container-overflow;
+    }
+  }
+}
+

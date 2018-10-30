@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the LB REST API Feed feature.
+ */
+
+include_once 'lb_rest_api_feed.features.inc';

@@ -1,0 +1,270 @@
+/**
+ * @file
+ *
+ * Container mixins, used to implement boxes in the theme.
+ * 
+ * This file needs to go away. All references to containers needs to be replaced with the one in the utilities partial.
+ */
+
+
+ /* basic container - extended by various widgets */
+.basic-container {
+  @include border-radius(8px);
+  border: 1px solid $e-gray;
+  padding: 1em 1.5em;
+}
+/* basic container element - applies to most records */
+.basic-item-container {
+  border-bottom: 1px solid $e-gray;
+  margin: 0em;
+  padding: 0em;
+}
+
+/* quicklinks - used on the dashboard */
+.quick-links {
+  
+  margin: 0em 0em .8em;
+    
+  .pane-title {
+    @extend .widget-title-links;
+    @extend .title-fonts;
+  }
+  
+  .link-container {
+    display: inline-block;
+    vertical-align: top;
+    width: 48%;
+    font-size: 0.9em;
+    
+    strong {
+      color: #999;
+      text-transform: uppercase;
+    }
+    strong, A {
+      margin-bottom: 0.4em;
+      text-decoration: none;
+      display: block;
+      &.btn {
+        display: inline-block;
+      }
+    }
+  }
+}
+
+
+/* summary rows */
+.results-summary {
+  background-color: #e1e1e1;
+  color: $base-blue4;
+  @include border-radius(4px);
+  text-decoration: none;
+  font-size: 0.8em;
+  display: table;
+  margin: 0em auto 0.8em;
+  padding: 0.2em .75em;
+}
+
+/* views filters */
+.filter-wrapper {
+  
+  @include border-radius(8px);
+  border: 1px solid $e-gray;
+  padding: .5em 1em;
+  background-color: #f9f9f9;  
+  
+  .views-exposed-widget {
+    display: inline-block;
+    vertical-align: top;
+    float: none;
+  }
+  
+}
+
+/* admin menu - fixes some incompatibilities */
+// move this to the theme
+#admin-menu .dropdown .admin-menu-icon img {
+  height: 16px;
+  width: 16px;
+}
+
+/* typography */
+// move this to the global theme
+// this should be a setting available from init
+A {
+  color: $link-blue;
+  @include transition-property(all);
+  @include transition-duration(.2s);
+  @include transition-timing-function(ease-in-out);  
+  &:hover {
+    color: $link-blue2;
+  }
+  &:active {
+    color: $link-blue3;
+  }
+  
+}
+
+// these are still being used in contacts, reports, titles and a few other places
+// replace them with a mixin
+// the mixin should exist in utilities
+.title-fonts {
+  font-family: $font-titles;
+  letter-spacing: -0.05em;
+}
+.title-fonts-large {
+  font-size: 1.2em;
+}
+.summary-data {
+  font-size: 1.4em;
+  font-weight: 700;
+  background-color: White;
+}
+
+
+/* footer */
+// move this to the ehme
+FOOTER {
+  background-color: #555;
+  padding: 1em -0em 2em;
+}
+
+/* reports */
+// move this to a mixin
+// should use panels mixin for handling media queries
+.crm_core_reports {
+ $zen-column-count: 6;
+ $zen-gutter-width: 4em;
+ 
+  H3 {
+    @include border-radius(32px);
+    background-color: $base-blue4;
+    display: inline-block;
+    padding: .5em 1em;
+    margin: 0em;
+    color: White;
+    font-weight: 700;
+    @include text-shadow(rgba(0,0,0,.5) 1px 1px 0);
+    font-size: 1.3em;
+    
+    .crm_core_report_icon {
+      height: 30px;
+      width: 30px;
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+      margin-left: -8px;
+      background-color: white !important;
+      border-radius: 24px;
+      padding: 0;
+    }    
+    
+  }
+  
+  .item-list {
+
+    font-size: 0.9em;
+    
+    
+    UL {
+      list-style: none;
+      margin: 1em 0em 1em 1em;
+      padding: 0em;
+        
+      LI {
+        list-style: none;
+        margin: 0em;
+        padding: 0em;
+        font-style: italic;
+        margin-left: 12px;
+        
+        A {
+          margin-left: -12px;
+          font-style: normal;
+          text-decoration: none;
+          font-size: 1.1em;
+        }
+        
+      }
+    
+    }
+  
+  }
+ 
+  @include zen-grid-container;
+  .column-left {
+    @include zen-grid-item(3,1);
+    padding: 0em 2em 0em 0em;
+  }
+  .column-right {
+    @include zen-grid-item(3,4);
+  }
+  
+}
+
+/* views */
+
+/* views filters */
+// move this to a mixin
+// there should be a form style just for views filters
+.views-exposed-form {
+  
+  @extend .filter-wrapper;  
+  .views-exposed-widget {
+  
+    font-size: $h5-font-size;
+    padding: 0em;
+    margin: 0em .4em 0em 0em;
+    
+    LABEL {
+      text-transform: uppercase;
+    }
+  }
+}
+
+/* media queries */
+// not sure what to do with these
+// they affect the header and other stuff
+@media all and (min-width: 0px) and (max-width: 683px) {
+  /* logo size */
+  .header__logo {
+    width: 220px;
+    margin-bottom: .5em;
+  }
+  
+  /* report columns */
+  .crm_core_reports {
+    .column-left {
+      display: block;
+      width: 100%;
+      margin: 0em;
+    }
+    .column-right {
+      display: block;
+      width: 100%;
+      margin: 0em;
+    }
+  }
+}
+@media all and (min-width: 684px) and (max-width: 959px) {
+  /* logo size */
+  .header__logo {
+    width: 240px;
+    margin-bottom: .6em;
+  }
+}
+@media all and (min-width: 960px) {
+  /* logo size */
+  .header__logo {
+    width: 260px;
+    margin-bottom: .8em;
+  }
+}
+@media all and (min-width: 1200px) {
+  /* logo size */
+  .header__logo {
+    width: 280px;
+    margin-bottom: 1em;
+  }
+}
+
+

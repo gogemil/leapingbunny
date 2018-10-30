@@ -1,0 +1,24 @@
+<?php
+/**
+ * @file
+ * Code for the LB Take Action feature.
+ */
+
+include_once 'lb_take_action.features.inc';
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function lb_take_action_form_crm_core_profile_entry_form_pledge_to_go_cruelty_free_alter(&$form, &$form_state) {
+  $language = $form['field_ao_home_address']['#language'];
+  // Reorder state field.
+  // $form['field_ao_home_address'][$language][0]['locality_block']['administrative_area']['#weight'] = -9;
+  // $form['field_ao_home_address'][$language][0]['locality_block']['administrative_area']['#required'] = TRUE;
+  $form['field_ao_home_address'][$language][0]['locality_block']['locality']['#weight'] = 10;
+  // Hide fields we don't want.
+  $form['field_ao_home_address'][$language][0]['locality_block']['postal_code']['#access'] = FALSE;
+  $form['field_ao_home_address'][$language][0]['street_block']['#access'] = FALSE;
+  $language = $form['field_mailing_list']['#language'];
+  // Enable subscription by default.
+  $form['field_mailing_list'][$language]['#default_value'] = 1;
+}

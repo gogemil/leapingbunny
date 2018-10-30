@@ -1,0 +1,14 @@
+/**
+ * @file
+ * Hero units
+ *
+ * Defines the appearance of hero elements used within the theme
+ */
+.hero-element {
+  @include ao-fontography($ao-fonto-style: hero);
+  width: 60%;
+  margin: 2em 0em;
+  padding: 1em 2em;
+  background-color: rgba(135,105,40,.7);
+  @include border-radius(1em);
+} 

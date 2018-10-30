@@ -1,0 +1,304 @@
+/**
+ * @file
+ * Displays activities and icons in the system
+ *
+ */
+
+/**
+ * DEFAULT VARIABLES
+ * Default settings, see mixin documentation for explanations.
+ */
+
+/* main activity icon registry */
+$ao-icon: () !default;
+$ao-icon-font-family: $icon-font !default;
+$ao-icon-default-size: 50px !default;
+$ao-icon-float: left !default;
+ 
+/* ao-icon-register defaults */
+$ao-icon-title:          false !default;
+$ao-icon-background:     false !default;
+$ao-icon-color:          false !default;
+$ao-icon-text-shadow:    false !default;
+$ao-icon-border:         false !default;
+$ao-icon-border-radius:  false !default;
+$ao-icon-margin:         false !default;
+$ao-icon-padding:        false !default;
+$ao-icon-before:         false !default;
+$ao-icon-height:         false !default;
+$ao-icon-width:         false !default;
+
+/* ao-icon-get defaults */
+$ao-icon-name:                false !default;
+$ao-icon-size:                false !default;
+$ao-debug:                    false !default;
+
+/**
+ * AO GET ICON
+ *
+ * Creates a complete set of styles for an icon.
+ * Use this when you want to generate styles for an icon.
+ *
+ * @variables:
+ * $ao-style: Required. The name of the icon. Defaults to false.
+ * $ao-icon-size: The size of the icon. Must be in pixels. Defaults to $ao-icon-default-size.
+ *
+ */
+@mixin ao-get-icon (
+  $ao-icon-name: $ao-icon,
+  $ao-icon-size: $ao-icon-default-size,
+  $ao-icon-float: $ao-icon-float,
+  $ao-icon-background: $ao-icon-background,
+  $ao-icon-color: $ao-icon-color,
+  $ao-icon-text-shadow: $ao-icon-text-shadow,
+  $ao-icon-border: $ao-icon-border,
+  $ao-icon-border-radius: $ao-icon-border-radius,
+  $ao-icon-margin: $ao-icon-margin,
+  $ao-icon-padding: $ao-icon-padding,
+  $ao-icon-height: $ao-icon-height,
+  $ao-icon-width: $ao-icon-width,
+  $ao-debug: $ao-debug
+){
+  
+  // get presets for the icon, if they exist
+  // @include ao-get-icon-info($ao-icon-name);
+  $style: ao-get-icon-info($ao-icon-name);
+  
+  // always fall back to the general icons style
+  @if $style == false {
+    $style: ao-get-icon-info(general);
+  }
+  
+  // get the css values for the icon
+  $background: map-get($style, 'background');
+  $color: map-get($style, 'color');
+  $text-shadow: map-get($style, 'text-shadow');
+  $border: map-get($style, 'border');
+  $border-radius: map-get($style, 'border-radius');
+  $margin: map-get($style, 'margin');
+  $padding: map-get($style, 'padding');
+  $before: map-get($style, 'before');
+  
+  // @TODO: add named presets for $ao-icon-size  
+  
+  // we always want to use pixels when creating icons
+  // ems will not produce perfect squares
+  $icon-size: $ao-icon-size;
+  @if unit($ao-icon-size) != px {
+    @warn "Icon sizes mut be in pixels, `#{$icon-size}` is not. Substituting default pixel sizes for the icon.";
+    $icon-size: $ao-icon-default-size;
+  }
+  
+  // uncomment this to see default settings for icons
+  $ao-debug: true;
+  
+  @if $ao-debug == true {
+    default-size: $ao-icon-default-size;
+    size-passed-in: $ao-icon-size;
+    size-in-use: $icon-size;
+    default-color: $ao-icon-color;
+    default-background: $ao-icon-background;
+    default-text-shadow: $ao-icon-text-shadow;
+    default-border: $ao-icon-border;
+    default--border-radius: $ao-icon-border-radius;
+    default-margin: $ao-icon-margin;
+    default-padding: $ao-icon-padding;
+    default-before: $ao-icon-before;
+    icon-color: $color;
+    icon-background: $background;
+    icon-color: $color;
+    icon-text-shadow: $text-shadow;
+    icon-border: $border;
+    icon-border-radius: $border-radius;
+    icon-margin: $margin;
+    icon-padding: $padding;
+    icon-before: $before;
+  }
+    
+  
+  // icons fit into a square
+  // where the font size is 60% of the height and width of the icon size
+  // and the padding is 20% on either side
+  @include box-sizing(border-box);
+  @include user-select(false);
+  
+  @if $ao-icon-float != false {
+    float: $ao-icon-float;
+  }
+  
+  // generate the font
+  // do not use vertical rhythms here, there is no way to get a square using them
+  font-size: round($icon-size*0.6);
+  line-height: 1;
+  
+  // generate the padding
+  @if $ao-icon-padding != false {
+    padding: $ao-icon-padding;
+  } @else {
+    $padding-size: round(($icon-size*0.4)/2);
+    padding: $padding-size;
+  }
+
+  // generate the height / width
+  @if $ao-icon-height != false {
+    height: $ao-icon-height;
+  } @else {
+    height: $icon-size;
+  }
+  
+  @if $ao-icon-width != false {
+    width: $ao-icon-width;
+  } @else {
+    width: $icon-size;
+  }
+  
+  // these would be the user setttable things
+  @if $ao-icon-margin != false {
+    margin: $ao-icon-margin;
+    // margin: 0px rhythm(.3) 0px 0px;
+  }
+  @if $margin != false {
+    margin: $margin;
+  }
+
+  // override any of the style settings, if necessary
+  // the way we arrive at a value is like this
+  // 1. If there is a specific value set when the mixin is called, use that
+  // 2. If there is a default value set for all icons, use that
+  // 3. If there is a specific value set for the icon, use that
+  // 4. If none of the previous are true, ignore the value
+  
+  // set the border
+  @if $ao-icon-border != false {
+    border: $ao-icon-border;
+  } @else if $border != false {
+    border: $border;
+  }
+
+  // border-radius
+  @if $ao-icon-border-radius != false {
+    border-radius: $ao-icon-border-radius;
+  } @else if $border-radius != false {
+    border-radius: $border-radius;
+  }
+  
+  // background
+  @if $ao-icon-background != false {
+    background: $ao-icon-background;
+  } @else if $background != false {
+    background: $background;
+  }
+
+  // color
+  @if $ao-icon-color != false {
+    color: $ao-icon-color;
+  } @else if $background != false {
+    color: $color;
+  }
+
+  // this is where the icon is set
+  &:before {
+    font-family: $ao-icon-font-family !important;
+    content: "#{$before}";
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    speak: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/**
+ * AO SET ACTIVITY ICON
+ *
+ * Sets values for an activity icon.
+ * 
+ * @variables:
+ * $ao-icon-title: Required. Title for the icon. Defaults to false.
+ * $ao-icon-background: Background for the icon. Can be overridden when the icon is displayed. Defaults to false.
+ * $ao-icon-color: Color for the icon. Can be overridden when the icon is displayed. Defaults to White.
+ * $ao-icon-text-shadow: Shadow for the text in the icon.
+ * $ao-icon-border: Standard border for the icon. Can be overridden when the icon is displayed. Defaults to false.
+ * $ao-icon-border-radius: Border radius for the icon. Can be overridden when the icon is displayed. Defaults to false.
+ * $ao-icon-box-shadow: Box shadow for the icon. Can be overridden when the icon is displayed. Defaults to false.
+ * $ao-icon-margin: Margin for the icon. Defaults to false.
+ * $ao-icon-padding: Padding for the icon. Defaults to false.
+ * 
+ */  
+@function ao-set-icon (
+  $ao-icon-title: $ao-icon-title,
+  $ao-icon-background: $ao-icon-background,
+  $ao-icon-color: $ao-icon-color,
+  $ao-icon-text-shadow: $ao-icon-text-shadow,
+  $ao-icon-border: $ao-icon-border,
+  $ao-icon-border-radius: $ao-icon-border-radius,
+  $ao-icon-margin: $ao-icon-margin,
+  $ao-icon-padding: $ao-icon-padding,
+  $ao-icon-before: $ao-icon-before
+){
+  // check that there is a valid name for the icon
+  @if $ao-icon-title != false {
+    $newmap: (
+      $ao-icon-title: (
+        background: $ao-icon-background,
+        color: $ao-icon-color,
+        text-shadow: $ao-icon-text-shadow,
+        border: $ao-icon-border,
+        border-radius: $ao-icon-border-radius,
+        margin: $ao-icon-margin,
+        padding: $ao-icon-padding,
+        before: $ao-icon-before
+      )
+    );
+    $ao-icon: map-merge($ao-icon, $newmap);
+    @return true;
+  }
+  @return false;
+}
+
+/**
+ * AO GET ICON INFO
+ *
+ * Returns information about an activity icon.
+ * 
+ * @variables:
+ * $ao-style: Required. The name of the icon. Defaults to false.
+ * 
+ */ 
+@function ao-get-icon-info (
+  $ao-style: $ao-style
+){
+  $style: false;
+  
+  @if map-has-key($ao-icon, $ao-style) {
+    $style: map-get($ao-icon, $ao-style);
+  }
+  
+  @return $style;
+}
+
+/**
+ * AO ICON GENERATE STYLE
+ *
+ * Generates a set of styles for icons that override some of the default settings.
+ * 
+ */ 
+@mixin ao-icon-generate-style(
+  $selector-1,
+  $color,
+  $code,
+  $selector-2: ".crm-core-activity-icon"
+){
+  #{$selector-1} #{$selector-2} {
+    background-color: $color !important;
+    &:before {
+      content: "#{$code}" !important;
+    }
+  }
+}
+
+
+

@@ -1,0 +1,22 @@
+.pane-lb-recent-promotions {
+  .pane-title {
+    color: $dark;
+    font-family: 'source_sans_prosemibold', $verdana;
+    text-transform: uppercase;
+  }
+}
+
+.pane-lb-downloads-panel-pane-1 {
+  @include lb_download();
+}
+
+.pane-company-assistance {
+  float: right;
+  clear: both;
+  top: -42px;
+  position: relative;
+  
+  p {
+    margin: 0;
+  }
+}

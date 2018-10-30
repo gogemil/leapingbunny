@@ -1,0 +1,83 @@
+/**
+ * @file
+ * Node
+ *
+ * Defines styles for displaying nodes
+ */
+
+/**
+ * DEFAULT VARIABLES
+ * Default settings for node
+ * See mixin documentation for explanations.
+ */
+$ao-node-background:      false !default;
+$ao-node-margin:          false !default;
+$ao-node-padding:         false !default;
+$ao-node-border-top:      false !default;
+$ao-node-border-bottom:   false !default;
+$ao-node-border-left:     false !default;
+$ao-node-border-right:    false !default;
+$ao-node-border-on-last:  false !default;
+
+/**
+ * AO NODE
+ * Provides consistent styles for nodes.
+ * Can be applied to all nodes or individual node types.
+ * Can be applied to teasers as well as other display modes.
+ *
+ * Variables:
+ * 
+ * Any variable will be ignored if set to false (unless otherwise stated).
+ * 
+ * $ao-node-padding: Padding to apply to the node.
+ * $ao-node-border-top: Top border to apply to the node.
+ * $ao-node-border-bottom: Bottom border to apply to the node.
+ * $ao-node-border-left: Left border to apply to the node.
+ * $ao-node-border-right: Right border to apply to the node.
+ * $ao-node-border-on-last: Border to apply to the last item. Use this to remove borders on the last item. Defaults to false.
+ * $ao-node-padding: Padding to apply to the nodes. Defaults to false.
+ * $ao-node-margin: Whether or not to apply borders to the last item. Defaults to true.
+ *
+ */
+@mixin ao-node (
+  $ao-node-background: $ao-node-background,
+  $ao-node-margin: $ao-node-margin,
+  $ao-node-padding: $ao-node-padding,
+  $ao-node-border-top: $ao-node-border-top,
+  $ao-node-border-bottom: $ao-node-border-bottom,
+  $ao-node-border-left: $ao-node-border-left,
+  $ao-node-border-right: $ao-node-border-right,
+  $ao-node-border-on-last: $ao-node-border-on-last
+) {
+
+  @if $ao-node-background != false {
+    background: $ao-node-background;
+  }
+  @if $ao-node-margin != false {
+    margin: $ao-node-margin;
+  }
+  @if $ao-node-padding != false {
+    padding: $ao-node-padding;
+  }
+  @if $ao-node-border-top != false {
+    border-top: $ao-node-border-top;
+  }
+  @if $ao-node-border-bottom != false {
+    border-bottom: $ao-node-border-bottom;
+  }
+  @if $ao-node-border-left != false {
+    border-left: $ao-node-border-left;
+  }
+  @if $ao-node-border-right != false {
+    border-right: $ao-node-border-right;
+  }
+  
+  @if $ao-node-border-on-last != false {
+    &:last-child {
+      @if $ao-node-border-on-last != false {
+        border: $ao-node-border-on-last;
+      }
+    }
+  }
+  
+}

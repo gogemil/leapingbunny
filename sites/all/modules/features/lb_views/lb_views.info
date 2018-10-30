@@ -1,0 +1,10 @@
+name = LB views
+description = Additional views to display content.
+core = 7.x
+package = LB
+dependencies[] = ctools
+dependencies[] = views
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+features[views_view][] = lb_press_releases
+project path = sites/all/modules/features

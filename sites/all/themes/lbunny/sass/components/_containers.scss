@@ -1,0 +1,33 @@
+#header {
+  @extend %gray-container;
+  height: 48px;
+  position: relative;
+  z-index: 200;
+  @media #{$mobile-menu} {
+    margin-bottom: 35px;
+  }
+}
+
+#footer {
+  @extend %green-container;
+}
+
+.region-basement {
+  @extend %light-gray2-container;
+  .block {
+    margin-bottom: 0;
+    p {
+      margin: 0;
+    }
+  }
+}
+
+.region-bottom {
+  @extend %gray-container;
+  .block {
+    margin-bottom: 0;
+    p {
+      margin: 0;
+    }
+  }
+}

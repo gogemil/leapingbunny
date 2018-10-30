@@ -1,0 +1,14 @@
+name = Pathologic
+description = Helps avoid broken links and incorrect paths in content.
+package = "Input filters"
+dependencies[] = filter
+core = 7.x
+files[] = pathologic.test
+
+
+; Information added by drush on 2015-03-13
+version = "7.x-2.12+1-dev"
+core = "7.x"
+project = "pathologic"
+datestamp = "1426266528"
+

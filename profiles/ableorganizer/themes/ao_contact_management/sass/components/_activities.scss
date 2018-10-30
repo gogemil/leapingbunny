@@ -1,0 +1,168 @@
+/**
+ * @file
+ * Displays activities and icons in the system
+ *
+ */
+
+/**
+ * DEFAULT VARIABLES
+ * Default settings, see mixin documentation for explanations.
+ */
+/* ao-activity-item defaults */
+$ao-activity-item-margin:               false !default;
+$ao-activity-item-padding:              false !default;
+$ao-activity-item-width:                100% !default;
+$ao-activity-item-icon:                 false !default;
+$ao-activity-item-icon-size:            false !default;
+$ao-activity-item-icon-selector:        '.crm-core-activity-icon' !default;
+$ao-activity-item-action-link-selector: '.crm-core-activity-actions' !default;
+$ao-activity-item-info-selector:        '.crm-core-activity-info' !default;
+$ao-activity-item-icon-placement:       false !default;
+$ao-activity-item-icon-style:           false !default;
+$ao-activity-item-icon-height:          false !default;
+$ao-activity-item-icon-width:           false !default;
+$ao-activity-item-icon-border:          false !default;
+$ao-activity-item-icon-border-radius:   false !default;
+$ao-activity-item-icon-background:      false !default;
+$ao-activity-item-icon-color:           false !default;
+$ao-activity-item-icon-margin:          false !default;
+$ao-activity-item-icon-padding:         false !default;
+
+
+/**
+ * AO ACTIVITY ITEM
+ * 
+ * Styles a single activity feed item.
+ * 
+ * Variables. All variables are ignored if set to false, unless otherwise noted.
+ * @TODO: clean up this list. There are variables no longer in use.
+ * 
+ * $ao-activity-item-margin: The margin to apply to the activity item. Defaults to false.
+ * $ao-activity-item-padding: The padding to apply to the activity item. Defaults to false.
+ * $ao-activity-item-width: The padding to apply to the activity item. Defaults to 100%.
+ * $ao-activity-item-icon-selector: CSS selector for the activity icon.
+ * $ao-activity-item-info-selector: CSS selector for information about the activity.
+ * $ao-activity-item-info-selector: CSS selector for action links associated with activity.
+ * $ao-activity-item-icon-size: The size to use for the icons. Should be a number experessed as pixels,
+ *   or a preset value. See ao-get-icon for details. Defaults to $ao-icon-default-size.
+ * $ao-activity-item-icon-style: 
+ * 
+ */
+@mixin ao-activity-item (
+
+  $ao-activity-item-margin: $ao-activity-item-margin,
+  $ao-activity-item-padding: $ao-activity-item-padding,
+  $ao-activity-item-info-selector: $ao-activity-item-info-selector,
+  $ao-activity-item-icon-selector:  $ao-activity-item-icon-selector,
+  $ao-activity-item-action-link-selector:  $ao-activity-item-action-link-selector,
+  $ao-activity-item-icon-size: $ao-activity-item-icon-size,
+  
+  $ao-activity-item-icon-style: $ao-activity-item-icon-style,
+  $ao-activity-item-icon-placement: $ao-activity-item-icon-placement,
+  $ao-activity-item-icon-style: $ao-activity-item-icon-style,
+  $ao-activity-item-icon-height: $ao-activity-item-icon-height,
+  $ao-activity-item-icon-width: $ao-activity-item-icon-width,
+  $ao-activity-item-icon-border: $ao-activity-item-icon-border,
+  $ao-activity-item-icon-border-radius: $ao-activity-item-icon-border-radius,
+  $ao-activity-item-icon-background: $ao-activity-item-icon-background,
+  $ao-activity-item-icon-color: $ao-activity-item-icon-color,
+  $ao-activity-item-icon-margin: $ao-activity-item-icon-margin,
+  $ao-activity-item-icon-padding: $ao-activity-item-icon-padding
+  
+){
+
+  // this is where we theme the content of an activity list
+  
+  // position should always be relative, we are going to position things in it
+  position: relative;
+  
+  &:after {
+     visibility: hidden;
+     display: block;
+     font-size: 0;
+     content: " ";
+     clear: both;
+     height: 0;    
+  }
+  
+  // settings for the container
+  @if $ao-activity-item-margin != false {
+    margin: $ao-activity-item-margin;
+  }
+  @if $ao-activity-item-padding != false {
+    padding: $ao-activity-item-padding;
+  }
+  @if $ao-activity-item-width != false {
+    width: $ao-activity-item-width;
+  }
+  
+  /* ICONS */
+  // if there is no icon size, set it to the default
+  $icon-size: $ao-icon-default-size;
+  @if $ao-activity-item-icon-size != false {
+    $icon-size: $ao-activity-item-icon-size;
+  }
+  
+  #{$ao-activity-item-icon-selector} {
+    @include ao-get-icon (
+      $ao-icon-size: $icon-size
+    );
+  }
+
+  /* INFO BOX */
+  #{$ao-activity-item-info-selector} {
+    // here is where we theme the info box
+    display: block;
+    margin-left: $icon-size*1.4;
+  }
+
+  /* ACTION LINKS */
+  #{$ao-activity-item-action-link-selector} {
+    // here is where we place the action links
+    float: right;
+  }
+  
+/*  
+
+  // ICON OVERRIDES
+  // this will let us mess with the appearance of an icon
+  // should go into the icon callback
+  
+  // get styles for the icon
+  @if $ao-activity-item-info-selector != false and $ao-activity-item-icon-style != false {
+    #{$ao-activity-item-info-selector}{
+    
+      @include ao-get-icon ($ao-activity-style: $ao-activity-style);
+      
+      // apply height and width
+      @if $ao-activity-item-icon-height != false {
+        height: $ao-activity-item-icon-height;
+      }
+      @if $ao-activity-item-icon-width != false {
+        width: $ao-activity-item-icon-width;
+      }
+      // override any of the style settings, if necessary
+      @if $ao-activity-item-icon-border != false {
+        border: $ao-activity-item-icon-border;
+      }
+      @if $ao-activity-item-icon-border-radius != false {
+        border: $ao-activity-item-icon-border-radius;
+      }
+      @if $ao-activity-item-icon-background != false {
+        background: $ao-activity-item-icon-background;
+      }
+      @if $ao-activity-item-icon-margin != false {
+        margin: $ao-activity-item-icon-margin;
+      }
+      @if $ao-activity-item-icon-padding != false {
+        padding: $ao-activity-item-icon-padding;
+      }
+    }
+  }
+
+  */
+  
+}
+
+
+

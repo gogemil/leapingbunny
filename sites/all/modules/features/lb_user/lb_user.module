@@ -1,0 +1,1303 @@
+<?php
+/**
+ * @file
+ * Code for the LB User feature.
+ */
+
+include_once 'lb_user.features.inc';
+/**
+ * Implements hook_menu().
+ */
+function lb_user_menu() {
+  $items = array();
+
+  //@TODO Access callback.
+
+  $items['crm-core/contact/%crm_core_contact/brand-manager'] = array(
+    'title' => 'Add Brand Manager',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_user_brand_manager_form', 2),
+    'access callback' => '_accesscheck',
+    'access arguments' => array(2),
+  );
+
+  $items['crm-core/contact/%crm_core_contact/manufacturers'] = array(
+    'title' => 'Add/Edit manufacturers',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_user_manufacturers_form', 2),
+    'access callback' => '_accesscheck',
+    'access arguments' => array(2),
+  );
+
+  $items['crm-core/contact/%crm_core_contact/suppliers'] = array(
+    'title' => 'Add/Edit suppliers',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_user_suppliers_form', 2),
+    'access callback' => '_accesscheck',
+    'access arguments' => array(2),
+  );
+
+  $items['crm-core/contact/%crm_core_contact/brands'] = array(
+    'title' => 'Add brand',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_user_brands_form', 2),
+    'access callback' => '_accesscheck',
+    'access arguments' => array(2),
+  );
+
+  // removing user from the path, to ensure we have the right theme in place
+  $items['lb/%crm_core_contact/brand-manager/add'] = array(
+    'title' => 'Add Brand Manager',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_user_brand_manager_form', 1),
+    'access callback' => '_accesscheck',
+    'access arguments' => array(1),
+  );
+
+  $items['lb/%crm_core_contact/brand/add'] = array(
+    'title' => 'Add Brand',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_user_brands_form', 1),
+    'access callback' => '_accesscheck',
+    'access arguments' => array(1),
+  );
+
+  $items['lb/%crm_core_contact/manufacturer/add'] = array(
+    'title' => 'Add / Edit manufacturers',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_user_manufacturers_form', 1),
+    'access callback' => '_accesscheck',
+    'access arguments' => array(1),
+  );
+
+  $items['lb/%crm_core_contact/supplier/add'] = array(
+    'title' => 'Add/Edit suppliers',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_user_suppliers_form', 1),
+    'access callback' => '_accesscheck',
+    'access arguments' => array(1),
+  );
+
+  $items['lb/%crm_core_contact/brand-manager/edit'] = array(
+    'title' => 'Add Brand Manager',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_user_brand_manager_form', 1),
+    'access callback' => '_accesscheck',
+    'access arguments' => array(1),
+  );
+
+  $items['lb/%crm_core_contact/brand-manager/edit'] = array(
+    'title' => 'Add Brand Manager',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lb_user_brand_manager_form', 1),
+    'access callback' => '_accesscheck',
+    'access arguments' => array(1),
+  );
+
+  $items['lb/%crm_core_contact/%/%crm_core_activity'] = array(
+    'title' => 'View declaration',
+    'title callback' => '_lb_user_declaration_page_title',
+    'title arguments' => array(2),
+    'page callback' => 'lb_user_declaration_page',
+    'page arguments' => array(1, 2, 3),
+    'access callback' => '_accesscheck',
+    'access arguments' => array(1),
+  );
+
+  $items['crm-core/contact/%crm_core_contact/%/%crm_core_activity'] = array(
+    'title' => 'View declaration',
+    'title callback' => '_lb_user_declaration_page_title',
+    'title arguments' => array(3),
+    'page callback' => 'lb_user_declaration_page',
+    'page arguments' => array(2, 3, 4),
+    'access callback' => '_accesscheck',
+    'access arguments' => array(2),
+  );
+
+  $items['lb_resend/%/%crm_core_contact/%crm_core_contact'] = array(
+    'title' => 'Resend declaration',
+    'title callback' => '_lb_user_declaration_page_title',
+    'title arguments' => array(1),
+    'page callback' => 'lb_user_resend_declaration_page',
+    'page arguments' => array(1, 2, 3),
+    'access callback' => '_accesscheck',
+    'access arguments' => array(3),
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function lb_user_menu_alter(&$items) {
+  // Duplicate crm_core_contact edit page for users.
+  $items['lb/contact/%crm_core_contact/edit'] = $items['crm-core/contact/%crm_core_contact/edit'];
+  // Added custom access check.
+  $items['lb/contact/%crm_core_contact/edit']['access callback'] = '_accesscheck';
+  $items['lb/contact/%crm_core_contact/edit']['access arguments'] = array(2);
+  $items['lb/contact/%crm_core_contact/edit']['title'] = 'Primary Contact';
+
+  // Add custom access page to company application and logo panels.
+  $items['company/%pm_arg/application']['access callback'] = '_accesscheck';
+  $items['company/%pm_arg/application']['access arguments'] = array(1);
+  $items['company/%pm_arg/logo-licensing-application']['access callback'] = '_accesscheck';
+  $items['company/%pm_arg/logo-licensing-application']['access arguments'] = array(1);
+
+  // Add access check to application pages
+  $items['company/%crm_core_contact/application_section_a']['access callback'] = '_accesscheck';
+  $items['company/%crm_core_contact/application_section_a']['access arguments'] = array(1);
+  $items['company/%crm_core_contact/application_section_b']['access callback'] = '_accesscheck';
+  $items['company/%crm_core_contact/application_section_b']['access arguments'] = array(1);
+  $items['company/%crm_core_contact/application_section_c']['access callback'] = '_accesscheck';
+  $items['company/%crm_core_contact/application_section_c']['access arguments'] = array(1);
+  $items['company/%crm_core_contact/application_section_d']['access callback'] = '_accesscheck';
+  $items['company/%crm_core_contact/application_section_d']['access arguments'] = array(1);
+  $items['company/%crm_core_contact/application_section_e']['access callback'] = '_accesscheck';
+  $items['company/%crm_core_contact/application_section_e']['access arguments'] = array(1);
+  $items['company/%crm_core_contact/application_section_f']['access callback'] = '_accesscheck';
+  $items['company/%crm_core_contact/application_section_f']['access arguments'] = array(1);
+  $items['company/%crm_core_contact/application_section_g']['access callback'] = '_accesscheck';
+  $items['company/%crm_core_contact/application_section_g']['access arguments'] = array(1);
+
+  // Add access check to apply for logo.
+  $items['company/logo_licensing_application_form/%crm_core_contact/%crm_core_contact']['access callback'] = '_accesscheck';
+  $items['company/logo_licensing_application_form/%crm_core_contact/%crm_core_contact']['access arguments'] = array(2);
+  $items['company/logo_licensing_application_form/%crm_core_contact/%crm_core_contact']['title'] = 'Logo Licensing Application Form';
+
+  // unset($items['lb/contact/%crm_core_contact/edit']['access arguments']);
+  unset($items['lb/contact/%crm_core_contact/edit']['type']);
+  return $items;
+}
+
+/**
+ * Callback to check access for mirrored crm_core_contact edit page.
+ *
+ * @see lb_user_menu_alter().
+ */
+function _accesscheck($arg) {
+  // If arg is panel arg, use the data.
+  if (isset($arg->data) && !empty($arg->data)) {
+    $arg = $arg->data;
+  }
+  if (empty($account)) {
+    $account = $GLOBALS['user'];
+  }
+  if (empty($arg->contact_id) || empty($account->uid)) {
+    return FALSE;
+  }
+
+  if(user_access('bypass node access')){
+    return TRUE;
+  }
+  $account_contact = crm_core_user_sync_get_contact_from_uid($account->uid);
+  if ($arg->type == 'individual') {
+    if ($arg->contact_id == $account_contact->contact_id) {
+      return TRUE;
+    }
+  }
+  $relations = lb_user_relation_get_all_entities('crm_core_contact', $arg->contact_id, 'lb_primary_contact');
+  $contacts = array();
+  foreach ($relations['lb_primary_contact'] as $rel) {
+    foreach ($rel->endpoints[LANGUAGE_NONE] as $endpoint) {
+      if (!empty($endpoint['entity_id']) && $endpoint['entity_id'] != $arg->contact_id) {
+        $contacts[] = $endpoint['entity_id'];
+      }
+    }
+  }
+
+  if ($arg->type == 'company') {
+    if (in_array($account_contact->contact_id, $contacts)) {
+      return TRUE;
+    }
+  }
+
+  // Check if contact is associated with company, ie brand manager.
+  if ($arg->type == 'individual') {
+    $relations = lb_user_relation_get_all_entities('crm_core_contact', $arg->contact_id, 'lb_marketing_contact');
+    $companies = array();
+    foreach ($relations['lb_marketing_contact'] as $rel) {
+      foreach ($rel->endpoints[LANGUAGE_NONE] as $endpoint) {
+        if (!empty($endpoint['entity_id']) && $endpoint['entity_id'] != $arg->contact_id) {
+          if (in_array($endpoint['entity_id'], $contacts)) {
+            return TRUE;
+          }
+        }
+      }
+    }
+
+  }
+  return FALSE;
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function lb_user_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'content_types') {
+    return 'plugins/' . $plugin_type;
+  }
+  if ($owner == 'ctools' && $plugin_type == 'contexts') {
+    return 'plugins/contexts';
+  }
+  return NULL;
+}
+
+/**
+ * Implements hook_preprocess_views_view_field().
+ */
+function lb_user_preprocess_views_view_field(&$vars) {
+  $view = $vars['view'];
+  // Add link to declaration, if it exist.
+  $company_bundles = lb_user_get_company_declaration_bundles();
+  $user_bundles = lb_user_get_user_declaration_bundles();
+  $user_page = FALSE;
+  $company_page = FALSE;
+  if (array_key_exists($view->name, $company_bundles) || array_key_exists($view->name, $user_bundles)) {
+    if ($vars['field']->real_field == 'field_lb_declaration_fid' && empty($vars['output'])) {
+      $vars['output'] = '';
+
+      // User profile view.
+      if (array_key_exists($view->name, $user_bundles) && !empty($vars['row']->crm_core_contact_crm_core_contact_1_contact_id)) {
+        $user_page = TRUE;
+      }
+
+      // Company view.
+      if (array_key_exists($view->name, $company_bundles) && !empty($vars['row']->crm_core_contact_crm_core_contact_contact_id)) {
+        $company_page = TRUE;
+      }
+
+      if ($user_page) {
+        $contact_id = $vars['row']->crm_core_contact_crm_core_contact_contact_id;
+        $bundles = $user_bundles;
+      }
+      elseif ($company_page) {
+        $contact_id = $vars['row']->crm_core_contact_crm_core_contact_contact_id;
+        $bundles = $company_bundles;
+      }
+
+      if (!empty($bundles)) {
+        switch ($bundles[$view->name]) {
+          case 'declaration_product_compliance':
+            $declaration_form = 'product_compliance_form';
+            $upload_form = 'manufacturers';
+            $user_upload_form = 'manufacturer';
+            break;
+
+          case 'declaration_raw_material':
+            $declaration_form = 'raw_material_compliance';
+            $upload_form = 'suppliers';
+            $user_upload_form = 'supplier';
+            break;
+        }
+      }
+
+      $company_id = $view->args[0];
+
+      if (!empty($contact_id) && !empty($bundles) && !empty($company_id) && !empty($declaration_form)) {
+        $activity_id = _lb_user_get_declaration($bundles[$view->name], $contact_id);
+
+        if ($user_page) {
+          $view_path = 'lb/' . $company_id . '/' . $declaration_form;
+        }
+        else {
+          $view_path = 'crm-core/contact/' . $company_id . '/' . $declaration_form;
+        }
+
+        if ($activity_id) {
+          $vars['output'] = l(t('View completed form'), $view_path . '/' . $activity_id);
+        }
+        else {
+          $vars['output'] = l(t('Resend declaration'), 'lb_resend/' . $declaration_form . '/' . $contact_id . '/' . $company_id .'/profile');
+          $vars['output'] .= ' or '. l(t('Upload'), 'lb/'. $company_id .'/'. $user_upload_form .'/add');
+          if ($company_page) {
+            $vars['output'] = l(t('Resend declaration'), 'lb_resend/' . $declaration_form . '/' . $contact_id . '/' . $company_id);
+            $vars['output'] .= ' or '. l(t('Upload'), 'crm-core/contact/'. $company_id .'/'. $upload_form);
+          }
+        }
+      }
+
+    }
+    elseif ($vars['field']->real_field == 'field_lb_declaration_fid' && !empty($vars['output'])) {
+      $vars['output'] = l(t('View'), $vars['output']);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function lb_user_entity_info_alter(&$entity_info) {
+  $entity_info['crm_core_contact']['view modes']['company'] = array(
+    'label' => t('Company'),
+    'custom settings' => TRUE,
+  );
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function lb_user_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'user_profile_form') {
+    // Remove og fields.
+    unset($form['og_user_comment']);
+    unset($form['og_user_crm_core_contact']);
+
+    // Remove og validation.
+    $exclude = array('og_validate_widgets', 'og_validate_widgets', 'og_form_group_reference_validate');
+    foreach ($form['#validate'] as $key => $validation) {
+      if (in_array($validation, $exclude)) {
+        unset($form['#validate'][$key]);
+      }
+    }
+    $form['#submit'][] = 'lb_user_profile_form_submit';
+  }
+
+  if ($form_id == 'crm_core_contact_ui_form' && arg(0) != 'crm-core') {
+    $form['actions']['submit']['#submit'][] = 'lb_user_primary_contact_submit';
+    $form['actions']['delete']['#access'] = FALSE;
+    $form['field_ao_birthday']['#access'] = FALSE;
+    $form['field_ao_home_address']['#access'] = FALSE;
+    $form['field_ao_twitter']['#access'] = FALSE;
+    $form['field_ao_facebook']['#access'] = FALSE;
+
+    if ($form['#entity']->type == 'company') {
+      $allowed_fields = array(
+        'contact_name',
+        'field_ao_business_address',
+        'field_ao_primary_telephone',
+        'field_lb_fax',
+        'field_lb_toll_free_telephone',
+        'field_lb_trading_name',
+        'field_lb_consumer_email',
+      );
+      foreach ($form as $key => $field) {
+        if (is_array($field)) {
+          $lang = $field['#language'];
+          // Unset crm_core fields we don't want.
+          if ($field[$lang][0]['#entity_type'] == 'crm_core_contact' && !in_array($key, $allowed_fields)) {
+            $form[$key]['#access'] = FALSE;
+          }
+          if ($field[$lang]['#entity_type'] == 'crm_core_contact' && !in_array($key, $allowed_fields)) {
+            $form[$key]['#access'] = FALSE;
+          }
+        }
+      }
+    }
+    // Make address fields not required.
+    $address_fields = array('street_block', 'locality_block');
+    foreach ($address_fields as $comp) {
+      if (!empty($form['field_ao_home_address'])) {
+        foreach($form['field_ao_home_address'][LANGUAGE_NONE][0][$comp] as $key => $subcomp) {
+          if (isset($form['field_ao_home_address'][LANGUAGE_NONE][0][$comp][$key]['#required'])) {
+            $form['field_ao_home_address'][LANGUAGE_NONE][0][$comp][$key]['#required'] = 0;
+          }
+        }
+      }
+      if (!empty($form['field_ao_business_address'])) {
+        foreach($form['field_ao_business_address'][LANGUAGE_NONE][0][$comp] as $key => $subcomp) {
+          if (isset($form['field_ao_business_address'][LANGUAGE_NONE][0][$comp][$key]['#required'])) {
+            $form['field_ao_business_address'][LANGUAGE_NONE][0][$comp][$key]['#required'] = 0;
+          }
+        }
+      }
+    }
+  }
+
+  // modify the promotions and partnership pages
+  // add a brandid if it's passed through the URL
+  // hide the field if the user is not an admin, this is something users don't need to change
+  if($form_id == 'promotion_node_form' || $form_id == 'partnership_node_form'){
+
+    $edit = $_GET;
+
+    if(isset($edit['brandid'])){
+
+      $brand = entity_load('node', array((int)$edit['brandid']));
+      $brand = $brand[$edit['brandid']];
+
+      if($brand){
+        $form_state['node']->field_brand[LANGUAGE_NONE][0]['target_id'] = $brand->nid;
+        $form['field_brand'][LANGUAGE_NONE][0]['target_id']['#default_value'] = $brand->title . ' (' . $brand->nid . ')';
+        $form['field_brand'][LANGUAGE_NONE][0]['target_id']['#entity'] = $brand;
+        // users should never see the brand page
+        if(!user_access('bypass node access')){
+          $form['field_brand']['#access'] = false;
+        }
+      }
+
+    }
+    // Hide revision information from companies.
+    $role = 'administrator';
+    $user = $GLOBALS['user'];
+    if (!in_array($role, $user->roles)) {
+      $form['revision_information']['#access'] = FALSE;
+    }
+  }
+
+  // Add redirect after submission declaration.
+  if ($form_id == 'crm_core_profile_entry_form_lb_declaration_raw_material' || $form_id == 'crm_core_profile_entry_form_declaration_of_product') {
+    $form['#submit'][] = 'lb_user_declaration_submit';
+  }
+}
+
+/**
+ * Submit callback for user_profile_form form.
+ */
+function lb_user_profile_form_submit(&$form, &$form_state) {
+  // Update contact's email if user email changes
+  $uid = $form_state['user']->uid;
+  $contact = crm_core_user_sync_get_contact_from_uid($uid);
+  if (!empty($contact->contact_id)) {
+    if (!empty($form_state['values']['mail'])) {
+      $contact->field_ao_email_address[LANGUAGE_NONE][0]['email'] = $form_state['values']['mail'];
+      // Save the contact.
+      crm_core_contact_save($contact);
+    }
+  }
+  // Redirect to user page only if password was changed.
+  if (!empty($form_state['user']->pass)) {
+    $form_state['redirect'] = 'user/' . $form_state['user']->uid;
+  }
+}
+
+/**
+ * Submit callback for crm_core_contact form on the user page.
+ */
+function lb_user_primary_contact_submit(&$form, &$form_state) {
+  $form_state['redirect'] = 'user';
+}
+
+/**
+ * Submit callback declaration forms.
+ */
+function lb_user_declaration_submit(&$form, &$form_state) {
+  if (user_is_anonymous()) {
+    $form_state['redirect'] = '<front>';
+  }
+  else {
+    $company_id = arg(3);
+    if ($company_id && $company = entity_load_single('crm_core_contact', $company_id)) {
+      $primary_contact = lb_user_get_primary_contact_for_company($company);
+      if ($primary_contact) {
+        $user = crm_core_user_sync_get_user_from_contact_id($primary_contact->contact_id);
+        if (!empty($user->uid)) {
+          $form_state['redirect'] = 'user/' . $user->uid;
+        }
+      }
+      else {
+        $form_state['redirect'] = 'user';
+      }
+    }
+  }
+}
+
+/**
+ * Brand manager form.
+ */
+function lb_user_brand_manager_form($form, &$form_state, $entity) {
+  $entity_type = 'crm_core_contact';
+  $bundle = 'individual';
+  if ($entity->type == 'company') {
+    $individual = entity_create($entity_type, array('type' => $bundle));
+    $form_state['company'] = $entity;
+    $form_state['individual'] = $individual;
+    $form_state['new_entity'] = TRUE;
+  }
+  else {
+    $individual = $entity;
+    $form_state['individual'] = $individual;
+  }
+
+
+  $fields = array(
+    'contact_name',
+    'field_ao_email_address',
+    'field_ao_primary_telephone',
+    'field_ao_home_address',
+  );
+
+  foreach ($fields as $field) {
+    lb_user_attach_entity_field('crm_core_contact', $form, $form_state, $individual, $entity_type, $field, $bundle);
+  }
+
+  $form['contact_name'][LANGUAGE_NONE][0]['#title'] = t('Contact Name');
+  $form['contact_name'][LANGUAGE_NONE][0]['#components']['given']['title'] .= '<span class="form-required" title="This field is required.">*</span>';
+  $form['contact_name'][LANGUAGE_NONE][0]['#components']['family']['title'] .= '<span class="form-required" title="This field is required.">*</span>';
+
+  // Make address fields not required.
+  $address_fields = array('street_block', 'locality_block');
+  foreach ($address_fields as $comp) {
+    if (!empty($form['field_ao_home_address'])) {
+      foreach($form['field_ao_home_address'][LANGUAGE_NONE][0][$comp] as $key => $subcomp) {
+        if (isset($form['field_ao_home_address'][LANGUAGE_NONE][0][$comp][$key]['#required'])) {
+          $form['field_ao_home_address'][LANGUAGE_NONE][0][$comp][$key]['#required'] = 0;
+        }
+      }
+    }
+  }
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#value' => t('Submit'),
+    '#type' => 'submit',
+  );
+
+  return $form;
+}
+
+/**
+ * Submit callback for lb_user_brand_manager_form form.
+ */
+function lb_user_brand_manager_form_submit(&$form, &$form_state) {
+  $individual =& $form_state['individual'];
+
+  // Save brand manager.
+  field_attach_submit('crm_core_contact', $individual, $form, $form_state);
+  crm_core_contact_save($individual);
+
+  if (!empty($form_state['new_entity'])) {
+    // Create relationship.
+    $company =& $form_state['company'];
+    $relationship = entity_create('relation', array('relation_type' => 'lb_marketing_contact'));
+    $relationship_wrapper = entity_metadata_wrapper('relation', $relationship);
+    $company_wrapper = entity_metadata_wrapper('crm_core_contact', $company);
+    $individual_wrapper = entity_metadata_wrapper('crm_core_contact', $individual);
+    $relationship_wrapper->endpoints = array($individual_wrapper, $company_wrapper);
+    $relationship_wrapper->crm_core_relationship_status = TRUE;
+    $relationship_wrapper->save();
+    drupal_set_message(t('Brand manager successfully added.'));
+    _lb_user_attach_redirect($form_state, $company);
+  }
+  else {
+    $form_state['redirect'] = 'user';
+  }
+}
+
+/**
+ * Attach contact field to form.
+ */
+function lb_user_attach_entity_field($entity_type, &$form, &$form_state, $contact, $entity_type, $field_name, $bundle) {
+  $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+  field_attach_form($entity_type, $contact, $form, $form_state, NULL, $field_instance);
+}
+
+/**
+ * Manufacturers form.
+ */
+function lb_user_manufacturers_form($form, &$form_state, $company) {
+  $form_state['company'] = $company;
+  $date_field = field_view_field('crm_core_contact', $company, 'field_lb_cutoff_date');
+  $date = $date_field[0]['#markup'];
+  if (empty($date)) {
+
+    $company_wrapper = entity_metadata_wrapper('crm_core_contact', $company);
+    $company_name = $company_wrapper->contact_name->family->value();
+    // $output = t('Can not add manufacturer until @company_name has specified a fixed cut-off date.', array('@company_name' => $company_name));
+    $link = l($company_name, 'crm-core/contact/'. $company->contact_id);
+    if (arg(0) == 'lb') {
+      $link = 'your ' . l(t('Company Page'), 'user');
+    }
+    // $output .= '<br><br>';
+    // $output .= t('Return to !link.', array('!link' => $link));
+    $output = _lb_user_cannot_add_contractor_text('manufacturer', $company_name, $link);
+    $form['output']['#markup'] = $output;
+    return $form;
+  }
+  $form = lb_registration_application_section_d_form($form, $form_state, $company);
+  $form['contractors_description']['#access'] = FALSE;
+  $form['lb_application']['#access'] = FALSE;
+
+  // Hide unnecessary contractors.
+  lb_user_hide_contractor($form, 'lb_manufacturer');
+
+  $form['suppliers_wrapper']['#access'] = FALSE;
+  // unset rather than set access false to stop phantom
+  // items being created in lb_registration_application_section_d_form_submit
+  unset($form['suppliers_wrapper']);
+  $form['actions']['#access'] = TRUE;
+  $form['actions']['previous']['#access'] = FALSE;
+  $form['actions']['submit']['#value'] = t('Submit');
+  return $form;
+}
+
+/**
+ * Submit callback for lb_user_manufacturers_form form.
+ */
+function lb_user_manufacturers_form_submit(&$form, &$form_state) {
+  $company =& $form_state['company'];
+  lb_registration_application_section_d_form_submit($form, $form_state);
+  drupal_set_message(t('Manufacturer successfully added.'));
+  _lb_user_attach_redirect($form_state, $company);
+}
+
+/**
+ * Suppliers form.
+ */
+function lb_user_suppliers_form($form, &$form_state, $company) {
+  $form_state['company'] = $company;
+  $date_field = field_view_field('crm_core_contact', $company, 'field_lb_cutoff_date');
+  $date = $date_field[0]['#markup'];
+  if (empty($date)) {
+
+    $company_wrapper = entity_metadata_wrapper('crm_core_contact', $company);
+    $company_name = $company_wrapper->contact_name->family->value();
+    // $output = t('Can not add supplier until @company_name has specified a fixed cut-off date.', array('@company_name' => $company_name));
+    $link = l($company_name, 'crm-core/contact/'. $company->contact_id);
+    if (arg(0) == 'lb') {
+      $link = 'your ' . l(t('Company Page'), 'user');
+    }
+    // $output .= '<br><br>';
+    // $output .= t('Return to !link.', array('!link' => $link));
+    $output = _lb_user_cannot_add_contractor_text('supplier', $company_name, $link);
+
+    $form['output']['#markup'] = $output;
+    return $form;
+  }
+  $form = lb_registration_application_section_d_form($form, $form_state, $company);
+  $form['contractors_description']['#access'] = FALSE;
+  $form['lb_application']['#access'] = FALSE;
+
+  // Hide unnecessary contractors.
+  lb_user_hide_contractor($form, 'lb_supplier');
+
+  unset($form['suppliers_wrapper']['#description']);
+
+  $form['manufacturers_wrapper']['#access'] = FALSE;
+  // unset rather than set access false to stop phantom
+  // items being created in lb_registration_application_section_d_form_submit
+  unset($form['manufacturers_wrapper']);
+  $form['actions']['#access'] = TRUE;
+  $form['actions']['previous']['#access'] = FALSE;
+  $form['actions']['submit']['#value'] = t('Submit');
+  return $form;
+}
+
+/**
+ * Submit callback for lb_user_manufacturers_form form.
+ */
+function lb_user_suppliers_form_submit(&$form, &$form_state) {
+  $company =& $form_state['company'];
+  lb_registration_application_section_d_form_submit($form, $form_state);
+  drupal_set_message(t('Supplier successfully added.'));
+  _lb_user_attach_redirect($form_state, $company);
+}
+
+/**
+ * Brands form.
+ */
+function lb_user_brands_form($form, &$form_state, $company) {
+  $form_state['company'] = $company;
+  $form_state['entity_type'] = 'node';
+  $form_state['bundle'] = 'brand';
+  $form_state['new_entity'] = TRUE;
+  $brand = entity_create($form_state['entity_type'], array('type' => $form_state['bundle']));
+  $form_state['#entity'] = $brand;
+  $form['title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Brand name'),
+    '#default_value' => empty($brand->title) ? '' : $brand->title,
+    '#required' => TRUE,
+  );
+  $fields = _lb_registration_section_f_fields();
+  _lb_user_custom_entity_form($form_state['entity_type'], $form_state['bundle'], $brand, $form, $form_state, $fields);
+
+  $form['field_lb_product_types']['#access'] = FALSE;
+
+  // Swap labels with descriptions.
+  $form['field_lb_animal_ingredients'][LANGUAGE_NONE]['#title'] = $form['field_lb_animal_ingredients'][LANGUAGE_NONE]['#description'];
+  unset($form['field_lb_animal_ingredients'][LANGUAGE_NONE]['#description']);
+  $form['field_lb_distributor_list'][LANGUAGE_NONE]['#title'] = $form['field_lb_distributor_list'][LANGUAGE_NONE]['#description'];
+  unset($form['field_lb_distributor_list'][LANGUAGE_NONE]['#description']);
+  $form['field_lb_certifications'][LANGUAGE_NONE]['#title'] = $form['field_lb_certifications'][LANGUAGE_NONE]['#description'];
+  unset($form['field_lb_certifications'][LANGUAGE_NONE]['#description']);
+  $form['field_lb_cosmetics']['#prefix'] = '<div class="cosmetics-label">' . $form['field_lb_product_types'][LANGUAGE_NONE]['#description'] . '</div>';
+  $form['field_lb_countries']['#prefix'] = '<div class="countries-label">' . $form['field_lb_countries'][LANGUAGE_NONE]['#description'] . '</div>';
+  $form['field_lb_countries'][LANGUAGE_NONE]['#description'] = '';
+  return $form;
+}
+
+/**
+ * Submit callback for lb_user_brands_form form.
+ */
+function lb_user_brands_form_submit(&$form, &$form_state) {
+  $company =& $form_state['company'];
+  _lb_user_custom_entity_form_submit($form, $form_state);
+
+  $entity_wrapper = entity_metadata_wrapper($form_state['entity_type'], $form_state['#entity']);
+  $company_wrapper = entity_metadata_wrapper('crm_core_contact', $company);
+  $company_wrapper->field_lb_brands[] = $entity_wrapper;
+  $company_wrapper->save();
+
+  if (!empty($form_state['new_entity'])) {
+    $activity_fields = array(
+      'field_activity_participants' => array($company_wrapper->getIdentifier()),
+      'field_lb_company' => $company_wrapper->getIdentifier(),
+      'field_lb_brand_ref' => $entity_wrapper->getIdentifier(),
+    );
+    lb_application_report_create_activity('lb_brand_listed', $activity_fields);
+  }
+
+  drupal_set_message(t('Thank you for adding a brand. Leaping Bunny will review your submission and let you know if there are any questions. Be aware that you will not see your changes until your submission is reviewed.'));
+  _lb_user_attach_redirect($form_state, $company);
+}
+
+/**
+ * Returns company for primary contact.
+ */
+function lb_user_get_company_for_primary_contact($contact) {
+
+  global $contact_company_relationship;
+
+  if(empty($contact_company_relationship)) {
+
+    // check for primary contact relationship
+    $company = relation_get_related_entity('crm_core_contact', $contact->contact_id, 'lb_primary_contact');
+
+    // check for marketing contact relationship
+    if(empty($company)) {
+      $company = relation_get_related_entity('crm_core_contact', $contact->contact_id, 'lb_marketing_contact');
+    }
+
+    $contact_company_relationship = $company;
+
+    // add the primary contact to the company record, just to make sure we have it
+    if(!empty($company->contact_id)){
+      $company->primary_contact = lb_user_get_primary_contact_for_company($company);
+    }
+
+  }
+
+  return !empty($contact_company_relationship) ? $contact_company_relationship : FALSE;
+}
+
+/**
+ * Returns primary contact for company.
+ */
+function lb_user_get_primary_contact_for_company($company) {
+  $primary_contact = relation_get_related_entity('crm_core_contact', $company->contact_id, 'lb_primary_contact');
+  return !empty($primary_contact) ? $primary_contact : FALSE;
+}
+
+/**
+ * Returns all endpoints for a relationship.
+ *
+ * Used to get all contacts for a company.
+ */
+function lb_user_relation_get_all_entities($entity_type, $entity_id, $relation_type = NULL, $r_index = NULL) {
+  $query = relation_query($entity_type, $entity_id, $r_index);
+  if ($relation_type) {
+    $query->entityCondition('bundle', $relation_type);
+  }
+  $results = $query->execute();
+  $result = reset($results);
+  if (empty($result)) {
+    return FALSE;
+  }
+  // Loop through each relation
+  foreach ($results as $relation) $rids[] = $relation->rid;
+  // Load all related entities endpoint references
+  $raw_relations = relation_load_multiple($rids);
+
+  // Reformat relations output.
+  foreach ($raw_relations as $relation) {
+    if (!isset($relations[$relation->relation_type])) {
+        $relations[$relation->relation_type] = array();
+    }
+    $relations[$relation->relation_type][] = $relation;
+  }
+
+  return $relations;
+ }
+
+/**
+ * Returns company declaration bundles according with view.
+ */
+function lb_user_get_company_declaration_bundles() {
+  return array(
+    'lb_company_page_manufacturers' => 'declaration_product_compliance',
+    'lb_company_page_suppliers' => 'declaration_raw_material',
+  );
+}
+
+/**
+ * Returns user declaration bundles according with view.
+ */
+function lb_user_get_user_declaration_bundles() {
+  return array(
+    'lb_user_profile_manufacturers' => 'declaration_product_compliance',
+    'lb_user_profile_suppliers' => 'declaration_raw_material',
+  );
+}
+
+/**
+ * Hide contractor items.
+ */
+function lb_user_hide_contractor(&$form, $enabled_contractor_type) {
+  foreach (element_children($form['contractors']) as $key) {
+    $element = &$form['contractors'][$key];
+    if (empty($element['company']['field_lb_contractor_type'][LANGUAGE_NONE]['#default_value'])) {
+      $element['company']['field_lb_contractor_type'][LANGUAGE_NONE]['#default_value'] = $enabled_contractor_type;
+      $element['company']['field_lb_contractor_type'][LANGUAGE_NONE]['#access'] = FALSE;
+    }
+    elseif (!empty($element['company']['field_lb_contractor_type'][LANGUAGE_NONE]['#default_value'])
+      && $element['company']['field_lb_contractor_type'][LANGUAGE_NONE]['#default_value'] != $enabled_contractor_type) {
+      $element['#access'] = FALSE;
+    }
+    else {
+      $element['company']['field_lb_contractor_type'][LANGUAGE_NONE]['#access'] = FALSE;
+    }
+  }
+}
+
+/**
+ * Return cutoff date.
+ */
+function lb_user_company_status_cutoff_date($company) {
+  $company_wrapper = entity_metadata_wrapper('crm_core_contact', $company);
+  return $company_wrapper->field_lb_cutoff_date->value();
+}
+
+/**
+ * Return company status.
+ */
+function lb_user_company_status_value($company) {
+  $types = lb_user_company_status_activity_types();
+  $types += lb_user_request_activity_types();
+  if ($activity = lb_user_company_status_get_company_status_activity($types, 'DESC', $company)) {
+    return array_search($activity->type, $types);
+  }
+  return FALSE;
+}
+
+/**
+ * Return company status key.
+ */
+function lb_user_company_status_value_key($company) {
+  $types = lb_user_company_status_activity_types();
+  $types += lb_user_request_activity_types();
+  if ($activity = lb_user_company_status_get_company_status_activity($types, 'DESC', $company)) {
+    return $activity->type;
+  }
+  return FALSE;
+}
+
+
+/**
+ * Return company originally approved date.
+ */
+function lb_user_company_status_originally_approved_date($company) {
+  $types = lb_user_company_status_activity_types();
+  if ($activity = lb_user_company_status_get_company_status_activity($types['Approved'], 'ASC', $company)) {
+    $wrapper = entity_metadata_wrapper('crm_core_activity', $activity);
+    return $wrapper->field_activity_date->value();
+  }
+  return FALSE;
+}
+
+/**
+ * Return company recommitment date.
+ */
+function lb_user_company_status_recommitment_date($company) {
+  $recommitment_date = FALSE;
+
+  $approvement = lb_application_report_get_activity_by_company('lb_company_application_approved', $company);
+  if ($approvement) {
+    $approvement_wrapper = entity_metadata_wrapper('crm_core_activity', $approvement);
+    $recommitment_date = $approvement_wrapper->field_lb_recommitment_date->value();
+  }
+
+  return $recommitment_date;
+}
+
+/**
+ * Return activity by criterion.
+ */
+function lb_user_company_status_get_company_status_activity($types, $order, $company) {
+  $query = db_select('field_data_field_lb_company', 'c');
+  $query->innerJoin('crm_core_activity', 'a', 'a.activity_id = c.entity_id');
+  $query->fields('a');
+  $query->fields('c');
+
+  if (is_array($types)) {
+    $query->condition('c.bundle', $types, 'IN');
+  }
+  else {
+    $query->condition('c.bundle', $types);
+  }
+
+  $query->condition('c.field_lb_company_target_id', $company->contact_id);
+  $query->orderBy('a.created', $order);
+  $query->range(0, 1);
+  $activity = $query->execute()
+    ->fetchObject();
+
+  if ($activity) {
+    return crm_core_activity_load($activity->activity_id);
+  }
+  return FALSE;
+}
+
+/**
+ * Return activities by criterion.
+ */
+function lb_user_company_status_get_company_activity_count($types, $company) {
+  $query = db_select('field_data_field_lb_company', 'c');
+  $query->innerJoin('crm_core_activity', 'a', 'a.activity_id = c.entity_id');
+  $query->fields('a');
+  $query->fields('c');
+
+  if (is_array($types)) {
+    $query->condition('c.bundle', $types, 'IN');
+  }
+  else {
+    $query->condition('c.bundle', $types);
+  }
+
+  $query->condition('c.field_lb_company_target_id', $company->contact_id);
+  return $query->execute()
+    ->rowCount();
+}
+
+/**
+ * Returns activity types for company status.
+ */
+function lb_user_company_status_activity_types() {
+  return array(
+    'Recommitment Submitted' => 'lb_recommitment_submitted',
+    'Recommitment Due' => 'lb_recommitment_due',
+    'Approved' => 'lb_company_application_approved',
+    'Denied' => 'lb_company_application_rejected',
+    'Closed' => 'lb_company_application_closed',
+    'Canceled' => 'lb_company_application_canceled',
+  );
+}
+
+/**
+ * Returns activity types for application request.
+ */
+function lb_user_request_activity_types() {
+  return array(
+    'Foreign' => 'lb_application_request_foreign',
+    'Needs More Info' => 'lb_application_request_needs_inf',
+    'Application request approved' => 'lb_application_request_approved',
+    'Application denied' => 'lb_application_request_denied',
+  );
+}
+
+/**
+ * Attach redirect.
+ */
+function _lb_user_attach_redirect(&$form_state, $company) {
+  if (arg(0) == 'lb') {
+    $primary_contact = lb_user_get_primary_contact_for_company($company);
+    if ($primary_contact) {
+      $user = crm_core_user_sync_get_user_from_contact_id($primary_contact->contact_id);
+      if (!empty($user->uid)) {
+        $form_state['redirect'] = 'user/' . $user->uid;
+      }
+    }
+    else {
+      $form_state['redirect'] = 'user';
+    }
+  }
+  else {
+    $form_state['redirect'] = 'crm-core/contact/' . $company->contact_id;
+  }
+}
+
+/**
+ * Custom entity form with certain fields.
+ */
+function _lb_user_custom_entity_form($entity_type, $bundle, $entity, &$form, &$form_state, $fields) {
+  foreach ($fields as $field_name) {
+    lb_user_attach_entity_field('crm_core_contact', $form, $form_state, $entity, $entity_type, $field_name, $bundle);
+  }
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+    '#weight' => 99,
+  );
+}
+
+/**
+ * Custom entity form submit callback.
+ */
+function _lb_user_custom_entity_form_submit(&$form, &$form_state) {
+  $entity_type = $form_state['entity_type'];
+  $entity =& $form_state['#entity'];
+  if (isset($form_state['values']['title'])) {
+    $entity->title = $form_state['values']['title'];
+  }
+  field_attach_submit($entity_type, $entity, $form, $form_state);
+  // Add authoring information if missing.
+  if (empty($entity->uid)) {
+    $account = $GLOBALS['user'];
+    $entity->uid = $account->uid;
+  }
+  // Add company to brand.
+  if (!empty($form_state['bundle']) && $form_state['bundle'] == 'brand') {
+    if (!empty($form_state['company'])) {
+      $company = $form_state['company'];
+      $entity->field_lb_brand_company[LANGUAGE_NONE] = array(array('target_id' => $company->contact_id));
+    }
+  }
+  entity_save($entity_type, $entity);
+}
+
+/**
+ * Return declaration id.
+ */
+function _lb_user_get_declaration($bundle, $contractor_id) {
+  return db_select('field_data_field_activity_participants', 'p')
+    ->fields('p', array('entity_id'))
+    ->condition('p.entity_type', 'crm_core_activity')
+    ->condition('p.bundle', $bundle)
+    ->condition('p.field_activity_participants_target_id', $contractor_id)
+    ->execute()
+    ->fetchField();
+}
+
+/**
+ * Declaration page title callback.
+ */
+function _lb_user_declaration_page_title($type) {
+  $types = _lb_user_declaration_names();
+  if (!empty($types[$type]['name'])) {
+    return $types[$type]['name'];
+  }
+}
+
+/**
+ * Declaration page callback.
+ */
+function lb_user_declaration_page($company, $type, $declaration) {
+
+  // set the text to appear at the top of the form
+  $opening = $closing = '';
+
+  $name = field_view_field('crm_core_contact', $company, 'contact_name', array('settings' => array('output' => 'raw')));
+  $name_markup = $name[0]['#markup'];
+  $date_field = field_view_field('crm_core_contact', $company, 'field_lb_cutoff_date');
+  $date = $date_field[0]['#markup'];
+  $declaror_field = field_view_field('crm_core_activity', $declaration, 'field_lb_company_name_raw');
+  $declaror_name = $declaror_field[0]['#markup'];
+  switch ($type) {
+  	case 'raw_material_compliance';
+  $opening = <<<OPN
+    <p>To be completed by the Supplier of Ingredients/formulations (Note: an ingredient distributor is not able to sign this form.)</p>
+    <p>This declaration applies to all Ingredients/formulations supplied to {$name_markup}.</p>
+    <h2>Raw Material Supplier Declaration</h2>
+    <ol>
+      <li>I hereby confirm that the products and Ingredients and their component parts comply with the requirement of the Corporate Standard of Compassion for Animals that they have not been tested or re-tested on animals to assess safety, efficacy, or environmental effects of Cosmetics and/or Household Products by or on behalf of $declaror_name since $date at the latest.
+      <li>I hereby confirm that all of the above information is complete and accurate and agree to immediately notify the product manufacturer in writing of any changes to the above details.
+    </ol>
+OPN;
+
+    // set the text to appear at the bottom of the form
+    $closing = <<<CLO
+      <p><em>* By entering his/her name in the Signature field, the signer hereby attests that s/he is the duly authorized agent of the Entity, as only authorized agents have access to this form, with full power and authority to execute this Declaration of Raw Material Compliance and thereby to bind the Entity to the commitments made herein. Completion of this electronic form is binding.</em></p>
+      <strong>What is the “Coalition for Consumer Information on Cosmetics”?</strong>
+      <p>The Coalition for Consumer Information on Cosmetics (CCIC) is a coalition of national animal protection groups that promotes a meaningful, reliable, non-animal testing standard and logo for cosmetics, personal care, and household products. The Coalition was developed to meet both consumer and corporate demand for a single, reliable certification that designates products as free of new animal testing.</p>
+      <strong>What is the “Corporate Standard of Compassion for Animals” (“the Standard”)?</strong>
+      <p>The Standard is a commitment a Company makes to ban animal testing during any stage of its products’ development. The Standard applies to a Company’s Cosmetics and Household Products. As part of that pledge, a Company is required to obtain declarations from each of its Suppliers and Third Party Manufacturers that the Ingredients, formulations, or products supplied to the CCIC-approved Company, have not been Animal Tested after that Company’s Fixed Cut-off Date. The result is a product guaranteed to be 100% free of new Animal Testing. While Ingredients may have been tested in the past, the Standard is designed to prevent future Animal Testing. Commitments are updated on an annual basis.</p>
+      <strong>Definitions</strong>
+      <p>(For more information on the Standard, or further terms defined, please contact either CCIC or the Company making this request for more detailed explanation.)</p>
+      <strong>Animal Testing</strong>
+      <p>All testing of finished Cosmetics and/or Household Products, or any one or more Ingredients or formulations used in manufacturing or production of such products in which whole non-human animals are the test subjects, including without limitation, fish, amphibians, reptiles, birds, and non-human mammals. Animal Testing excludes in vitro tests or tests conducted completely with human volunteers.</p>
+      <p>The prohibition against Animal Testing contained in the Standard does not apply to the purchase of animal-tested Ingredients if </p>
+      (a) the Ingredient was tested to meet explicit statutory or regulatory requirements for animal testing; AND
+      (b) the testing was not conducted to assess safety, efficacy, or environmental effects of Cosmetics and/or Household Products.
+      <strong>Company</strong>
+      <p>The person, corporation, partnership, or other legal organization that has separate existence and can function legally, including without limitation, its subsidiaries, affiliates, divisions, agents, and employees, involved in selling Cosmetic and/or Household Products under its own name.</p>
+      <strong>Cosmetics</strong>
+      <p>Personal care products, including without limitation, products for the hair (e.g., shampoo, conditioner, coloring agents, depilatory agents), skin (e.g., soap, moisturizer, sunscreen, aftershave, antiperspirant, deodorant, talcum powder, bubble bath), mouth (e.g., toothpaste, mouthwash), nails (e.g., nail polish, polish remover), perfume, cologne, lipstick, eye shadow and liner, and rouge. Cosmetics also means personal care products marketed or regulated as over-the-counter drugs (e.g., toothpaste marketed with the claim of fighting cavities, mouthwash marketed with the claim of killing germs).</p>
+      <strong>Fixed Cut-off Date</strong>
+      <p>A date after which a Company, its Third Party Manufacturers, and/or Suppliers must not have conducted or commissioned Animal Testing for the Company’s own-label products and/or Ingredients supplied for use in the Company’s Cosmetic and/or Household Products.</p>
+      <p>A Fixed Cut-off Date must be fixed, and applied across the Company’s entire Cosmetic and/or Household Products range, now and in the future.</p>
+      <strong>Household Products</strong>
+      <p>Products for the home, including without limitation, laundry and dish detergent, bleach, cleaners and cleansers, floor wax, furniture polish, and air fresheners. As defined, Household Products does not include paint and paint remover, varnish and other stains, chemical drain declogger, paper products, candles, or insecticide.</p>
+      <strong>Ingredient</strong>
+      <p>A single substance or mixture of substances, system, or compound, intended for use in Cosmetic and/or Household Products, as listed on the product label.</p>
+      <strong>Supplier</strong>
+      <p>Any manufacturer that supplies, directly, through an agent, or Third Party Manufacturer, any Ingredient or Ingredient mixture used in the formulation of a Company’s own-label Cosmetic and/or Household Products. This includes the original manufacturer of the Ingredient.</p>
+      <strong>Third Party Manufacturer</strong>
+      <p>A manufacturer that produces products on behalf of the Company seeking approval under the Standard.</p>
+CLO;
+
+  	  break;
+  	case 'product_compliance_form';
+
+  // set the text to appear at the top of the form
+  $opening = <<<OPN
+    <p>To be completed by Third Party Manufacturers of Cosmetic and/or Household Products</p>
+    <p>This declaration applies to all products supplied to {$name_markup}.</p>
+    <h2>Product Manufacturer Declaration</h2>
+    <ol>
+    <li>I hereby confirm that the products and Ingredients and their component parts comply with the requirement of the Corporate Standard of Compassion for Animals that they have not been tested or re-tested on animals to assess safety, efficacy, or environmental effects of Cosmetics and/or Household Products by or on behalf of $declaror_name since $date at the latest.
+    <li>I hereby confirm that we have either collected Declarations of Raw Material Compliance or inserted purchase order language for the products and ingredients and their component parts indicated above, and declare that none have been the subject of Animal Testing or re-testing to assess safety, efficacy, or environmental effects of Cosmetics and/or Household Products by or on behalf of our Suppliers since the above $date at the latest.
+    <li>I hereby confirm that all of the above information is complete and accurate and agree to immediately notify {$name_markup} in writing of any changes to the above details.
+    </ol>
+OPN;
+
+    // set the text to appear at the bottom of the form
+    $closing = <<<CLO
+    <p>Please download Declarations of Raw Material Compliance to be filled out by suppliers.</p>
+    <p><em>* By entering his/her name in the Signature field, the signer hereby attests that s/he is the duly authorized agent of the Entity, as only authorized agents have access to this form, with full power and authority to execute this Declaration of Product Compliance and thereby to bind the Entity to the commitments made herein. Completion of this electronic form is binding.</em></p>
+    <strong>What is the “Coalition for Consumer Information on Cosmetics”?</strong>
+    <p>The Coalition for Consumer Information on Cosmetics (CCIC) is a coalition of national animal protection groups that promotes a meaningful, reliable, non-animal testing standard and logo for cosmetics, personal care, and household products. The Coalition was developed to meet both consumer and corporate demand for a single, reliable certification that designates products as free of new animal testing.</p>
+    <strong>What is the “Corporate Standard of Compassion for Animals” (“the Standard”)?</strong>
+    <p>The Standard is a commitment a Company makes to ban animal testing during any stage of its products’ development. The Standard applies to a Company’s Cosmetics and Household Products. As part of that pledge, a Company is required to obtain declarations from each of its Suppliers and Third Party Manufacturers that the Ingredients, formulations, or products supplied to the CCIC-approved Company, have not been Animal Tested after that Company’s Fixed Cut-off Date. The result is a product guaranteed to be 100% free of new Animal Testing. While Ingredients may have been tested in the past, the Standard is designed to prevent future Animal Testing. Commitments are updated on an annual basis.</p>
+    <strong>Definitions</strong>
+    <p>(For more information on the Standard, or further terms defined, please contact either CCIC or the Company making this request for more detailed explanation.)</p>
+    <strong>Animal Testing</strong>
+    <p>All testing of finished Cosmetics and/or Household Products, or any one or more Ingredients or formulations used in manufacturing or production of such products in which whole non-human animals are the test subjects, including without limitation, fish, amphibians, reptiles, birds, and non-human mammals. Animal Testing excludes in vitro tests or tests conducted completely with human volunteers.</p>
+    The prohibition against Animal Testing contained in the Standard does not apply to the purchase of animal-tested Ingredients if
+    (a) the Ingredient was tested to meet explicit statutory or regulatory requirements for animal testing; AND
+    (b) the testing was not conducted to assess safety, efficacy, or environmental effects of Cosmetics and/or Household Products.
+    <strong>Company</strong>
+    <p>The person, corporation, partnership, or other legal organization that has separate existence and can function legally, including without limitation, its subsidiaries, affiliates, divisions, agents, and employees, involved in selling Cosmetic and/or Household Products under its own name.</p>
+    <strong>Cosmetics</strong>
+    <p>Personal care products, including without limitation, products for the hair (e.g., shampoo, conditioner, coloring agents, depilatory agents), skin (e.g., soap, moisturizer, sunscreen, aftershave, antiperspirant, deodorant, talcum powder, bubble bath), mouth (e.g., toothpaste, mouthwash), nails (e.g., nail polish, polish remover), perfume, cologne, lipstick, eye shadow and liner, and rouge. Cosmetics also means personal care products marketed or regulated as over-the-counter drugs (e.g., toothpaste marketed with the claim of fighting cavities, mouthwash marketed with the claim of killing germs).</p>
+    <strong>Fixed Cut-off Date</strong>
+    <p>A date after which a Company, its Third Party Manufacturers, and/or Suppliers must not have conducted or commissioned Animal Testing for the Company’s own-label products and/or Ingredients supplied for use in the Company’s Cosmetic and/or Household Products.</p>
+    <p>A Fixed Cut-off Date must be fixed, and applied across the Company’s entire Cosmetic and/or Household Products range, now and in the future.</p>
+    <strong>Household Products</strong>
+    <p>Products for the home, including without limitation, laundry and dish detergent, bleach, cleaners and cleansers, floor wax, furniture polish, and air fresheners. As defined, Household Products does not include paint and paint remover, varnish and other stains, chemical drain declogger, paper products, candles, or insecticide.</p>
+    <strong>Ingredient</strong>
+    <p>A single substance or mixture of substances, system, or compound, intended for use in Cosmetic and/or Household Products, as listed on the product label.</p>
+    <strong>Supplier</strong>
+    <p>Any manufacturer that supplies, directly, through an agent, or Third Party Manufacturer, any Ingredient or Ingredient mixture used in the formulation of a Company’s own-label Cosmetic and/or Household Products. This includes the original manufacturer of the Ingredient.</p>
+    <strong>Third Party Manufacturer</strong>
+    <p>A manufacturer that produces products on behalf of the Company seeking approval under the Standard.</p>
+CLO;
+
+  	  break;
+  }
+  $renderable = entity_view('crm_core_activity', array($declaration), 'full');
+  // add print link, bad placement here and non-admins don't have perms
+  // see lb_declaration_forms_crm_core_activity_view_alter which is similar though
+  if ($type == 'raw_material_compliance' || $type == 'product_compliance_form') {
+    $print_link = l(t('Print'), 'print/' . $_GET['q'], array('attributes' => array('id' => 'print-link')));
+    $renderable['crm_core_activity'][$declaration->activity_id]['print'] = array(
+      '#weight' => -110,
+      '#markup' => $print_link,
+    );
+  }
+  $renderable['crm_core_activity'][$declaration->activity_id]['opening'] = array(
+    '#weight' => -100,
+    '#markup' => $opening,
+  );
+  $renderable['crm_core_activity'][$declaration->activity_id]['closing'] = array(
+    '#weight' => 100,
+    '#markup' => $closing,
+  );
+  return $renderable;
+  // return entity_view('crm_core_activity', array($declaration), 'full');;
+}
+
+/**
+ * Resend declaration page callback.
+ */
+function lb_user_resend_declaration_page($type, $contractor, $company, $profile = NULL) {
+  $date_field = field_view_field('crm_core_contact', $company, 'field_lb_cutoff_date');
+  $date = $date_field[0]['#markup'];
+  if (empty($date)) {
+    $contractor_type = "";
+    switch ($type) {
+      case 'raw_material_compliance':
+        $contractor_type = 'supplier';
+        break;
+
+      case 'product_compliance_form':
+        $contractor_type = 'manufacturer';
+        break;
+      }
+    $company_wrapper = entity_metadata_wrapper('crm_core_contact', $company);
+    $company_name = $company_wrapper->contact_name->family->value();
+    // $output = t('Can not add @contractor until @company_name has specified a fixed cut-off date.', array('@contractor' => $contractor_type, '@company_name' => $company_name));
+    $link = l($company_name, 'crm-core/contact/'. $company->contact_id);
+    if (arg(0) == 'lb') {
+      $link = 'your ' . l(t('Company Page'), 'user');
+    }
+    // $output .= '<br><br>';
+    // $output .= t('Return to !link.', array('!link' => $link));
+    $output = _lb_user_cannot_add_contractor_text($contractor_type, $company_name, $link);
+    return $output;
+  }
+  $company_wrapper = entity_metadata_wrapper('crm_core_contact', $company);
+  // get primary contact of contractor
+  $contractor_contact = relation_get_related_entity('crm_core_contact', $contractor->contact_id, 'lb_primary_contact', 1);
+  switch ($type) {
+    case 'raw_material_compliance':
+      $path = 'company/raw_material_compliance/'
+        . $contractor->contact_id
+        . '/'
+        . $company_wrapper->contact_id->value();
+      $declaration_form_link_path = url($path, array('absolute' => TRUE));
+      $cut_off_date_stamp = $company_wrapper->field_lb_cutoff_date->value();
+
+      rules_invoke_component('rules_lb_registration_supplier_contact_notification', $company, $contractor, $contractor_contact, $declaration_form_link_path, format_date($cut_off_date_stamp, 'custom', 'm/d/Y'));
+      break;
+
+    case 'product_compliance_form':
+      $path = 'company/product_compliance_form/'
+        . $contractor->contact_id
+        . '/'
+        . $company_wrapper->contact_id->value();
+      $product_declaration_form_path = url($path, array('absolute' => TRUE));
+      // Declaration of Raw Material Compliance PDF link.
+      $declarations = variable_get('lb_registration_section_d_declarations', array());
+      $material_declaration_file_path = '';
+      if (!empty($declarations['declaration_product'])) {
+        $pdf_file = file_load($declarations['declaration_material']);
+        if (!empty($pdf_file)) {
+          $material_declaration_file_path = file_create_url($pdf_file->uri);
+        }
+      }
+      $cut_off_date_stamp = $company_wrapper->field_lb_cutoff_date->value();
+
+      rules_invoke_component('rules_lb_registration_manufacturer_contact_notification', $company, $contractor, $contractor_contact, $product_declaration_form_path, $material_declaration_file_path, format_date($cut_off_date_stamp, 'custom', 'm/d/Y'));
+      break;
+  }
+  $contractor_name = $contractor->contact_name[LANGUAGE_NONE][0]['family'];
+  $company_name = $company_wrapper->contact_name->family->value();
+
+  $output = t('Resent declaration of compliance to @contractor_name on behalf of @company_name.', array('@contractor_name' => $contractor_name, '@company_name' => $company_name));
+  $link = l($company_name, 'crm-core/contact/'. $company->contact_id);
+  if ($profile != NULL) {
+    $link = l(t('profile'), 'user');
+  }
+  $output .= '<br><br>';
+  $output .= t('Return to !link.', array('!link' => $link));
+  return $output;
+}
+
+/**
+ * Returns declaration names.
+ */
+function _lb_user_declaration_names() {
+  return array(
+    'product_compliance_form' => array(
+      'bundle' => 'declaration_product_compliance',
+      'name' => t('Raw Material Supplier Declaration'),
+    ),
+    'raw_material_compliance' => array(
+      'bundle' => 'declaration_raw_material',
+      'name' => t('Raw Material Supplier Declaration'),
+    ),
+  );
+}
+
+/**
+ * Returns custom text used on different screens.
+ */
+function _lb_user_cannot_add_contractor_text($contractor_type, $company_name, $return_link) {
+  $text = '';
+
+  $text = t("Cannot add new @contractor_type until @company_name has specified a fixed cut-off date.<br><br>
+  Please return to !link, and Apply for Certification.  You’ll have an opportunity to enter Supplier and Manufacturer information once you begin your application.",  array('@contractor_type' => $contractor_type, '@company_name' => $company_name, '!link' => $return_link));
+
+  return $text;
+}

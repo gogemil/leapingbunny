@@ -1,0 +1,398 @@
+@CHARSET "UTF-8";
+/* front page regions */
+/* line 10, ../sass/ableorganizer_sample_content.scss */
+BODY.front .ao-down-arrow {
+  width: 0;
+  height: 0;
+  border-left: 35px solid transparent;
+  border-right: 35px solid transparent;
+  border-top: 35px solid White;
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  margin-left: -35px;
+}
+
+/* line 21, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content {
+  padding-top: 0em;
+}
+
+/* line 24, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-above-content-1-wrapper {
+  background-color: #999;
+}
+
+/* line 27, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-above-content-1-wrapper #zone-above-content-1 {
+  height: 470px;
+}
+
+/* line 32, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-content-wrapper {
+  background-color: #00b0f3;
+}
+
+/* line 35, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-1-wrapper {
+  background-color: #ffcc4d;
+  overflow: hidden;
+}
+
+/* line 39, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-2-wrapper {
+  background-color: White;
+  overflow: hidden;
+}
+
+/* line 43, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content h2 {
+  text-align: center;
+  font-size: 2.25em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  font-weight: normal;
+  background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #90783f 49%, #90783f 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #90783f 49%, #90783f 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #90783f 49%, #90783f 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #90783f 49%, #90783f 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #436ab3 49%, #436ab3 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #436ab3 49%, #436ab3 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #436ab3 49%, #436ab3 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #436ab3 49%, #436ab3 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  color: #436ab3;
+}
+
+/* line 66, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content h2 SPAN {
+  background-color: White;
+  padding: 0em .5em;
+}
+
+/* line 70, ../sass/ableorganizer_sample_content.scss */
+BODY.front #zone-branding-wrapper #main-menu LI A {
+  text-decoration: none;
+  font-size: 1.4em;
+  color: Black;
+}
+
+/* line 75, ../sass/ableorganizer_sample_content.scss */
+BODY.front #zone-branding-wrapper .navigation-menu {
+  font-size: 1em;
+}
+
+/* hero */
+/* line 82, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-above-content-1-wrapper {
+  background: #ffb836 url(../images/people.png) top center no-repeat;
+  height: 380px;
+}
+
+/* line 86, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content .hero_text {
+  width: 60%;
+  margin-top: 6em;
+  margin-left: 1em;
+  color: White;
+  padding: 1em;
+  background-color: rgba(135, 105, 40, 0.3);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  border-radius: 1em;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+}
+
+/* line 98, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content .hero_text h2 {
+  border-bottom: none;
+  text-align: left;
+  font-size: 2.5em;
+  margin: 0em 0em .5em 0em;
+  background: none;
+  font-weight: 700;
+  color: White;
+}
+
+/* line 107, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content .hero_text P {
+  font-size: 1.85em;
+  font-weight: normal;
+}
+
+/* above content */
+/* line 112, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-above-content-2-wrapper H2 {
+  color: #436ab3;
+  margin-bottom: 1em;
+}
+
+/* line 116, ../sass/ableorganizer_sample_content.scss */
+.ui-widget-overlay {
+  background-color: White;
+  opacity: .6;
+}
+
+/* main content */
+/* line 122, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-content-wrapper H2,
+BODY.front #section-content #zone-content-wrapper P {
+  color: White;
+}
+
+/* line 126, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-content-wrapper H2 {
+  background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, white 49%, white 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, white 49%, white 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, white 49%, white 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, white 49%, white 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  margin-top: 66px;
+}
+
+/* line 133, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-content-wrapper .region-content-inner H2 {
+  margin-top: 32px;
+}
+
+/* line 136, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-content-wrapper H2 SPAN {
+  background-color: #00b0f3;
+}
+
+/* line 139, ../sass/ableorganizer_sample_content.scss */
+.ao-how-it-does-it {
+  background: url(../images/ao-how-it-does-it.png) top left no-repeat;
+  height: 386px;
+  width: 1173px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 3em;
+}
+
+/* below content */
+/* line 148, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-1-wrapper H2, BODY.front #section-content #zone-below-content-1-wrapper {
+  color: #90783f;
+  font-size: 1.5em;
+}
+
+/* line 152, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-1-wrapper H2 {
+  background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #89722c 49%, #89722c 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #89722c 49%, #89722c 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #89722c 49%, #89722c 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #89722c 49%, #89722c 53%, rgba(255, 255, 255, 0) 54%, rgba(255, 255, 255, 0) 100%);
+  margin-top: 66px;
+  margin-bottom: 0px;
+}
+
+/* line 160, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-1-wrapper H2 SPAN {
+  background-color: #ffcc4d;
+}
+
+/* line 163, ../sass/ableorganizer_sample_content.scss */
+BODY.not-logged-in #section-content #zone-below-content-1-wrapper UL {
+  margin-bottom: 2em;
+}
+
+/* line 166, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-1-wrapper LI {
+  margin-bottom: 1em;
+}
+
+/* line 169, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-1-wrapper .ao-featlist {
+  display: table-cell;
+  padding: 0em 2em;
+}
+
+/* line 173, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-1-wrapper .ao-down-arrow {
+  border-top: 35px solid #00b0f3;
+}
+
+/* line 176, ../sass/ableorganizer_sample_content.scss */
+BODY.logged-in #section-content #zone-below-content-1-wrapper .ao-down-arrow {
+  margin-top: -66px;
+}
+
+/* below content 2 */
+/* line 181, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-2-wrapper {
+  background: #c8effe url(../images/crowd.png) top center no-repeat;
+}
+
+/* line 184, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-2-wrapper H2 {
+  color: #ff2c00;
+  margin-top: 66px;
+}
+
+/* line 188, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-2-wrapper H2 SPAN {
+  background-color: #fff0ca;
+  background-color: #eaf8fd;
+}
+
+/* line 192, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-2-wrapper H3 {
+  text-align: center;
+  font-size: 1.8em;
+  text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.3);
+}
+
+/* line 197, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-2-wrapper .ao-info-masthead {
+  text-align: center;
+  font-size: 1.5em;
+  margin-bottom: 1.3em;
+  text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.3);
+}
+
+/* line 203, ../sass/ableorganizer_sample_content.scss */
+.ao-info-holder {
+  display: table;
+  width: 100%;
+  margin-top: 1em;
+  margin-bottom: 3em;
+  background-color: rgba(60, 116, 137, 0.4);
+  border-radius: 1em;
+  -moz-border-radius: 1em;
+  -webkit-border-radius: 1em;
+  padding: 1em;
+}
+
+/* line 214, ../sass/ableorganizer_sample_content.scss */
+.ao-info-item {
+  display: table-cell;
+  font-size: 1.2em;
+  padding: 1em .8em;
+  color: #333;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* line 221, ../sass/ableorganizer_sample_content.scss */
+.ao-info-item P {
+  text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.3);
+}
+
+/* line 224, ../sass/ableorganizer_sample_content.scss */
+.ao-info-item H4 {
+  color: White;
+  font-weight: normal;
+  margin-bottom: .5em;
+  text-align: left;
+}
+
+/* line 230, ../sass/ableorganizer_sample_content.scss */
+.ao-info-item .ao-info-btn {
+  display: inline-block;
+  width: normal;
+  margin-top: .5em;
+  margin-left: auto;
+  margin-right: auto;
+  background-image: none;
+  background-color: #4ccafa;
+  text-shadow: none;
+  text-transform: uppercase;
+  font-weight: normal;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+/* line 244, ../sass/ableorganizer_sample_content.scss */
+BODY.front #section-content #zone-below-content-2-wrapper .ao-down-arrow {
+  border-top: 35px solid #ffcc4d;
+}
+
+/* line 247, ../sass/ableorganizer_sample_content.scss */
+BODY.logged-in #section-content #zone-below-content-2-wrapper .ao-down-arrow {
+  margin-top: -66px;
+}
+
+/* documentation */
+/* line 254, ../sass/ableorganizer_sample_content.scss */
+.context-about #section-content #zone-above-content-1-wrapper {
+  background-color: #3697ee;
+  color: White;
+}
+
+/* line 258, ../sass/ableorganizer_sample_content.scss */
+.context-about #section-content #zone-above-content-1-wrapper .block .content H2 {
+  margin: 1em 0em;
+  font-size: 2.25em;
+  font-weight: normal;
+}
+
+/* line 264, ../sass/ableorganizer_sample_content.scss */
+.context-about #section-content #zone-content-wrapper {
+  padding-top: 2em;
+  padding-bottom: 1em;
+}
+
+/* line 270, ../sass/ableorganizer_sample_content.scss */
+.context-about #region-sidebar-first .block .block-title {
+  font-size: 1.15em;
+}
+
+/* line 273, ../sass/ableorganizer_sample_content.scss */
+.context-about #region-sidebar-first .block .content LI {
+  list-style-image: none;
+  list-style-type: none;
+  margin: 0px 0px 1em;
+  padding: 0px;
+}
+
+/* line 279, ../sass/ableorganizer_sample_content.scss */
+.context-about #region-sidebar-first .block .content LI A {
+  text-decoration: none;
+}
+
+@media screen and (max-width: 540px) {
+  /* line 284, ../sass/ableorganizer_sample_content.scss */
+  .ao_profeat {
+    display: block;
+  }
+
+  /* line 287, ../sass/ableorganizer_sample_content.scss */
+  .ao-info-item {
+    display: block;
+  }
+
+  /* line 290, ../sass/ableorganizer_sample_content.scss */
+  .ao-info-holder {
+    width: auto;
+  }
+
+  /* line 293, ../sass/ableorganizer_sample_content.scss */
+  BODY.front #section-content #zone-below-content-2-wrapper {
+    background-repeat: repeat;
+  }
+
+  /* line 296, ../sass/ableorganizer_sample_content.scss */
+  BODY.front #section-content #zone-below-content-1-wrapper .ao-featlist {
+    display: block;
+  }
+
+  /* line 299, ../sass/ableorganizer_sample_content.scss */
+  BODY.front #boxes-box-hero_content {
+    padding: 1em;
+  }
+
+  /* line 302, ../sass/ableorganizer_sample_content.scss */
+  BODY.front #zone-branding-wrapper #main-menu LI A {
+    font-size: 1em;
+  }
+
+  /* line 305, ../sass/ableorganizer_sample_content.scss */
+  BODY.front #section-content .hero_text {
+    margin-top: 1.5em;
+    width: auto;
+  }
+
+  /* line 309, ../sass/ableorganizer_sample_content.scss */
+  BODY.front #section-content .hero_text P {
+    font-size: 1.45em;
+    font-weight: normal;
+  }
+}

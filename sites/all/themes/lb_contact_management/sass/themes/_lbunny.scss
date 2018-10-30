@@ -1,0 +1,225 @@
+/**
+ * @file lbunny.scss
+ * This implements some styles specific to the lbunny theme
+ */
+
+/**
+  * APPLICATION
+  */
+BODY.page-company-application {
+
+  .pane-lb-application-section-b-panel-pane-2,
+  .pane-lb-application-section-c-panel-pane-2,
+  .pane-lb-application-section-d-company-panel-pane-1,
+  .pane-lb-application-section-e-panel-pane-2,
+  .pane-lb-application-section-f-panel-pane-2,
+  .pane-lb-application-section-g-company-page-panel-pane-1,
+  .pane-lb-application-section-a-panel-pane-2 {
+    // @include lb_app_box($fields-as-table: true);
+  }
+
+}
+
+/**
+ * ACTIVITIES
+ */
+
+BODY.page-crm-core-contact-activity .panel-display {
+
+
+
+  .view-lb-application-request-about-your-company,
+  .view-id-lb_application_request_contact_info {
+    @include lb-field-display();
+  }
+
+}
+
+/**
+  * USER PROFILE
+  */
+BODY.page-crm-core-contact {
+
+  .panel-panel {
+    position: relative;
+  }
+  
+ .panel-pane {
+    position: inherit;
+  }
+  
+  .panel-display {
+    padding: rhythm(1);
+    background-color: White;
+    border: 1px solid #d5d5d5;
+  }
+
+  .entity-crm-core-contact, BODY.page-crm-core-contact .panels-flexible-row.contact {
+    border: none;
+    background-color: white;
+    padding: 0em;
+    margin: 0em;
+  }
+
+  /**
+   * Create LB Boxes where appropriate
+   */
+  .user-profile-container-class {
+    @include lb_box($fields-as-table: false);
+  }
+
+
+  .pane-lb-company-page-brands-managers-panel-pane-1,
+  // .view-lb-company-page-brands-managers,
+  .pane-lb-company-page-primary-contact-panel-pane-1,
+  // .pane-lb-user-profile-brands-managers-panel-pane-1,
+  .pane-lb-user-profile-primary-contact-panel-pane-1,
+  .pane-lb-user-profile-brands {
+    @include lb_box($fields-as-table: true);
+  }
+
+  .pane-lb-user-profile-brands {
+    .pane-bmc-button {
+      position: static; // Three buttons should stay on a left inline
+    }
+  }
+
+  /**
+   * Apply box button styles as needed
+   */
+  .pane-pc-button,
+  .pane-bmc-button {
+    background-color: Red;
+    margin: rhythm(.25) 0em;
+    @include lb_box_button();
+    right: rhythm(1);
+    margin-top: rhythm(.5);
+    position: absolute;
+    z-index: 999;
+  }
+
+
+  .pane-application-certification {
+    div {
+      text-align: center;
+      background-color: #e1e1e1;
+
+      span {
+        background-color: red;
+        margin: rhythm(.25) 0em;
+        @include lb_box_button();
+        margin-top: rhythm(.5);
+      }
+    }
+  }
+
+  /**
+   * Apply table styles to the info pages
+   */
+  .pane-company-status TABLE {
+    @include lb_user_table('flying');
+  }
+  .view-lb-user-profile-manufacturers,
+  .view-lb-user-profile-suppliers {
+    margin-bottom: rhythm(.5);
+
+    TABLE {
+      @include lb_user_table();
+    }
+  }
+
+  /**
+   * Apply title fonts to some of the panes
+   */
+  .pane-lb-user-profile-brands-panel-pane-1 h2.pane-title,
+  .pane-lb-user-profile-manufacturers-panel-pane-1 H2.pane-title,
+  .pane-lb-user-profile-suppliers-panel-pane-1 H2.pane-title {
+    @include lb_standard_fonts(header);
+  }
+
+  /**
+   * Position the panes correctly
+   */
+  .pane-lb-user-profile-brands-panel-pane-1,
+  .pane-lb-user-profile-suppliers-panel-pane-1,
+  .pane-lb-user-profile-brands-managers-panel-pane-1,
+  .pane-lb-user-profile-suppliers-panel-pane-1,
+  .pane-lb-user-profile-manufacturers-panel-pane-1 {
+    position: relative;
+  }
+
+  /**
+   * Apply header button styles as needed
+   */
+  .pane-sup-button,
+  .pane-mc-button {
+    margin: 0em;
+    @include lb_header_button();
+    background-color: Red;
+    position: absolute;
+    right: rhythm(1);
+    margin-top: -.5em;
+    A {
+      color: White;
+    }
+  }
+
+  /**
+   * Apply activity list styles
+   */
+   .view-lb-company-page-recent-company-activities,
+  .view-lb-user-profile-recent-activities {
+    @include lb_activity_list();
+
+  }
+
+}
+
+
+/**
+ * CONTACTS
+ */
+BODY.page-crm-core-contact {
+  .panel-display {
+    padding: rhythm(1);
+    background-color: White;
+  }
+}
+
+#block-menu-menu-crm-core-contact-menu {
+  float: left;
+  ul {
+    list-style: none;
+    background: none;
+    margin: 0;
+    padding: 0;
+    li {
+      list-style: none;
+      display: inline-block;
+      padding: 0;
+      margin: 0;
+      &.active-trail {
+        a {
+          background: $c-gray;
+        }
+      }
+      a {
+        display: block;
+        background: #777777;
+        padding: 3px 7px;
+        &:hover {
+          background: $c-gray;
+          color: #000;
+        }
+      }
+    }
+  }
+}
+
+.page-crm-core-reports {
+  h3 {
+    .crm_core_report_icon {
+      display: none;
+    }
+  }
+}

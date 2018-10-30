@@ -1,0 +1,151 @@
+/**
+ * @file
+ * Sample Content
+ *
+ * Theme for sample content
+ */
+
+/**
+ * HEADER
+ */ 
+NAV#main-menu {
+  UL {
+    LI {
+      A {
+        /* NAVIGATION LINKS */
+        @include ao-fontography($ao-fonto-style: navigation-link);
+        @include ao-transition;
+      }
+    }
+  }
+}
+
+/**
+ * PAGES
+ */ 
+/**
+ * DONATION, EVENT PAGES
+ */ 
+BODY.node-type-cmcev-event,
+BODY.node-type-cmcd-page {
+  // make the region stand out on these pages
+  .region-sidebar-second {
+    @include ao-region (
+      $ao-region-background: White,
+      $ao-region-padding: rhythm(.25) rhythm(.6),
+      $ao-region-border-top: 1px solid rgb(119, 119, 119),
+      $ao-region-border-bottom: 1px solid rgb(119, 119, 119),
+      $ao-region-border-left: 1px solid rgb(119, 119, 119),
+      $ao-region-border-right: 1px solid rgb(119, 119, 119)
+    );
+    // don't use the standard margins for regions
+    // this will interfere with Zen
+    margin-top: -1em;
+    #block-crm-core-profile-crm-core-profile-form-viewer {
+      H2.block-title {
+        @include ao-fontography($ao-fonto-style: form-title-special);
+      }
+    }
+  }
+}
+
+/**
+ * NODES
+ */ 
+article.node {
+  
+  /* DEFAULT NODE DISPLAY */
+  // teaser
+  &.node-teaser {
+    @include ao-node(
+      $ao-node-margin: 0em 0em rhythm(1),
+      $ao-node-padding: rhythm(1),
+      $ao-node-border-top: 1px solid $c-gray,
+      $ao-node-border-bottom: 1px solid $c-gray,
+      $ao-node-border-left: 1px solid $c-gray,
+      $ao-node-border-right: 1px solid $c-gray
+    );
+  }
+  // full content 
+  &:not(.node-teaser) {
+    @include ao-node(
+      $ao-node-padding: rhythm(1),
+      $ao-node-border-top: 1px solid $c-gray,
+      $ao-node-border-bottom: 1px solid $c-gray,
+      $ao-node-border-left: 1px solid $c-gray,
+      $ao-node-border-right: 1px solid $c-gray
+    );
+  }
+  
+  /* EVENT NODES */
+  &.node-cmcev-event {
+    
+    // display the title and date in a grid
+    @include ao-grid (
+      $ao-grid-padding: false,
+      $ao-grid-border: false,
+      $ao-grid-item-selector: '> DIV',
+      $ao-grid-item-cols: 2,
+      $ao-grid-item-parent-cols: 1,
+      $ao-grid-item-grid-width: 100%,
+      $ao-grid-item-grid-padding: false,
+      $ao-grid-item-gutter-width: 0%,
+      $ao-grid-item-gutter-alpha: false,
+      $ao-grid-item-gutter-omega: true
+    );
+  
+    // give them a background color
+    > DIV.field-name-field-cmcev-location,
+    > DIV.field-name-field-cmcev-date {
+      background-color: $f-gray2;
+      padding: rhythm(.5);
+      margin-bottom: rhythm(.25);
+    }
+  
+    // break the body out of the grid
+    > DIV.field-name-body {
+      @include ao-grid-item-break();
+    }
+  }
+}
+
+/**
+ * BLOCKS
+ */
+#block-boxes-ao-volunteer-info,
+#block-boxes-ao-petition-description,
+#block-boxes-ao-event-desc,
+#block-boxes-ao-donate-info {
+  
+  // give the info boxes a special style
+  @include ao-block (
+    $ao-block-background: $f-gray4,
+    $ao-block-padding: 0em 1em 1em,
+    $ao-block-margin: 1em 0em 0em 0em,
+    $ao-block-box-sizing: border-box,
+    $ao-block-box-shadow: (0 0 0 1px rgba(0, 0, 0, .1), 0 1px 4px rgba(0, 0, 0, .2)),
+    $ao-block-color: $gray-1
+  );
+  
+  H2.block__title {
+    @include ao-fontography($ao-fonto-style: block-title-sample-title);
+  }
+  
+  .boxes-box-content {
+    @include ao-fontography($ao-fonto-style: block-content-sample-content);
+    UL {
+      margin: 0em;
+      padding: 0em;
+      LI {
+        @include ao-fontography($ao-fonto-style: block-content-sample-list);
+        list-style-type: none;
+      }
+    }
+  }
+}
+ 
+/**
+ * COMPONENTS
+ */
+
+

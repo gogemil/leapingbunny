@@ -1,0 +1,157 @@
+/**
+ * @file
+ * Defines the general look of reports
+ *
+ */
+BODY.page-crm-core-reports {
+  
+  .pane-title {
+    @extend .widget-title-links;
+    @extend .title-fonts;
+  }
+  
+  /* view headers */
+  .view-header {
+  
+    position: relative;
+    
+    .detail-buttons {
+      position: absolute;
+      right: 0px;
+      top: 0px;
+    }
+  }
+
+  .widget-summary-info {
+
+    @extend .results-summary;
+      
+    .widget-summary-info-detail {
+      font-weight: 700;
+    }
+  
+  }
+
+
+  /* annual reports */
+  .annual-report {
+    caption {
+      margin-bottom: 10px;
+      position: relative;
+      text-align: left;
+      font-weight: bold;
+      font-size:$h3-font-size;
+    }
+  }
+  .view-cmcev-revenues-report {
+    @extend .annual-report;
+  }
+
+  /* specific data summary tables */
+  .pane-cmcv-source-summary-totals,
+  .pane-cmcv-opportunity-metrics,
+  .pane-cmcv-overview-metrics,
+  .view-cmcp-source-summary-header,
+  .view-petition-page-performance-summary,
+  .pane-cmcp-overview-metrics,
+  .view-cmcev-sources-summary-report,
+  .view-cmcev-event-summary-metrics,
+  .pane-event-metrics,
+  .view-cmcd-source-total-figures {
+    @extend .data-summary;
+  }
+  
+  /* specific data tables */
+  .pane-cmcv-source-summary-frequency,
+  .pane-cmcv-source-summary-attendance,
+  .pane-opportunity-summary-sources,
+  .pane-opportunity-summary-attendance,
+  .pane-opportunity-summary-frequency,
+  .pane-cmcv-opportunity-attendance,
+  .view-cmcv-recent-signups,
+  .view-cmcp-source-summary-top-petitions,
+  .view-cmcp-source-summary-top-signatories,
+  .pane-cmcp-other-petitions,
+  .pane-cmcp-page-source-summary,
+  .pane-petition-top-sources-panel-pane-1,
+  .pane-cmcp-recent-signatures-panel-pane-1,
+  .pane-source-summary-attendance,
+  .pane-source-summary-frequency,
+  .pane-event-attendance,
+  .pane-cmcev-overview-signups-panel-pane-1,
+  .pane-donor-recent-donors-table,
+  .pane-donors-top-donors-panel-pane-1,
+  .pane-donation-page-time-table,
+  .pane-donation-page-day-table,
+  .pane-donation-source-frequency-graph,
+  .pane-donation-source-average-graph,
+  .pane-donation-source-os-graph,
+  .pane-cmcd-details-callouts-panel-pane-1,
+  .pane-cmcd-source-callouts-panel-pane-1 {
+    @extend .data-tables;
+    .table-container {
+      margin-top: 20px;
+    }
+  }
+  
+  /* specific field highlights */
+  .table-field-source-percentage,
+  .table-field-frequency-percentage,
+  .table-field-attendance-percentage,
+  .table-field-attendance-registrations,
+  .table-field-volunteer-frequency-percent,
+  .table-field-attendance-percent,
+  .table-field-petition-signatories,
+  .views-field-activity-id,
+  .views-field-field-cmcev-amount,
+  .table-field-total-amount-by-time,
+  .table-field-day-of-week,
+  .views-field-field-cmcd-amount,
+  .table-field-donor-frequency,
+  .table-field-average-amount,
+  .table-field-source {
+    font-weight: 700;
+  }
+
+  /* table centering */
+  .table-field-source-percentage,
+  .table-field-frequency-percentage,
+  .table-field-attendance-percentage,
+  .table-field-attendance-registrations,
+  .table-field-volunteer-frequency-percent,
+  .table-field-attendance-percent,
+  .table-field-petition-signatories,
+  .views-field-nid,
+  .views-field-expression,
+  .views-field-activity-id,
+  .views-field-field-cmcev-amount,
+  .table-field-event-attended,
+  .table-field-event-registered,
+  .views-field-activity-id-1,
+  .table-field-time-of-day,
+  .table-field-total-donations,
+  .table-field-total-amount-by-time,
+  .table-field-total-amount,
+  .table-field-total-donors,
+  .views-field-field-cmcd-amount-1,
+  .views-field-field-cmcd-amount,
+  .views-field-activity-id,
+  .table-field-number-of-donors,
+  .table-field-total-receipts,
+  .table-field-total-amount,
+  .table-field-donors,
+  .table-field-percent {
+    text-align: center;
+  }
+
+  /* keep report buttons on the same line */
+  .view-cmcv-opportunities-report .views-field-nothing,
+  .pane-cmcp-recent-signatures-panel-pane-1 TD.views-field-nothing,
+  .pane-petition-top-sources-panel-pane-1 TD.views-field-nothing,
+  .view-cmcev-events-report TD.views-field-nothing {
+    white-space: nowrap;
+    padding-left: .5em;
+    padding-right: .5em;
+  }
+
+}

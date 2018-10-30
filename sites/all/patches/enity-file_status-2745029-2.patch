@@ -1,0 +1,32 @@
+diff --git a/modules/callbacks.inc b/modules/callbacks.inc
+index 0c5c8ee..b21e2e0 100644
+--- a/modules/callbacks.inc
++++ b/modules/callbacks.inc
+@@ -278,6 +278,9 @@ function entity_metadata_system_get_file_properties($file, array $options, $name
+     case 'size':
+       return $file->filesize;
+ 
++    case 'status':
++      return $file->status;
++
+     case 'url':
+       return url(file_create_url($file->uri), $options);
+ 
+diff --git a/modules/system.info.inc b/modules/system.info.inc
+index 0c6ba6b..edb3835 100644
+--- a/modules/system.info.inc
++++ b/modules/system.info.inc
+@@ -110,6 +110,13 @@ function entity_metadata_system_entity_property_info() {
+     'type' => 'integer',
+     'schema field' => 'filesize',
+   );
++  $properties['status'] = array(
++    'label' => t('File status'),
++    'description' => t('Status of the file.'),
++    'getter callback' => 'entity_metadata_system_get_file_properties',
++    'type' => 'integer',
++    'schema field' => 'status',
++  );
+   $properties['url'] = array(
+     'label' => t("URL"),
+     'description' => t("The web-accessible URL for the file."),

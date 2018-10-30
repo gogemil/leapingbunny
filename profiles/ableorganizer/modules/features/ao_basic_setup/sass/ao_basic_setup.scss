@@ -1,0 +1,153 @@
+/**
+ * @file
+ * 
+ * Controls the layout of the default content for AbleOrganizer
+ */
+
+/* init */
+/* font sizes */
+$base-font-size:   16px; // The font size set on the root html element.
+$base-line-height: 24px; // This line-height determines the basic unit of vertical rhythm.
+
+$h1-font-size: 2    * $base-font-size;
+$h2-font-size: 1.5  * $base-font-size;
+$h3-font-size: 1.17 * $base-font-size;
+$h4-font-size: 1    * $base-font-size;
+$h5-font-size: 0.83 * $base-font-size;
+$h6-font-size: 0.67 * $base-font-size;
+
+/* basic colors */
+$ao_orange:   #ffb836;
+$ao_orange2:  #ffcc4d;
+$ao_blue:     #00b0f3;
+$ao_blue2:    #436ab3;
+$ao_aqua:     #c8effe;
+$gray-1:      #2f353e;
+$base-red: #FF5A51;
+
+/* text colors */
+$header_line: rgba(67,106,179,1);
+$transparent: rgba(255,255,255,0);
+
+/* fonts */
+$open-sans:       'Open Sans', Helvetica, "Nimbus Sans L", sans-serif;
+$montserrat:      'Montserrat', Helvetica, "Nimbus Sans L", sans-serif;
+
+// Now create some variables for the font stacks we want to use on this site.
+$base-font-family: $open-sans; // The font family set on the html element.
+$font-body:        $open-sans;
+$font-titles:      $montserrat;
+
+
+/* partials */
+// Add Compass' IE and vendor prefix support variables.
+@import "compass/support";
+// Better than Drupal's clearfix.
+@import "compass/utilities/general/clearfix";
+// See http://compass-style.org/help/tutorials/spriting/
+@import "compass/utilities/sprites";
+// Use one CSS3 mixin instead of multiple vendor prefixes.
+@import "compass/css3";
+// Helps set up a vertical rhythm.
+@import "compass/typography/vertical_rhythm";
+// add sassy buttons
+@import "sassy-buttons";
+// Add the Zen Grids responsive layout mixins.
+@import "zen";
+
+
+/* layouts */
+  
+  
+/* Component (SMACSS module) rules */
+@import "components/features";
+@import "components/info-box";
+
+
+/* displays an info item */
+.info-item {
+  text-align: left;
+  display: inline-block;
+  width: 30%;
+  vertical-align: top;
+}
+.info-holder {
+}
+
+/* controls the display of dialogs */
+.ao_profeat_dialog {
+  color: #777;
+  font-size: 0.9em;
+}
+.ao_profeat_dialog .ao_profeat_dialog_title {
+  text-align: center;
+  margin: 0em;
+  background-image: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 48%, rgba(67,106,179,1) 49%, rgba(67,106,179,1) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,0) 100%);
+  background-image: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 48%, rgba(67,106,179,1) 49%, rgba(67,106,179,1) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,0) 100%);
+  background-image: -o-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 48%, rgba(67,106,179,1) 49%, rgba(67,106,179,1) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,0) 100%);
+  background-image: linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 48%, rgba(67,106,179,1) 49%, rgba(67,106,179,1) 50%, rgba(255,255,255,0) 51%, rgba(255,255,255,0) 100%);
+  
+  
+  padding: .5em 0em;
+  text-transform: uppercase;
+  font-size: 1.3em;
+}
+.ao_profeat_dialog .ao_profeat_dialog_title .title_inner {
+  display: inline-block;
+}
+.ao_profeat_dialog .ao_profeat_dialog_title .title_bg {
+  background-color: White;
+  display: inline-block;
+  padding: 0em .5em;
+}
+.ao_profeat_dialog .ao_profeat_dialog_title .ao_profeat_dialog_icon {
+  display: inline-block;
+  margin: 0em 0em .5em 0em ;
+  background-color: #CCC;
+  border-radius: 50%;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  vertical-align: middle;
+}
+.ao_profeat_dialog .ao_profeat_dialog_title .ao_profeat_dialog_icon SPAN {
+  background-image: url('../images/ao-frontend-icons.png');
+  height: 30px;
+  width: 30px;
+  margin: 10px auto;
+  display: block;
+}
+.ao_profeat_dialog .ao_profeat_dialog_fundraising .ao_profeat_dialog_icon {
+  background-color: #399B19;
+}
+.ao_profeat_dialog .ao_profeat_dialog_events .ao_profeat_dialog_icon {
+  background-color: #1A6099;
+}
+.ao_profeat_dialog .ao_profeat_dialog_petition .ao_profeat_dialog_icon {
+  background-color: #e26427;
+}
+.ao_profeat_dialog .ao_profeat_dialog_volunteer .ao_profeat_dialog_icon {
+  background-color: #D12424;
+}
+.ao_profeat_dialog .ao_profeat_dialog_fundraising .ao_profeat_dialog_icon SPAN {
+  background-position: -31px 0px;
+}
+.ao_profeat_dialog .ao_profeat_dialog_events .ao_profeat_dialog_icon SPAN {
+  background-position: -61px 0px;
+}
+.ao_profeat_dialog .ao_profeat_dialog_petition .ao_profeat_dialog_icon SPAN {
+  background-position: -61px -30px;
+}
+.ao_profeat_dialog .ao_profeat_dialog_volunteer .ao_profeat_dialog_icon SPAN {
+  background-position: 0px 0px;
+}
+.ao_profeat_dialog LI {
+  margin: 0em 0em 1em;
+}
+
+
+/* @TODO: move to theme */
+
+/* Component (SMACSS module) rules */
+@import "themes/ao_sample_content";

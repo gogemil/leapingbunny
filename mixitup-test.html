@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        #Grid .mix{
+            opacity: 0;
+            display: none;
+            border: 1px solid #808080;
+        }
+    </style>
+    <script src="sites/all/modules/contrib/jquery_update/replace/jquery/1.7/jquery.min.js"></script>
+    <script src="sites/all/libraries/jquery-mixitup/jquery.mixitup.min.js"></script>
+    <script>
+        $(function(){
+
+            $('#Grid').mixitup();
+
+        });
+    </script>
+</head>
+<body>
+<div>Filters</div>
+<ul>
+    <li class="filter" data-filter="all">All</li>
+    <li class="filter" data-filter="dogs">Dogs</li>
+    <li class="filter" data-filter="cats">Cats</li>
+    <li class="filter" data-filter="krakens">krakens</li>
+    <li class="filter" data-filter="dogs cats">dogs cats</li>
+</ul>
+
+<div>Main content</div>
+<ul id="Grid">
+    <li class="mix dogs">Dogs</li>
+    <li class="mix cats">Cats</li>
+    <li class="mix krakens">Krakens</li>
+    <li class="mix dogs cats">dogs cats</li>
+</ul>
+
+</body>
+</html>

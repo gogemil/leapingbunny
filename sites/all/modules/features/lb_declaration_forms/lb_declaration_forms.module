@@ -1,0 +1,588 @@
+<?php
+/**
+ * @file
+ * Code for the lb_declaration_forms feature.
+ */
+
+include_once 'lb_declaration_forms.features.inc';
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function lb_declaration_forms_preprocess_page(&$vars) {
+
+  if (arg(0) == 'crm-core' && arg(1) == 'reports' && arg(2) == 'lb_decl') {
+    $breadcrumb = array(
+      l(t('Home'), '<front>'),
+      l(t('CRM Core'), 'crm-core'),
+      l(t('Reports'), 'crm-core/reports'),
+      l(t('Declarations'), 'crm-core/reports/lb_decl'),
+    );
+
+    drupal_set_breadcrumb($breadcrumb);
+  }
+
+}
+
+/**
+ * Implements hook_crm_core_report_register().
+ */
+function lb_declaration_forms_crm_core_report_register() {
+
+  $reports = array(
+    'lb_declarations' => array(
+      'title' => t('Declarations'),
+      'reports' => array(),
+      'widgets' => array(),
+    ),
+    'lb_licenses' => array(
+      'title' => t('Licensing'),
+      'reports' => array(),
+      'widgets' => array(),
+    ),
+
+  );
+  // Declarations
+  $reports['lb_declarations']['reports']['products'] = array(
+    'title' => t('Product Compliance'),
+    'path' => 'crm-core/reports/lb_decl/product_compliance',
+    'description' => t('Lists all Declarations of Product Compliance.'),
+  );
+  $reports['lb_declarations']['reports']['materials'] = array(
+    'title' => t('Raw Materials'),
+    'path' => 'crm-core/reports/lb_decl/raw_materials',
+    'description' => t('Lists all Declarations of Raw Material Compliance.'),
+  );
+
+
+  // Licensing
+  $reports['lb_licenses']['reports']['logo'] = array(
+    'title' => t('Logo Licensing'),
+    'path' => 'crm-core/reports/lb_licenses/logos',
+    'description' => t('Lists all logo licensing applications.'),
+  );
+
+  return $reports;
+}
+
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * Adds additional fields to the form along with a submit handler
+ * to ensure we are capturing the right compnay / participants
+ */
+function lb_declaration_forms_form_crm_core_profile_entry_form_declaration_of_product_alter(&$form, &$form_state) {
+
+  // need to get the company being targeted
+  // where does this come from?
+  $company = lb_declaration_forms_get_company(arg(3));
+  $date_short = format_date(time(), 'custom', 'M d, Y');
+  // $date = format_date(time(), 'custom', 'F d, Y');
+  $date = $company['date'];
+  $manufacturer = lb_declaration_forms_get_company(arg(2));
+
+  // set the text to appear at the top of the form
+  $opening = <<<OPN
+    <p>To be completed by Third Party Manufacturers of Cosmetic and/or Household Products</p>
+    <p>This declaration applies to all products supplied to {$company['name']}.</p>
+    <h2>Product Manufacturer Declaration</h2>
+    <ol>
+    <li>I hereby confirm that the products and Ingredients and their component parts comply with the requirement of the Corporate Standard of Compassion for Animals that they have not been tested or re-tested on animals to assess safety, efficacy, or environmental effects of Cosmetics and/or Household Products by or on behalf of {$manufacturer['name']} since $date at the latest.
+    <li>I hereby confirm that we have either collected Declarations of Raw Material Compliance or inserted purchase order language for the products and ingredients and their component parts indicated above, and declare that none have been the subject of Animal Testing or re-testing to assess safety, efficacy, or environmental effects of Cosmetics and/or Household Products by or on behalf of our Suppliers since the above $date at the latest.
+    <li>I hereby confirm that all of the above information is complete and accurate and agree to immediately notify {$company['name']} in writing of any changes to the above details.
+    </ol>
+OPN;
+
+  $declarations = variable_get('lb_registration_section_d_declarations', array());
+  if (!empty($declarations['declaration_product'])) {
+    $pdf_file = file_load($declarations['declaration_material']);
+  }
+
+  if (isset($pdf_file)) {
+    $link = t('!link', array('!link' => l(t('Declarations of Raw Material Compliance'), file_create_url($pdf_file->uri), array('attributes' => array('target' => '_blank')))));
+  }
+  else {
+    $link = 'Declarations of Raw Material Compliance';
+  }
+    // set the text to appear at the bottom of the form
+    $closing = <<<CLO
+    <h2>For Your Records</h2>
+    <p>Please download $link to be filled out by suppliers.</p>
+    <p><em>* By entering his/her name in the Signature field, the signer hereby attests that s/he is the duly authorized agent of the Entity, as only authorized agents have access to this form, with full power and authority to execute this Declaration of Product Compliance and thereby to bind the Entity to the commitments made herein. Completion of this electronic form is binding.</em></p>
+    <h2>Glossary of Terms</h2>
+    <strong>What is the “Coalition for Consumer Information on Cosmetics”?</strong>
+    <p>The Coalition for Consumer Information on Cosmetics (CCIC) is a coalition of national animal protection groups that promotes a meaningful, reliable, non-animal testing standard and logo for cosmetics, personal care, and household products. The Coalition was developed to meet both consumer and corporate demand for a single, reliable certification that designates products as free of new animal testing.</p>
+    <strong>What is the “Corporate Standard of Compassion for Animals” (“the Standard”)?</strong>
+    <p>The Standard is a commitment a Company makes to ban animal testing during any stage of its products’ development. The Standard applies to a Company’s Cosmetics and Household Products. As part of that pledge, a Company is required to obtain declarations from each of its Suppliers and Third Party Manufacturers that the Ingredients, formulations, or products supplied to the CCIC-approved Company, have not been Animal Tested after that Company’s Fixed Cut-off Date. The result is a product guaranteed to be 100% free of new Animal Testing. While Ingredients may have been tested in the past, the Standard is designed to prevent future Animal Testing. Commitments are updated on an annual basis.</p>
+    <strong>Definitions</strong>
+    <p>(For more information on the Standard, or further terms defined, please contact either CCIC or the Company making this request for more detailed explanation.)</p>
+    <strong>Animal Testing</strong>
+    <p>All testing of finished Cosmetics and/or Household Products, or any one or more Ingredients or formulations used in manufacturing or production of such products in which whole non-human animals are the test subjects, including without limitation, fish, amphibians, reptiles, birds, and non-human mammals. Animal Testing excludes in vitro tests or tests conducted completely with human volunteers.</p>
+    <p>The prohibition against Animal Testing contained in the Standard does not apply to the purchase of animal-tested Ingredients if
+    (a) the Ingredient was tested to meet explicit statutory or regulatory requirements for animal testing; AND
+    (b) the testing was not conducted to assess safety, efficacy, or environmental effects of Cosmetics and/or Household Products.</p>
+    <strong>Company</strong>
+    <p>The person, corporation, partnership, or other legal organization that has separate existence and can function legally, including without limitation, its subsidiaries, affiliates, divisions, agents, and employees, involved in selling Cosmetic and/or Household Products under its own name.</p>
+    <strong>Cosmetics</strong>
+    <p>Personal care products, including without limitation, products for the hair (e.g., shampoo, conditioner, coloring agents, depilatory agents), skin (e.g., soap, moisturizer, sunscreen, aftershave, antiperspirant, deodorant, talcum powder, bubble bath), mouth (e.g., toothpaste, mouthwash), nails (e.g., nail polish, polish remover), perfume, cologne, lipstick, eye shadow and liner, and rouge. Cosmetics also means personal care products marketed or regulated as over-the-counter drugs (e.g., toothpaste marketed with the claim of fighting cavities, mouthwash marketed with the claim of killing germs).</p>
+    <strong>Fixed Cut-off Date</strong>
+    <p>A date after which a Company, its Third Party Manufacturers, and/or Suppliers must not have conducted or commissioned Animal Testing for the Company’s own-label products and/or Ingredients supplied for use in the Company’s Cosmetic and/or Household Products.</p>
+    <p>A Fixed Cut-off Date must be fixed, and applied across the Company’s entire Cosmetic and/or Household Products range, now and in the future.</p>
+    <strong>Household Products</strong>
+    <p>Products for the home, including without limitation, laundry and dish detergent, bleach, cleaners and cleansers, floor wax, furniture polish, and air fresheners. As defined, Household Products does not include paint and paint remover, varnish and other stains, chemical drain declogger, paper products, candles, or insecticide.</p>
+    <strong>Ingredient</strong>
+    <p>A single substance or mixture of substances, system, or compound, intended for use in Cosmetic and/or Household Products, as listed on the product label.</p>
+    <strong>Supplier</strong>
+    <p>Any manufacturer that supplies, directly, through an agent, or Third Party Manufacturer, any Ingredient or Ingredient mixture used in the formulation of a Company’s own-label Cosmetic and/or Household Products. This includes the original manufacturer of the Ingredient.</p>
+    <strong>Third Party Manufacturer</strong>
+    <p>A manufacturer that produces products on behalf of the Company seeking approval under the Standard.</p>
+CLO;
+
+  // add a new submit handler
+  $form['#submit'][] = 'lb_declaration_forms_declaration_of_product_submit_handler';
+
+  // change the label on the company name
+  $form['field_lb_company_name_raw']['#title'] = 'Company Name:';
+  $form['field_lb_company_name_raw']['#disabled'] = TRUE;
+  $form['field_lb_company_name_raw'][LANGUAGE_NONE][0]['value']['#default_value'] = $manufacturer['name'];
+
+  $form['crm_core_activity_declaration_product_compliance_field_lb_printed_name_given']['#required'] = TRUE;
+  $form['crm_core_activity_declaration_product_compliance_field_lb_printed_name_given']['#title'] = t('First name');
+  $form['crm_core_activity_declaration_product_compliance_field_lb_printed_name_family']['#required'] = TRUE;
+  $form['crm_core_activity_declaration_product_compliance_field_lb_printed_name_family']['#title'] = t('Last name');
+
+  $form['field_lb_sig_name'][LANGUAGE_NONE][0]['value']['#title'] = 'Signature';
+
+  // screw with the form in other ways
+  $form['opening'] = array(
+    '#weight' => -100,
+    '#markup' => $opening,
+  );
+  $form['date_of_compliance'] = array(
+    '#weight' => 98,
+    '#markup' => '<span class="fake-form-label">Date:</span>' . $date_short,
+  );
+  $form['actions']['#weight'] = 99;
+  $form['closing'] = array(
+    '#weight' => 100,
+    '#markup' => $closing,
+  );
+
+}
+
+/**
+ * Submit handler for declaration of product
+ */
+function lb_declaration_forms_declaration_of_product_submit_handler($form, &$form_state){
+
+  if(!is_numeric(arg(2))){
+    return;
+  }
+
+  $val = array(arg(2));
+  $activity =& $form_state['crm_core_activity'];
+  $activity_wrapper = entity_metadata_wrapper('crm_core_activity', $activity);
+  $activity_wrapper->field_activity_participants->set($val);
+  $activity_wrapper->field_lb_company->set(arg(3));
+  $activity_wrapper->field_lb_printed_name = array(
+    'given' => $form_state['values']['crm_core_activity_declaration_product_compliance_field_lb_printed_name_given'],
+    'family' => $form_state['values']['crm_core_activity_declaration_product_compliance_field_lb_printed_name_family'],
+  );
+  $activity_wrapper->save();
+
+}
+
+/**
+ * Gets company id based on URL
+ */
+function lb_declaration_forms_get_company($contact_id){
+  // gets a company based on company id
+  $contact = crm_core_contact_load($contact_id);
+  $name = field_view_field('crm_core_contact', $contact, 'contact_name', array('settings' => array('output' => 'raw')));
+  $date = field_view_field('crm_core_contact', $contact, 'field_lb_cutoff_date');
+  $company_info = array(
+    'contact_id' => $contact_id,
+    'name' => $name[0]['#markup'],
+    'date' => $date[0]['#markup'],
+  );
+
+  return $company_info;
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * Adds additional fields to the form along with a submit handler
+ * to ensure we are capturing the right compnay / participants
+ */
+function lb_declaration_forms_form_crm_core_profile_entry_form_lb_declaration_raw_material_alter(&$form, &$form_state) {
+
+  // need to get the company being targeted
+  // where does this come from?
+  $company = lb_declaration_forms_get_company(arg(3));
+  $date_short = format_date(time(), 'custom', 'M d, Y');
+  // $date = format_date(time(), 'custom', 'F d, Y');
+  $date = $company['date'];
+  $supplier = lb_declaration_forms_get_company(arg(2));
+
+  // set the text to appear at the top of the form
+  $opening = <<<OPN
+    <p>To be completed by the Supplier of Ingredients/formulations (Note: an ingredient distributor is not able to sign this form.)</p>
+    <p>This declaration applies to all Ingredients/formulations supplied to {$company['name']}.</p>
+    <h2>Raw Material Supplier Declaration</h2>
+    <ol>
+      <li>I hereby confirm that the products and Ingredients and their component parts comply with the requirement of the Corporate Standard of Compassion for Animals that they have not been tested or re-tested on animals to assess safety, efficacy, or environmental effects of Cosmetics and/or Household Products by or on behalf of {$supplier['name']} since $date at the latest.
+      <li>I hereby confirm that all of the above information is complete and accurate and agree to immediately notify the product manufacturer in writing of any changes to the above details.
+    </ol>
+OPN;
+
+    // set the text to appear at the bottom of the form
+    $closing = <<<CLO
+    <h2>For Your Records</h2>
+      <p><em>* By entering his/her name in the Signature field, the signer hereby attests that s/he is the duly authorized agent of the Entity, as only authorized agents have access to this form, with full power and authority to execute this Declaration of Raw Material Compliance and thereby to bind the Entity to the commitments made herein. Completion of this electronic form is binding.</em></p>
+    <h2>Glossary of Terms</h2>
+      <strong>What is the “Coalition for Consumer Information on Cosmetics”?</strong>
+      <p>The Coalition for Consumer Information on Cosmetics (CCIC) is a coalition of national animal protection groups that promotes a meaningful, reliable, non-animal testing standard and logo for cosmetics, personal care, and household products. The Coalition was developed to meet both consumer and corporate demand for a single, reliable certification that designates products as free of new animal testing.</p>
+      <strong>What is the “Corporate Standard of Compassion for Animals” (“the Standard”)?</strong>
+      <p>The Standard is a commitment a Company makes to ban animal testing during any stage of its products’ development. The Standard applies to a Company’s Cosmetics and Household Products. As part of that pledge, a Company is required to obtain declarations from each of its Suppliers and Third Party Manufacturers that the Ingredients, formulations, or products supplied to the CCIC-approved Company, have not been Animal Tested after that Company’s Fixed Cut-off Date. The result is a product guaranteed to be 100% free of new Animal Testing. While Ingredients may have been tested in the past, the Standard is designed to prevent future Animal Testing. Commitments are updated on an annual basis.</p>
+      <strong>Definitions</strong>
+      <p>(For more information on the Standard, or further terms defined, please contact either CCIC or the Company making this request for more detailed explanation.)</p>
+      <strong>Animal Testing</strong>
+      <p>All testing of finished Cosmetics and/or Household Products, or any one or more Ingredients or formulations used in manufacturing or production of such products in which whole non-human animals are the test subjects, including without limitation, fish, amphibians, reptiles, birds, and non-human mammals. Animal Testing excludes in vitro tests or tests conducted completely with human volunteers.</p>
+      <p>The prohibition against Animal Testing contained in the Standard does not apply to the purchase of animal-tested Ingredients if </p>
+      (a) the Ingredient was tested to meet explicit statutory or regulatory requirements for animal testing; AND
+      (b) the testing was not conducted to assess safety, efficacy, or environmental effects of Cosmetics and/or Household Products.</p>
+      <strong>Company</strong>
+      <p>The person, corporation, partnership, or other legal organization that has separate existence and can function legally, including without limitation, its subsidiaries, affiliates, divisions, agents, and employees, involved in selling Cosmetic and/or Household Products under its own name.</p>
+      <strong>Cosmetics</strong>
+      <p>Personal care products, including without limitation, products for the hair (e.g., shampoo, conditioner, coloring agents, depilatory agents), skin (e.g., soap, moisturizer, sunscreen, aftershave, antiperspirant, deodorant, talcum powder, bubble bath), mouth (e.g., toothpaste, mouthwash), nails (e.g., nail polish, polish remover), perfume, cologne, lipstick, eye shadow and liner, and rouge. Cosmetics also means personal care products marketed or regulated as over-the-counter drugs (e.g., toothpaste marketed with the claim of fighting cavities, mouthwash marketed with the claim of killing germs).</p>
+      <strong>Fixed Cut-off Date</strong>
+      <p>A date after which a Company, its Third Party Manufacturers, and/or Suppliers must not have conducted or commissioned Animal Testing for the Company’s own-label products and/or Ingredients supplied for use in the Company’s Cosmetic and/or Household Products.</p>
+      <p>A Fixed Cut-off Date must be fixed, and applied across the Company’s entire Cosmetic and/or Household Products range, now and in the future.</p>
+      <strong>Household Products</strong>
+      <p>Products for the home, including without limitation, laundry and dish detergent, bleach, cleaners and cleansers, floor wax, furniture polish, and air fresheners. As defined, Household Products does not include paint and paint remover, varnish and other stains, chemical drain declogger, paper products, candles, or insecticide.</p>
+      <strong>Ingredient</strong>
+      <p>A single substance or mixture of substances, system, or compound, intended for use in Cosmetic and/or Household Products, as listed on the product label.</p>
+      <strong>Supplier</strong>
+      <p>Any manufacturer that supplies, directly, through an agent, or Third Party Manufacturer, any Ingredient or Ingredient mixture used in the formulation of a Company’s own-label Cosmetic and/or Household Products. This includes the original manufacturer of the Ingredient.</p>
+      <strong>Third Party Manufacturer</strong>
+      <p>A manufacturer that produces products on behalf of the Company seeking approval under the Standard.</p>
+CLO;
+
+  // add a new submit handler
+  $form['#submit'][] = 'lb_declaration_forms_declaration_of_raw_material_submit_handler';
+
+  // change the label on the company name
+  $form['field_lb_company_name_raw']['#title'] = 'Company Name:';
+  $form['field_lb_company_name_raw']['#disabled'] = TRUE;
+  $form['field_lb_company_name_raw'][LANGUAGE_NONE][0]['value']['#default_value'] = $supplier['name'];
+
+  $form['crm_core_activity_declaration_raw_material_field_lb_printed_name_given']['#required'] = TRUE;
+  $form['crm_core_activity_declaration_raw_material_field_lb_printed_name_given']['#title'] = t('First name');
+  $form['crm_core_activity_declaration_raw_material_field_lb_printed_name_family']['#required'] = TRUE;
+  $form['crm_core_activity_declaration_raw_material_field_lb_printed_name_family']['#title'] = t('Last name');
+
+  $form['field_lb_sig_name'][LANGUAGE_NONE][0]['value']['#title'] = 'Signature';
+
+  // screw with the form in other ways
+  $form['opening'] = array(
+    '#weight' => -100,
+    '#markup' => $opening,
+  );
+  $form['date_of_compliance'] = array(
+    '#weight' => 98,
+    '#markup' => '<span class="fake-form-label">Date:</span>' . $date_short,
+  );
+  $form['actions']['#weight'] = 99;
+  $form['closing'] = array(
+    '#weight' => 100,
+    '#markup' => $closing,
+  );
+
+}
+/**
+ * Submit handler for declaration of product
+ */
+function lb_declaration_forms_declaration_of_raw_material_submit_handler($form, &$form_state){
+
+  if(!is_numeric(arg(2))){
+    return;
+  }
+
+  $val = array(arg(2));
+  $activity =& $form_state['crm_core_activity'];
+  $activity_wrapper = entity_metadata_wrapper('crm_core_activity', $activity);
+  $activity_wrapper->field_activity_participants->set($val);
+  $activity_wrapper->field_lb_company->set(arg(3));
+  $activity_wrapper->field_lb_printed_name = array(
+    'given' => $form_state['values']['crm_core_activity_declaration_raw_material_field_lb_printed_name_given'],
+    'family' => $form_state['values']['crm_core_activity_declaration_raw_material_field_lb_printed_name_family'],
+  );
+  $activity_wrapper->save();
+
+}
+
+/**
+ * Implements hook_crm_core_profile_pre_entity_save_alter().
+ *
+ * We need to save data in the activity before custom rules fire so that tokens
+ * can be set.
+ */
+function lb_declaration_forms_crm_core_profile_pre_entity_save_alter($profile, $form, $form_state) {
+  if (isset($form_state['crm_core_activity'])) {
+    $activity =& $form_state['crm_core_activity'];
+    $declarations = array('declaration_raw_material', 'declaration_product_compliance');
+    if (in_array($activity->type, $declarations)) {
+      $type = $activity->type;
+      if(!is_numeric(arg(2))){
+        return;
+      }
+
+      $val = array(arg(2));
+      $activity_wrapper = entity_metadata_wrapper('crm_core_activity', $activity);
+      $activity_wrapper->field_activity_participants->set($val);
+      $activity_wrapper->field_lb_company->set(arg(3));
+      $given_field = "crm_core_activity_{$type}_field_lb_printed_name_given";
+      $family_field = "crm_core_activity_{$type}_field_lb_printed_name_family";
+      $activity_wrapper->field_lb_printed_name = array(
+        'given' => $form_state['values'][$given_field],
+        'family' => $form_state['values'][$family_field],
+      );
+      $activity_wrapper->save();
+    }
+    if ($activity->type == 'logo_licensing_application') {
+      if(!is_numeric(arg(2))){
+        return;
+      }
+
+      $activity =& $form_state['crm_core_activity'];
+      $activity_wrapper = entity_metadata_wrapper('crm_core_activity', $activity);
+      $activity_wrapper->field_activity_participants[] = arg(2);
+      $activity_wrapper->field_activity_participants[] = arg(3);
+      $activity_wrapper->field_lb_company->set(arg(2));
+      $activity_wrapper->save();
+    }
+  }
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * Adds additional fields to the form along with a submit handler
+ * to ensure we are capturing the right company / participants.
+ */
+function lb_declaration_forms_form_crm_core_profile_entry_form_logo_licensing_application_alter(&$form, &$form_state) {
+  $company = crm_core_contact_load(arg(2));
+  $company_name = $company->label();
+  $date_short = format_date(time(), 'custom', 'M d, Y');
+
+  $form['#submit'][] = 'lb_declaration_forms_logo_licensing_submit_handler';
+
+  // Conditions of use file link.
+  $cou_uri = 'sites/default/files/CCIC Logo License Application.pdf';
+  $cou_link = l(t('Leaping Bunny Logo Conditions of Use'), $cou_uri, array('attributes' => array('target' => '_blank')));
+  $form['before'] = array(
+    '#weight' => -110,
+    '#markup' => t('Before you fill out the Leaping Bunny Logo Licensing Application, please read the !link.', array('!link' => $cou_link)),
+    '#prefix' => '<p>',
+    '#suffix' => '</p>',
+  );
+
+  $form['field_conditions_of_use']['#weight'] = -109;
+  $form['field_conditions_of_use'][LANGUAGE_NONE]['#description'] = '';
+
+
+  $form['read_all'] = array(
+    '#weight' => -108,
+    '#markup' => t('All sections of the application must be completed and supporting documentation attached where necessary. For help and confidential advice please contact the CCIC administrator at 888-546-CCIC.'),
+    '#prefix' => '<p>',
+    '#suffix' => '</p>',
+  );
+
+  $form['approve'] = array(
+    '#weight' => -107,
+    '#markup' => t('Having been approved under the Corporate Standard of Compassion for Animals, %company_name would like to apply for use of the CCIC Leaping Bunny Logo.', array('%company_name' => $company_name)),
+  );
+
+  $form['field_brand_company_subsidiary']['#weight'] = -106;
+  $form['field_brand_company_subsidiary'][LANGUAGE_NONE][0]['value']['#title'] = $form['field_brand_company_subsidiary'][LANGUAGE_NONE][0]['value']['#description'];
+  $form['field_brand_company_subsidiary'][LANGUAGE_NONE][0]['value']['#description'] = '';
+
+  $form['field_company_label_agreement']['#weight'] = -105;
+  $form['field_company_label_agreement'][LANGUAGE_NONE]['#title'] = $form['field_company_label_agreement'][LANGUAGE_NONE]['#description'];
+  $form['field_company_label_agreement'][LANGUAGE_NONE]['#description'] = '';
+
+  $form['field_company_gross_sales'][LANGUAGE_NONE][0]['value']['#title'] = 'The company applying agrees to pay the appropriate Logo fee, as determined by the Fee Schedule. For this purpose, please note that the company\'s Gross Annual Sales in approved Products is:';
+  $form['field_company_gross_sales']['#weight'] = -104;
+
+  $form['field_audited_tax_form'][LANGUAGE_NONE][0]['#title'] = 'A copy of the company\'s audited tax form filed for the most recent year, or latest audited accounts, is attached:';
+  $form['field_audited_tax_form'][LANGUAGE_NONE][0]['#description'] = '';
+  $form['field_audited_tax_form']['#weight'] = -103;
+
+  $form['field_financial_agreement'][LANGUAGE_NONE]['#title'] = $form['field_financial_agreement'][LANGUAGE_NONE]['#description'];
+  $form['field_financial_agreement'][LANGUAGE_NONE]['#description'] = '';
+  $form['field_financial_agreement']['#weight'] = -102;
+
+  $form['undersigned'] = array(
+    '#weight' => -40,
+    '#markup' => t('The undersigned understands and accepts on behalf of the applying company the Leaping Bunny Logo Conditions of Use and declares the above-mentioned products meet with the criteria set out in the Standard.'),
+    '#prefix' => '<p>',
+    '#suffix' => '</p>',
+  );
+
+  $form['date_of_compliance'] = array(
+    '#weight' => 98,
+    '#markup' => '<span class="fake-form-label">Date Submitted:</span>' . $date_short,
+  );
+}
+
+
+/**
+ * Submit handler for Logo Licensing form.
+ */
+function lb_declaration_forms_logo_licensing_submit_handler($form, &$form_state){
+
+  if(!is_numeric(arg(2))){
+    return;
+  }
+
+  $activity =& $form_state['crm_core_activity'];
+  $activity_wrapper = entity_metadata_wrapper('crm_core_activity', $activity);
+  $activity_wrapper->field_activity_participants[] = arg(2);
+  $activity_wrapper->field_activity_participants[] = arg(3);
+  $activity_wrapper->field_lb_company->set(arg(2));
+  $activity_wrapper->save();
+}
+
+/**
+ * Implements hook_crm_core_activity_view_alter().
+ *
+ * Adding a print link to 'logo_licensing_application' activities.
+ */
+function lb_declaration_forms_crm_core_activity_view_alter(&$build) {
+  if ($build['#bundle'] == 'logo_licensing_application' && arg(0) == 'crm-core' && arg(1) == 'contact' && arg(3) == 'activity') {
+    $build['print_link'] = array(
+      '#markup' => l(t('Print'), 'print/' . current_path(), array('attributes' => array('id' => 'print-link'))),
+      '#weight' => -111,
+    );
+  }
+  // Alter logo app view to resemble form user fills in.
+  if ($build['#bundle'] == 'logo_licensing_application') {
+    if (arg(0) == 'crm-core' && arg(1) == 'contact' && is_numeric(arg(2))) {
+      $company = crm_core_contact_load(arg(2));
+      $company_name = $company->label();
+    }
+    if (arg(0) == 'company' && is_numeric(arg(1))) {
+      $company = crm_core_contact_load(arg(1));
+      $company_name = $company->label();
+    }
+    // Conditions of use file link.
+    $cou_uri = 'sites/default/files/CCIC Logo License Application.pdf';
+    $cou_link = l(t('Leaping Bunny Logo Conditions of Use'), $cou_uri, array('attributes' => array('target' => '_blank')));
+
+    $build['before'] = array(
+      '#weight' => -110,
+      '#markup' => t('Before you fill out the Leaping Bunny Logo Licensing Application, please read the !link.', array('!link' => $cou_link)),
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+    );
+
+    $build['read_all'] = array(
+      '#weight' => -108,
+      '#markup' => t('All sections of the application must be completed and supporting documentation attached where necessary. For help and confidential advice please contact the CCIC administrator at 888-546-CCIC.'),
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+    );
+
+    $build['approve'] = array(
+      '#weight' => -107,
+      '#markup' => t('Having been approved under the Corporate Standard of Compassion for Animals, %company_name would like to apply for use of the CCIC Leaping Bunny Logo.', array('%company_name' => $company_name)),
+      '#prefix' => '<ul><li>',
+      '#suffix' => '</li>',
+    );
+    if (!empty($build['field_brand_company_subsidiary'][0]['#markup'])) {
+      $build['field_brand_company_subsidiary']['#weight'] = -106;
+      $build['field_brand_company_subsidiary']['#title'] = "Please list all Brand, Company and/or Subsidiary names under the Company's Label to be registered Logo Users.";
+      $build['field_brand_company_subsidiary']['#prefix'] = '<li>';
+      $build['field_brand_company_subsidiary']['#suffix'] = '</li>';
+    }
+
+    if (!empty($build['field_company_label_agreement'][0]['#markup'])) {
+      $build['field_company_label_agreement']['#weight'] = -105;
+      $build['field_company_label_agreement']['#title'] = "I understand that the License only applies to those Products manufactured by my company's label, and falling under the definition of Cosmetics and Household Products, as defined by the Standard.";
+      $build['field_company_label_agreement']['#prefix'] = '<li>';
+      $build['field_company_label_agreement']['#suffix'] = '</li>';
+    }
+
+    if (!empty($build['field_company_gross_sales'][0]['#markup'])) {
+      $build['field_company_gross_sales']['#title'] = 'The company applying agrees to pay the appropriate Logo fee, as determined by the Fee Schedule. For this purpose, please note that the company\'s Gross Annual Sales in approved Products is:';
+      $build['field_company_gross_sales']['#weight'] = -104;
+      $build['field_company_gross_sales']['#prefix'] = '<li>';
+      $build['field_company_gross_sales']['#suffix'] = '</li>';
+    }
+
+    if (!empty($build['field_audited_tax_form'][0]['#markup'])) {
+      $build['field_audited_tax_form']['#title'] = 'A copy of the company\'s audited tax form filed for the most recent year, or latest audited accounts, is attached:';
+      $build['field_audited_tax_form']['#weight'] = -103;
+      $build['field_audited_tax_form']['#prefix'] = '<li>';
+      $build['field_audited_tax_form']['#suffix'] = '</li>';
+    }
+
+    if (!empty($build['field_financial_agreement'][0]['#markup'])) {
+      $build['field_financial_agreement']['#title'] = "I understand that the reasons for submitting financial information is to determine (a) the company's Logo fee and (b) if the company will be financially responsible for an independent audit to meet the Conditions of Use for the Logo.";
+      $build['field_financial_agreement']['#weight'] = -102;
+      $build['field_financial_agreement']['#prefix'] = '<li>';
+      $build['field_financial_agreement']['#suffix'] = '</li></ul>';
+    }
+    else {
+      $buld['close_markup'] = array(
+      	'#markup' => '',
+        '#suffix' => '</ul>',
+      );
+    }
+    $build['undersigned'] = array(
+      '#weight' => -40,
+      '#markup' => t('The undersigned understands and accepts on behalf of the applying company the Leaping Bunny Logo Conditions of Use and declares the above-mentioned products meet with the criteria set out in the Standard.'),
+      '#prefix' => '<p>',
+      '#suffix' => '</p>',
+    );
+
+    $build['field_conditions_of_use']['#weight'] = -39;
+    $build['field_activity_participants']['#weight'] = -38;
+    $build['field_lb_company']['#weight'] = -37;
+    $build['field_ao_primary_telephone']['#weight'] = -36;
+    $build['field_lb_contact_position']['#weight'] = -35;
+    $build['field_lb_sig_date']['#weight'] = -34;
+    $build['field_activity_date']['#weight'] = -33;
+  }
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function lb_declaration_forms_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'content_types') {
+    return 'plugins/' . $plugin_type;
+  }
+}
+
+/**
+ * Implements hook_rules_condition_info().
+ */
+function lb_declaration_forms_rules_condition_info() {
+  return array(
+    'lb_declaration_forms_section_d' => array(
+      'label' => t('Current page is section D'),
+      'group' => t('LB Declaration'),
+    ),
+  );
+}
+
+/**
+ * Rules condition callback.
+ */
+function lb_declaration_forms_section_d() {
+  // The file can be uploaded via ajax.
+  return arg(2) == 'application_section_d' || arg(5) == 'company_field_lb_declaration';
+}

@@ -1,0 +1,10 @@
+; Custom contact management theme for Leaping Bunny
+
+screenshot  = screenshot.png
+name        = Leaping Bunny Contact Management
+description = Custom contact management theme for Leaping Bunny
+
+core        = 7.x
+base theme  = ao_contact_management
+
+stylesheets[all][] = css/lb-styles.css

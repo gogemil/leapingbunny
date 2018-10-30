@@ -1,0 +1,394 @@
+<?php
+/**
+ * @file
+ * Code for the LB Brands feature.
+ */
+
+include_once 'lb_brands.features.inc';
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * partnership edit form modifications: Hide image field.
+ */
+function lb_brands_form_partnership_node_form_alter(&$form, &$form_state) {
+    $form['field_partnership_image']['#access'] = FALSE;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * brand edit form modifications: Hid product types field, replaces field
+ * titles with descriptions for some fields.
+ */
+function lb_brands_form_brand_node_form_alter(&$form, &$form_state) {
+  // Allow on brand add form, but not edit form.
+  if (!empty($form['#node']->nid)) {
+    $form['field_lb_product_types']['#access'] = FALSE;
+  }
+  // Swap labels with descriptions.
+  _lb_registration_replace_title_with_desc('field_lb_animal_ingredients', $form);
+  _lb_registration_replace_title_with_desc('field_lb_distributor_list', $form);
+  _lb_registration_replace_title_with_desc('field_lb_certifications', $form);
+  $form['field_lb_cosmetics']['#prefix'] = '<div class="cosmetics-label">' . $form['field_lb_product_types'][LANGUAGE_NONE]['#description'] . '</div>';
+  $form['field_lb_countries']['#prefix'] = '<div class="countries-label">' . $form['field_lb_countries'][LANGUAGE_NONE]['#description'] . '</div>';
+  $form['field_lb_countries'][LANGUAGE_NONE]['#description'] = '';
+  // Hid company field from no admins.
+  $role = 'administrator';
+  global $user;
+  if (!in_array($role, $user->roles)) {
+    $form['field_lb_brand_company']['#access'] = FALSE;
+    // Hide revision information.
+    $form['revision_information']['#access'] = FALSE;
+  }
+
+  // Add custom autocomplete.
+  $path = "lb_brands/autocomplete/";
+  if (!empty($form['#node']->nid)) {
+    $path .= $form['#node']->nid;
+  }
+  $form['field_lb_brand_manager'][LANGUAGE_NONE][0]['target_id']['#autocomplete_path'] = $path;
+
+  // Hide group info for all.
+  $form['og_group_ref']['#access'] = FALSE;
+}
+
+function lb_brands_node_submit($node, $form, &$form_state) {
+  if ($node->type == 'brand') {
+    if (!empty($form_state['build_info']['args'][0]->nid)) {
+      drupal_set_message(t('A Leaping Bunny Administrator will review and publish your changes as soon
+as possible.'));
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_views_view_unformatted().
+ *
+ * Adds brand categories as classes to view rows for use in mixitup.
+ */
+function lb_brands_preprocess_views_view_unformatted(&$vars) {
+  if ($vars['view']->name == 'lb_brands') {
+
+    foreach (array_keys($vars['rows']) as $key) {
+      $new_classes = array();
+      $fields = array(
+        'field_field_lb_cosmetics',
+        'field_field_lb_animal_care',
+        'field_field_lb_personal_care',
+        'field_field_lb_household_products',
+      );
+
+      foreach ($fields as $field) {
+        if (!empty($vars['view']->result[$key]->$field)) {
+          foreach ($vars['view']->result[$key]->$field as $field_data) {
+            if (!empty($field_data['rendered']['#markup'])) {
+              $new_classes[] = str_replace(array(' ', '/'), '_', check_plain($field_data['rendered']['#markup']));
+            }
+          }
+        }
+      }
+
+      // Adding company country to classes.
+      $country = $vars['view']->field['field_ao_business_address_country']->field_alias;
+      if (!empty($vars['view']->result[$key]->{$country})) {
+        $new_classes[] = $vars['view']->result[$key]->{$country};
+      }
+
+      // Marking brand as using logo.
+      if (!empty($vars['view']->result[$key]->logo_user_value)) {
+        $new_classes[] = 'uses-logo';
+      }
+
+      // Marking brand as partner.
+      if (!empty($vars['view']->result[$key]->brand_partnerships_nid)) {
+        $new_classes[] = 'is-partner';
+      }
+
+      // Marking brand with promotions.
+      if (!empty($vars['view']->result[$key]->brand_promotions_nid)) {
+        $new_classes[] = 'has-promotions';
+      }
+
+      // Marking brand as recent - added in past 6 month.
+      if (!empty($vars['view']->result[$key]->crm_core_activity_field_data_field_lb_application_outcome_ac)) {
+        $app_outc_activity_id = $vars['view']->result[$key]->crm_core_activity_field_data_field_lb_application_outcome_ac;
+        $outcome_activity = crm_core_activity_load($app_outc_activity_id);
+        if ($outcome_activity->type == 'lb_company_application_approved') {
+          $created_date = new DateObject($vars['view']->result[$key]->node_created);
+          $current_date = new DateObject('now');
+          $diff = $current_date->difference($created_date, 'months');
+
+          if ($diff >= 0 && $diff <= 6) {
+            $new_classes[] = 'recent';
+          }
+        }
+      }
+
+      $vars['classes_array'][$key] .= ' ' . implode(' ', $new_classes);
+    }
+  }
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ */
+function lb_brands_query_lb_brands_alter(QueryAlterableInterface $query) {
+  // Getting rid of duplicated entries after lb_brands_views_query_alter().
+  $query->groupBy('nid');
+}
+
+/**
+ * Implements hook_views_query_alter().
+ *
+ * Adds flags that promotions and partnerships exists for the brand.
+ *
+ * @see sites/all/themes/lbunny/templates/views/views-view-field--lb-brands--page--nothing.tpl.php
+ */
+function lb_brands_views_query_alter(&$view, views_plugin_query_default &$query) {
+  if ($view->name == 'lb_brands') {
+    // Adding partnerships to query.
+    // Join to field_data_field_brand.
+    $join = new views_join();
+    $extra = array(
+      array(
+        'field' => 'entity_type',
+        'value' => 'node',
+      ),
+      array(
+        'field' => 'bundle',
+        'value' => 'partnership',
+      ),
+      array(
+        'field' => 'deleted',
+        'value' => 0,
+        'numeric' => TRUE,
+      ),
+    );
+    $join->construct('field_data_field_brand', 'node', 'nid', 'field_brand_target_id', $extra);
+    $query->add_relationship('field_data_field_brand_partnerships', $join, 'field_data_field_brand');
+    // Join to node.
+    $join = new views_join();
+    $extra = array(
+      array(
+        'field' => 'status',
+        'value' => 1,
+        'numeric' => TRUE,
+      ),
+    );
+    $join->construct('node', 'field_data_field_brand_partnerships', 'entity_id', 'nid', $extra);
+    $query->add_relationship('brand_partnerships', $join, 'field_data_field_brand');
+    // Adding partnerships flag to query.
+    $query->add_field('brand_partnerships', 'nid', 'brand_partnerships_nid');
+
+    // Adding promotions to query.
+    // Join to field_data_field_brand.
+    $join = new views_join();
+    $extra = array(
+      array(
+        'field' => 'entity_type',
+        'value' => 'node',
+      ),
+      array(
+        'field' => 'bundle',
+        'value' => 'promotion',
+      ),
+      array(
+        'field' => 'deleted',
+        'value' => 0,
+        'numeric' => TRUE,
+      ),
+    );
+    $join->construct('field_data_field_brand', 'node', 'nid', 'field_brand_target_id', $extra);
+    $query->add_relationship('field_data_field_brand_promotions', $join, 'field_data_field_brand');
+    // Join to node.
+    $join = new views_join();
+    $extra = array(
+      array(
+        'field' => 'status',
+        'value' => 1,
+        'numeric' => TRUE,
+      ),
+    );
+    $join->construct('node', 'field_data_field_brand_promotions', 'entity_id', 'nid', $extra);
+    $query->add_relationship('brand_promotions', $join, 'field_data_field_brand');
+    // Adding promotions flag to query.
+    $query->add_field('brand_promotions', 'nid', 'brand_promotions_nid');
+
+    // Adding logo user field to query.
+    $join = new views_join();
+    $extra = array(
+      array(
+        'field' => 'entity_type',
+        'value' => 'crm_core_contact',
+      ),
+      array(
+        'field' => 'bundle',
+        'value' => 'company',
+      ),
+      array(
+        'field' => 'deleted',
+        'value' => 0,
+        'numeric' => TRUE,
+      ),
+    );
+    $join->construct('field_data_field_lb_logo_user', 'field_lb_brands_node', 'contact_id', 'entity_id', $extra);
+    $query->add_relationship('field_data_field_lb_logo_user_value', $join, 'field_lb_brands_node');
+    $query->add_field('field_data_field_lb_logo_user_value', 'field_lb_logo_user_value', 'logo_user_value');
+
+    // Adding dirty parent field to query.
+    $join = new views_join();
+    $extra = array(
+      array(
+        'field' => 'entity_type',
+        'value' => 'crm_core_contact',
+      ),
+      array(
+        'field' => 'bundle',
+        'value' => 'company',
+      ),
+      array(
+        'field' => 'deleted',
+        'value' => 0,
+        'numeric' => TRUE,
+      ),
+    );
+    $join->construct('field_data_field_lb_dirty_parent', 'field_lb_brands_node', 'contact_id', 'entity_id', $extra);
+    $query->add_relationship('lb_dirty_parent', $join, 'field_lb_brands_node');
+    $query->add_field('lb_dirty_parent', 'field_lb_dirty_parent_value', 'dirty_parent');
+  }
+}
+
+/**
+ * Implements hook_libraries_info().
+ */
+function lb_brands_libraries_info() {
+  $libraries = array();
+
+  $libraries['jquery-mixitup'] = array(
+    'name' => 'jQuery MixItUp',
+    'vendor url' => 'https://github.com/patrickkunka/mixitup',
+    'download url' => 'https://github.com/patrickkunka/mixitup/archive/v1.5.5.tar.gz',
+    'version' => '1.5.5',
+    'files' => array(
+      'js' => array(
+        'jquery.mixitup.min.js' => array('group' => JS_LIBRARY),
+      ),
+    ),
+  );
+
+  return $libraries;
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function lb_brands_preprocess_html(&$variables) {
+  if ($_GET['q'] == 'guide/brands') {
+    // Load the MixitUp library on brands page.
+    libraries_load('jquery-mixitup');
+    drupal_add_js(drupal_get_path('module', 'lb_brands') . '/lb_brands_mixitup.js');
+  }
+}
+
+/**
+ * Helper to check strings from filters that contains 'Any' or 'All'.
+ *
+ * @param string $str
+ *   String to check
+ *
+ * @return bool
+ *   TRUE if string is containing one.
+ */
+function _lb_brands_string_check_all($str) {
+  return stripos($str, 'all') !== FALSE || stripos($str, 'any') !== FALSE;
+}
+
+/**
+ * Implements hook_menu().
+ */
+function lb_brands_menu() {
+  $items['lb_brands/autocomplete/%'] = array(
+    'page callback' => 'lb_brands_autocomplete_callback',
+    'page arguments' => array(2),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Autocomplete callback.
+ *
+ * Return a list of brand managers based on brand being edited
+ * or on current user's company.
+ */
+function lb_brands_autocomplete_callback($brand_nid, $string='') {
+  $matches = array();
+
+  $companies = array();
+  $company = NULL;
+  if (!empty($brand_nid)) {
+    // Get company from brand node.
+    $brand = node_load($brand_nid);
+    $company = (!empty($brand->field_lb_brand_company[LANGUAGE_NONE][0]['target_id'])) ? $brand->field_lb_brand_company[LANGUAGE_NONE][0]['target_id'] : NULL;
+  }
+  // If company from brand is empty, get company from current user.
+  if (empty($company)) {
+    if (empty($account)) {
+      $account = $GLOBALS['user'];
+    }
+    // Get the contact for this user.
+    $account_contact = crm_core_user_sync_get_contact_from_uid($account->uid);
+
+    // Get the company the contact belongs to.
+    $relations = lb_user_relation_get_all_entities('crm_core_contact', $account_contact->contact_id, 'lb_primary_contact');
+    foreach ($relations['lb_primary_contact'] as $rel) {
+      foreach ($rel->endpoints[LANGUAGE_NONE] as $endpoint) {
+        if (!empty($endpoint['entity_id']) && $endpoint['entity_id'] != $account_contact->contact_id) {
+          $companies[] = $endpoint['entity_id'];
+        }
+      }
+    }
+  }
+  else {
+    $companies[] = $company;
+  }
+
+  // Get the company brand managers.
+  foreach ($companies as $company_id) {
+    $relations = lb_user_relation_get_all_entities('crm_core_contact', $company_id, 'lb_marketing_contact');
+    $brand_managers = array();
+    foreach ($relations['lb_marketing_contact'] as $rel) {
+      foreach ($rel->endpoints[LANGUAGE_NONE] as $endpoint) {
+        if (!empty($endpoint['entity_id']) && $endpoint['entity_id'] != $company_id) {
+          $brand_managers[] = $endpoint['entity_id'];
+        }
+      }
+    }
+  }
+
+  $brand_manager_entities = entity_load('crm_core_contact', $brand_managers);
+  // Filter based on search string.
+  foreach ($brand_manager_entities as $brand_manager) {
+    $first_name = (!empty($brand_manager->contact_name[LANGUAGE_NONE][0]['given'])) ? $brand_manager->contact_name[LANGUAGE_NONE][0]['given'] : '';
+    $last_name = (!empty($brand_manager->contact_name[LANGUAGE_NONE][0]['family'])) ? $brand_manager->contact_name[LANGUAGE_NONE][0]['family'] : '';
+    if ((!empty($first_name) &&
+         stripos($first_name, $string) !== FALSE) ||
+        (!empty($last_name) &&
+         stripos($last_name, $string) !== FALSE)) {
+      $names = array();
+      if (!empty($first_name)) {
+        $names[] = $first_name;
+      }
+      if (!empty($last_name)) {
+        $names[] = $last_name;
+      }
+      $name = implode(" ", $names);
+
+      $suggestion = $name . " (". $brand_manager->contact_id .")";
+      $matches[$suggestion] ='<div class="reference-autocomplete">'. $name. '</div>';
+    }
+  }
+  return drupal_json_output($matches);
+}

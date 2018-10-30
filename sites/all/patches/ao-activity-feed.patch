@@ -1,0 +1,23 @@
+From 0ec4679c733ebaac1af2a331ecc36b1d185645c5 Mon Sep 17 00:00:00 2001
+From: Alexander Schedrov
+Date: Wed, 28 May 2014 14:10:35 +0000
+Subject: Fixed activity feed for contact.
+
+---
+diff --git a/modules/features/ao/ao.views_default.inc b/modules/features/ao/ao.views_default.inc
+index c54762d..520be93 100644
+--- a/modules/features/ao/ao.views_default.inc
++++ b/modules/features/ao/ao.views_default.inc
+@@ -1049,10 +1049,6 @@ function ao_views_default_views() {
+   $handler->display->display_options['fields']['nothing']['table'] = 'views';
+   $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
+   $handler->display->display_options['fields']['nothing']['label'] = 'Date Received';
+-  $handler->display->display_options['fields']['nothing']['alter']['text'] = '[field_cmcp_received_date]
+-[field_cmcd_receive_date]
+-[field_cmcv_reg_date]
+-[field_cmcev_reg_date]';
+   $handler->display->display_options['fields']['nothing']['empty'] = '[field_activity_date]';
+   /* Field: Global: Custom text */
+   $handler->display->display_options['fields']['nothing_1']['id'] = 'nothing_1';
+--
+cgit v0.9.2

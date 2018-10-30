@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the LB Stats feature.
+ */
+
+include_once 'lb_stats.features.inc';

@@ -1,0 +1,1988 @@
+<?php
+/**
+ * @file
+ * Code for the Leaping Bunny Custom Data Import feature.
+ */
+
+include_once 'lb_custom_data_import.features.inc';
+/**
+ * @file
+ * Drupal needs this blank file.
+ *
+ */
+
+/**
+ * Implement hook_crm_core_data_import_source_row_alter()
+ */
+function lb_custom_data_import_crm_core_data_import_source_row_alter(&$row, $machine_name) {
+  //watchdog('lb_data_row', t('machine_name @entity with row @row', array('@entity'=> print_r($machine_name,true), '@row'=>print_r($row,true))));
+
+  if (strpos($machine_name, '_crm_core_contact_company_') !== FALSE) {
+    $company_name = NULL;
+    switch ($machine_name) {
+  	  case 'ccdi_4_crm_core_contact_company_1':
+  	  case 'ccdi_5_crm_core_contact_company_1':
+        $company_name = (!empty($row->company_name)) ? $row->company_name : NULL;
+        break;
+  	  case 'ccdi_4_crm_core_contact_company_2':
+  	  case 'ccdi_6_crm_core_contact_company_1':
+        $company_name = (!empty($row->supplier_company_name)) ? $row->supplier_company_name : ((!empty($row->supplier_name)) ? $row->supplier_name : NULL);
+  	    break;
+  	  case 'ccdi_4_crm_core_contact_company_3':
+  	  case 'ccdi_7_crm_core_contact_company_1':
+        $company_name = (!empty($row->man_company_name)) ? $row->man_company_name : ((!empty($row->man_name)) ? $row->man_name : NULL);
+  	    break;
+    }
+    if ($company_name == NULL || (empty($row->id) && empty($row->supplier_id) && empty($row->man_id))) {
+      $row = FALSE;
+    }
+  }
+
+  if (strpos($machine_name, '_crm_core_contact_individual_') !== FALSE) {
+    $first_name = NULL;
+    $last_name = NULL;
+    $email = NULL;
+    $full_name = NULL;
+    switch ($machine_name) {
+  	  case 'ccdi_4_crm_core_contact_individual_1':
+  	  case 'ccdi_5_crm_core_contact_individual_1':
+  	    $first_name = (!empty($row->first_name)) ? $row->first_name : NULL;
+  	    $last_name = (!empty($row->last_name)) ? $row->last_name : NULL;
+  	    $email = (!empty($row->email_address)) ? $row->email_address : NULL;
+  	    break;
+  	  case 'ccdi_4_crm_core_contact_individual_2':
+  	  case 'ccdi_6_crm_core_contact_individual_1':
+  	    $full_name = (!empty($row->supplier_printed_name)) ? $row->supplier_printed_name : ((!empty($row->supplier_contact)) ? $row->supplier_contact : NULL);
+  	    $email = (!empty($row->supplier_email_address)) ? $row->supplier_email_address : NULL;
+  	    break;
+  	  case 'ccdi_4_crm_core_contact_individual_3':
+  	  case 'ccdi_7_crm_core_contact_individual_1':
+  	    $full_name = (!empty($row->man_printed_name)) ? $row->man_printed_name : ((!empty($row->man_contact)) ? $row->man_contact : NULL);
+  	    $email = (!empty($row->man_email_address)) ? $row->man_email_address : NULL;
+  	    break;
+    }
+    if ((empty($row->id) && empty($row->supplier_contact_id) && empty($row->man_contact_id)) || ($email == NULL && ($full_name == NULL && ($first_name == NULL && $last_name == NULL)))) {
+      $row = FALSE;
+    }
+  }
+  // Do not import declarations with no signature and signature date.
+  if (strpos($machine_name, '_crm_core_activity_declaration_') !== FALSE) {
+    $sig = NULL;
+    $sig_date = NULL;
+    switch ($machine_name) {
+  	  case 'ccdi_6_crm_core_activity_declaration_raw_material_1':
+  	    $sig = (!empty($row->supplier_signature)) ? $row->supplier_signature : NULL;
+  	    $sig_date = (!empty($row->supplier_modified_dt)) ? $row->supplier_modified_dt : NULL;
+  	    break;
+  	  case 'ccdi_7_crm_core_activity_declaration_product_compliance_1':
+  	    $sig = (!empty($row->man_signature)) ? $row->man_signature : NULL;
+  	    $sig_date = (!empty($row->man_modified_dt)) ? $row->man_modified_dt : NULL;
+  	    break;
+    }
+    if ((empty($row->id) && empty($row->supplier_id) && empty($row->man_id)) || ($sig == NULL && $sig_date == NULL)) {
+      $row = FALSE;
+    }
+  }
+}
+
+/**
+ * Implement hook_crm_core_data_import_prepare_entity_alter()
+ */
+function lb_custom_data_import_crm_core_data_import_prepare_entity_alter(&$entity, &$row, $machine_name) {
+  $row = (array)$row;
+
+  //watchdog('lb_data', t('entity @entity with row @row', array('@entity'=> print_r($entity,true), '@row'=>print_r($row,true))));
+
+  try {
+    $target_entity_type = NULL;
+    if (isset($entity->type) && $entity->type == 'individual') {
+      lb_custom_data_import_contact_individual_alter($entity, $row);
+      $target_entity_type = 'crm_core_contact';
+    }
+
+    if (isset($entity->type) && $entity->type == 'company') {
+      lb_custom_data_import_contact_company_alter($entity, $row);
+      $target_entity_type = 'crm_core_contact';
+    }
+
+    if (isset($entity->type) && $entity->type == 'lb_application') {
+      lb_custom_data_import_activity_alter($entity, $row);
+      $target_entity_type = 'crm_core_activity';
+    }
+    if (isset($entity->type) && $entity->type == 'lb_company_application_approved') {
+      lb_custom_data_import_activity_alter($entity, $row);
+      $target_entity_type = 'crm_core_activity';
+    }
+    if (isset($entity->type) && ($entity->type == 'declaration_raw_material' || $entity->type == 'declaration_product_compliance')) {
+      lb_custom_data_import_activity_alter($entity, $row);
+      $target_entity_type = 'crm_core_activity';
+    }
+    if (strpos($machine_name, '_user_user_1')) {
+      lb_custom_data_import_user_alter($entity, $row);
+      $target_entity_type = 'user';
+    }
+
+    if (!empty($target_entity_type) && !empty($entity->type)) {
+      // Set patently empty values to fields with no values
+      $fields = array_keys(field_info_instances($target_entity_type , $entity->type));
+      foreach ($fields as $field) {
+        if (!isset($entity->{$field})) {
+          $entity->{$field} = array();
+        }
+      }
+    }
+
+  } catch (Exception $e) {
+    if (array_key_exists('id', $row)) {
+      $importing_entity_data = array(
+        'entity' => $entity->type,
+        'bundle' => isset($row['supplier_id']) ? 'Supplier' : (isset($row['man_id']) ? 'Manufacturer' : 'Company'),
+        'id' => $row['id'],
+      );
+    }
+
+    $err_msg = (empty($importing_entity_data)) ? 'Error while unknown entity processing'
+    : "Error while data {$importing_entity_data['entity']}:{$importing_entity_data['bundle']}:{$importing_entity_data['id']} processing in ".__FILE__." Error message: <br>";
+    $err_msg .= 'File: '.$e->getFile(). '</br>Line: '.$e->getLine().'</br> Message: '.$e->getMessage();
+    watchdog(__FUNCTION__, $err_msg, array(), WATCHDOG_ERROR);
+  }
+}
+
+function lb_custom_data_import_contact_individual_alter(&$entity, &$row) {
+  $wrapper = entity_metadata_wrapper('crm_core_contact', $entity);
+  $attributes = $wrapper->getPropertyInfo();
+
+  //watchdog('lb_data', t('attributes @attributes', array('@attributes'=> print_r($attributes,true))));
+
+  $notes = array();
+
+  $migrate_step = (isset($entity->migrate['machineName'])) ? $entity->migrate['machineName'] : '';
+
+  $first_name = NULL;
+  $last_name = NULL;
+  $full_name = NULL;
+  $email_address = NULL;
+  $country = NULL;
+  $existing_country = NULL;
+  $full_address = NULL;
+  $phone = NULL;
+  $title = NULL;
+  $contact_type = '';
+  $debug = FALSE;
+  switch ($migrate_step) {
+  	case 'ccdi_4_crm_core_contact_individual_1':
+  	case 'ccdi_5_crm_core_contact_individual_1':
+      if (!empty($row['id'])) {
+        $form_data_values = lb_custom_data_import_helper_get_form_data_values($row['id']);
+      }
+      foreach ($form_data_values as $key => $values) {
+        if (!empty($values->form_key) && !empty($values->form_value)) {
+          switch ($values->form_key) {
+        	  case 'telephone_num':
+        	    $phone = trim($values->form_value);
+        	    break;
+        	  case 'email':
+        	    $email_address = trim($values->form_value);
+        	    break;
+        	  case 'contact_person':
+        	    $full_name = trim($values->form_value);
+        	    break;
+      	    case 'position_held':
+      	      $title = trim($values->form_value);
+      	      break;
+      	    case 'address':
+      	      $full_address = trim($values->form_value);
+      	      break;
+          }
+        }
+      }
+  	  if (!empty($full_name)) {
+  	    $name_parts = lb_custom_data_import_parse_full_name($full_name);
+
+        $first_name = (!empty($name_parts['full_name'])) ? $name_parts['full_name'] : ((!empty($name_parts['first_name'])) ? $name_parts['first_name'] : NULL);
+        $last_name = (!empty($name_parts['last_name'])) ? $name_parts['last_name'] : NULL;
+
+  	  }
+  	  //$first_name = (!empty($row['first_name'])) ? trim($row['first_name']) : NULL;
+  	  //$last_name = (!empty($row['last_name'])) ? trim($row['last_name']) : NULL;
+      $country = (!empty($row['country'])) ? $row['country'] : NULL;
+      //$phone = (!empty($row['phone_num'])) ? $row['phone_num'] : NULL;
+      $contact_type = 'company ';
+
+      // If no email in form_data, use email in lb_users.
+      if (empty($email_address)) {
+        $email_address = (!empty($row['email_address'])) ? trim($row['email_address']) : NULL;
+      }
+      if (empty($full_name)) {
+        $first_name = (!empty($row['first_name'])) ? trim($row['first_name']) : NULL;
+        $last_name = (!empty($row['last_name'])) ? trim($row['last_name']) : NULL;
+      }
+      if (empty($first_name) && empty($last_name) && empty($email_address)) {
+        if (empty($entity->contact_id)) {
+          crm_core_contact_save($entity);
+        }
+        crm_core_contact_delete($entity->contact_id);
+        return FALSE;
+        // return without creating blank user
+      }
+
+  	  break;
+  	case 'ccdi_4_crm_core_contact_individual_2':
+  	case 'ccdi_6_crm_core_contact_individual_1':
+  	  // use printed name first
+  	  $full_name = (!empty($row['supplier_printed_name'])) ? trim($row['supplier_printed_name']) : ((!empty($row['supplier_contact'])) ? trim($row['supplier_contact']) : NULL);
+  	  if (!empty($full_name)) {
+  	    $name_parts = lb_custom_data_import_parse_full_name($full_name);
+
+        $first_name = (!empty($name_parts['full_name'])) ? $name_parts['full_name'] : ((!empty($name_parts['first_name'])) ? $name_parts['first_name'] : NULL);
+        $last_name = (!empty($name_parts['last_name'])) ? $name_parts['last_name'] : NULL;
+        if (!empty($name_parts['full_name'])) {
+          $debug = true;
+        }
+  	  }
+      $phone = (!empty($row['supplier_phone_num'])) ? $row['supplier_phone_num'] : NULL;
+      $contact_type = 'supplier ';
+  	  break;
+  	case 'ccdi_4_crm_core_contact_individual_3':
+  	case 'ccdi_7_crm_core_contact_individual_1':
+  	  // use printed name first
+  	  $full_name = (!empty($row['man_printed_name'])) ? trim($row['man_printed_name']) : ((!empty($row['man_contact'])) ? trim($row['man_contact']) : NULL);
+  	  if (!empty($full_name)) {
+  	    $name_parts = lb_custom_data_import_parse_full_name($full_name);
+
+        $first_name = (!empty($name_parts['full_name'])) ? $name_parts['full_name'] : ((!empty($name_parts['first_name'])) ? $name_parts['first_name'] : NULL);
+        $last_name = (!empty($name_parts['last_name'])) ? $name_parts['last_name'] : NULL;
+  	  }
+  	  break;
+  }
+
+  // Hotfix: Looking for existed contact as migrate can send here a new entity instead of existed while import
+  // for entity marked as 'need update'.
+  $email_address = (!empty($entity->field_ao_email_address[LANGUAGE_NONE][0]['email'])) ? $entity->field_ao_email_address[LANGUAGE_NONE][0]['email'] : $email_address;
+  $name_check = array('first_name' => $first_name, 'last_name' => $last_name, 'email_address' => $email_address);
+  if (empty($entity->contact_id) && !empty($name_check)) {
+    // check if there is a company with this name already
+    $existing_entity = lb_data_custom_data_import_get_entity_by_name($name_check, 'individual', NULL, $debug);
+    if (!empty($existing_entity)) {
+      $entity->is_new = FALSE;
+      $entity->contact_id = $existing_entity;
+    }
+  }
+
+  // If we are updating existed entity set active revision to a new one.
+  if (!empty($entity->contact_id)) {
+    $entity->revision = TRUE;
+    $entity->default_revision = TRUE;
+    // get existing values if any
+    // get address
+    $existing_entity_obj = array_shift(entity_load('crm_core_contact', array($entity->contact_id)));
+    $existing_address = $existing_entity_obj->field_ao_business_address;
+    $entity->field_ao_business_address = $existing_address;
+    $existing_country = (!empty($existing_address[LANGUAGE_NONE][0]['country'])) ? $existing_address[LANGUAGE_NONE][0]['country'] : NULL;
+    $entity->field_ao_primary_telephone = $existing_entity_obj->field_ao_primary_telephone;
+    $entity->contact_name = $existing_entity_obj->contact_name;
+    $entity->field_ao_email_address = $existing_entity_obj->field_ao_email_address;
+    $entity->field_lb_position_held = $existing_entity_obj->field_lb_position_held;
+  }
+  // Given name
+  if (!empty($first_name)){
+    $entity->contact_name[LANGUAGE_NONE][0]['given'] = $first_name;
+  }
+  // Family name
+  if (!empty($last_name)){
+    $entity->contact_name[LANGUAGE_NONE][0]['family'] = $last_name;
+  }
+
+  // Email
+  if (!empty($email_address)){
+    $entity->field_ao_email_address[LANGUAGE_NONE][0]['email'] = $email_address;
+  }
+  // Position
+  if (!empty($position)){
+    $entity->field_lb_position_held[LANGUAGE_NONE][0]['email'] = $position;
+  }
+
+  $country_code = lb_custom_data_import_set_country_code($country, $existing_country);
+
+  // Phone numbers
+  if (!empty($phone)) {
+    $target_value = array(
+      'number' => $phone,
+      'country_codes' => $country_code,
+      'extension' => '',
+    );
+    if (lb_custom_data_import_validate_phone($target_value)) {
+      $entity->field_ao_primary_telephone[LANGUAGE_NONE][0]['country_codes'] = $country_code;
+      $entity->field_ao_primary_telephone[LANGUAGE_NONE][0]['number'] = $phone;
+    }
+    else {
+      watchdog('lb_import', t('Invalid phone @phone for @contactcontact on row @row', array('@phone' => $phone, '@contact' => $contact_type, '@row' => $row)));
+    }
+  }
+
+
+  // Create contact relations
+  $org_id = (!empty($row['id'])) ? $row['id'] : NULL;
+
+  $migrate_steps_array = array('ccdi_5_crm_core_contact_individual_1');
+  if (isset($org_id) && (in_array($migrate_step, $migrate_steps_array))) {
+    $rel_name = 'lb_primary_contact';
+
+    $orig_company_id = db_select('migrate_map_ccdi_5_crm_core_contact_company_1', 'map')
+              ->fields('map', array('destid1'))
+              ->condition('map.sourceid1', $org_id)
+              ->execute()
+              ->fetchField();
+
+    if (!empty($orig_company_id)) {
+      // Save the contact so it will have an id
+      if (empty($entity->contact_id)) {
+        crm_core_contact_save($entity);
+      }
+      if ($rel_name != NULL) {
+        lb_custom_data_import_helper_create_relation($entity->contact_id, $orig_company_id, $rel_name);
+      }
+    }
+  }
+}
+
+function lb_custom_data_import_contact_company_alter(&$entity, &$row) {
+  $wrapper = entity_metadata_wrapper('crm_core_contact', $entity);
+  $attributes = $wrapper->getPropertyInfo();
+
+  //watchdog('lb_data', t('attributes @attributes', array('@attributes'=> print_r($attributes,true))));
+
+  $notes = array();
+
+  $migrate_step = (isset($entity->migrate['machineName'])) ? $entity->migrate['machineName'] : '';
+
+  // lb_form_data values
+  // get form_data values from db
+  $form_data_values = array();
+
+  $company_name = NULL;
+  $country = NULL;
+  $existing_country = NULL;
+  $city = NULL;
+  $state = NULL;
+  $zip_code = NULL;
+  $address = NULL;
+  $full_address = NULL;
+  $phone = NULL;
+  $fax = NULL;
+  $tollfree = NULL;
+  $website = NULL;
+  $parent_company = NULL;
+  $contact_type = '';
+  switch ($migrate_step) {
+  	case 'ccdi_4_crm_core_contact_company_1':
+  	case 'ccdi_5_crm_core_contact_company_1':
+      if (!empty($row['id'])) {
+        $form_data_values = lb_custom_data_import_helper_get_form_data_values($row['id']);
+      }
+      foreach ($form_data_values as $key => $values) {
+        if (!empty($values->form_key) && !empty($values->form_value)) {
+          switch ($values->form_key) {
+          	case 'telephone_num':
+          	  $phone = trim($values->form_value);
+          	  break;
+          	case 'fax_num':
+          	  $fax = trim($values->form_value);
+          	  break;
+          	case 'telephone_num_consumer':
+          	  $tollfree = trim($values->form_value);
+          	  break;
+          	case 'website':
+          	  $website = trim($values->form_value);
+          	  break;
+          	case 'company_sub_parent':
+          	  $parent_company = trim($values->form_value);
+          	  break;
+          	case 'name_of_company':
+          	  $company_name = trim($values->form_value);
+          	  break;
+          	case 'address':
+          	  $full_address = trim($values->form_value);
+          	  break;
+          }
+        }
+      }
+      $company_name = (!empty($company_name)) ? $company_name : ((!empty($row['company_name'])) ? $row['company_name'] : NULL);
+      $country = (!empty($row['country'])) ? $row['country'] : NULL;
+      $city = (!empty($row['city'])) ? $row['city'] : NULL;
+      $state = (!empty($row['state'])) ? $row['state'] : NULL;
+      $zip_code = (!empty($row['zip_code'])) ? $row['zip_code'] : NULL;
+      $address = (!empty($row['address'])) ? $row['address'] : NULL;
+      //$phone = (!empty($row['phone_num'])) ? $row['phone_num'] : NULL;
+      //$fax = (!empty($row['fax_num'])) ? $row['fax_num'] : NULL;
+      //$tollfree = (!empty($row['tollfree_num'])) ? $row['tollfree_num'] : NULL;
+      $contact_type = 'company';
+      break;
+  	case 'ccdi_4_crm_core_contact_company_2':
+  	case 'ccdi_6_crm_core_contact_company_1':
+      $company_name = (!empty($row['supplier_company_name'])) ? $row['supplier_company_name'] : ((!empty($row['supplier_name'])) ? $row['supplier_name'] : NULL);
+      $country = (!empty($row['supplier_country'])) ? $row['supplier_country'] : NULL;
+      $city = (!empty($row['supplier_city'])) ? $row['supplier_city'] : NULL;
+      $state = (!empty($row['supplier_state'])) ? $row['supplier_state'] : NULL;
+      $zip_code = (!empty($row['supplier_zipcode'])) ? $row['supplier_zipcode'] : NULL;
+      $address = (!empty($row['supplier_address'])) ? $row['supplier_address'] : NULL;
+      $phone = (!empty($row['supplier_phone_num'])) ? $row['supplier_phone_num'] : NULL;
+      $fax = (!empty($row['supplier_fax_num'])) ? $row['supplier_fax_num'] : NULL;
+      //$phone = (!empty($form_data_values['telephone_num'])) ? trim($form_data_values['telephone_num']) : NULL;
+      $contact_type = 'supplier';
+  	  break;
+  	case 'ccdi_4_crm_core_contact_company_3':
+  	case 'ccdi_7_crm_core_contact_company_1':
+      $company_name = (!empty($row['man_company_name'])) ? $row['man_company_name'] : ((!empty($row['man_name'])) ? $row['man_name'] : NULL);
+  	  $contact_type = 'manufacturer';
+      break;
+  }
+  if ($company_name == NULL) {
+    watchdog('lb_data_null', t('company name is null on @entity', array('@entity' => print_r($entity,true))));
+    return;
+  }
+
+  // Hotfix: Looking for existed contact as migrate can send here a new entity instead of existed while import
+  // for entity marked as 'need update'.
+  $existing_entity = lb_data_custom_data_import_get_entity_by_name($company_name, 'company', $contact_type);
+  //watchdog('company_debug', t('existing check @entity', array('@entity' => print_r($existing_entity,true))));
+
+  $migrate_steps_array = array('ccdi_6_crm_core_contact_company_1', 'ccdi_7_crm_core_contact_company_1');
+
+  if (empty($entity->contact_id) && !empty($company_name)) {
+    // check if there is a company with this name already
+    if (!empty($existing_entity)) {
+      // Only use existing for company. man/sup will need duplicates for
+      // declarations.
+      if (!in_array($migrate_step, $migrate_steps_array)) {
+        $entity->is_new = FALSE;
+        $entity->contact_id = $existing_entity;
+        //watchdog('company_debug_dupe', t('using exisiting @entity instead of new', array('@entity' => print_r($entity,true))));
+      }
+    }
+  }
+
+  if (!empty($entity->contact_id)) {
+    // If this is a supplier or manufacturer which happens to have the same
+    // id as a company it will get mapped to the company. we want to stop this.
+    if (in_array($migrate_step, $migrate_steps_array)) {
+      if (empty($existing_entity)) {
+       // watchdog('company_debug_dupe', t('working on existing company @comp with row @row', array('@comp' => print_r($entity, true), '@row'=> print_r($row, true))));
+        $entity->is_new = TRUE;
+        $entity->contact_id = NULL;
+      }
+      else {
+        // In supplier/man section crm_core has matched the entity and so have
+        // we, still want it to be new, however.
+        $entity->is_new = TRUE;
+        $entity->contact_id = NULL;
+        //watchdog('company_debug_dupe', t('using exisiting @entity that was also matched', array('@entity' => print_r($entity,true))));
+      }
+    }
+
+  }
+  // If we are updating existed entity set active revision to a new one.
+  if (!empty($entity->contact_id)) {
+    $entity->revision = TRUE;
+    $entity->default_revision = TRUE;
+    // get existing values if any
+    // get address
+    $existing_entity_obj = array_shift(entity_load('crm_core_contact', array($entity->contact_id)));
+    $existing_address = $existing_entity_obj->field_ao_business_address;
+    $entity->field_ao_business_address = $existing_address;
+    $existing_country = (!empty($existing_address[LANGUAGE_NONE][0]['country'])) ? $existing_address[LANGUAGE_NONE][0]['country'] : NULL;
+    $entity->field_ao_primary_telephone = $existing_entity_obj->field_ao_primary_telephone;
+    $entity->field_lb_fax = $existing_entity_obj->field_lb_fax;
+    $entity->field_lb_toll_free_telephone = $existing_entity_obj->field_lb_toll_free_telephone;
+    $entity->field_ao_website = $existing_entity_obj->field_ao_website;
+    $entity->field_lb_parent_company = $existing_entity_obj->field_lb_parent_company;
+    $entity->field_lb_contractor_type = $existing_entity_obj->field_lb_contractor_type;
+  }
+
+  // Company name
+  if (array_key_exists('contact_name', $attributes) && $company_name != NULL){
+    $entity->contact_name[LANGUAGE_NONE][0]['family'] = $company_name;
+    $entity->contact_name[LANGUAGE_NONE][0]['given'] = $company_name;
+  }
+
+  $country_code = lb_custom_data_import_set_country_code($country, $existing_country);
+
+  $target_value = array(
+    'country' => (isset($country_code) && $country_code != '') ? strtoupper($country_code) : NULL,
+    'administrative_area' => $state,
+    'locality' => $city,
+    'dependent_locality' => NULL,
+    'postal_code' => $zip_code,
+    'thoroughfare' => $address,
+    'premise' => NULL,
+    'sub_premise' => NULL,
+    'organisation_name' => NULL,
+    'name_line' => NULL,
+    'first_name' => NULL,
+    'last_name' => NULL,
+    'data' => NULL,
+  );
+  if (!is_string($target_value['administrative_area'])) {
+    $target_value['administrative_area'] = '';
+  }
+
+  //$wrapper->field_ao_business_address->set($target_value);
+  if (!empty($target_value['country'])) {
+    $entity->field_ao_business_address[LANGUAGE_NONE][0]['country'] = $target_value['country'];
+  }
+  if (!empty($target_value['administrative_area'])) {
+    $entity->field_ao_business_address[LANGUAGE_NONE][0]['administrative_area'] = strtoupper($target_value['administrative_area']);
+  }
+  if (!empty($target_value['locality'])) {
+    $entity->field_ao_business_address[LANGUAGE_NONE][0]['locality'] = $target_value['locality'];
+  }
+  if (!empty($target_value['postal_code'])) {
+    $entity->field_ao_business_address[LANGUAGE_NONE][0]['postal_code'] = $target_value['postal_code'];
+  }
+  if (!empty($target_value['thoroughfare'])) {
+    $entity->field_ao_business_address[LANGUAGE_NONE][0]['thoroughfare'] = $target_value['thoroughfare'];
+  }
+  if (!empty($full_address)) {
+    //$entity->field_ao_business_address
+  }
+
+
+  // Phone numbers
+  if (!empty($phone)) {
+    $target_value = array(
+      'number' => $phone,
+      'country_codes' => $country_code,
+      'extension' => '',
+    );
+    if (lb_custom_data_import_validate_phone($target_value)) {
+      //$wrapper->field_ao_primary_telephone->set($target_value);
+      $entity->field_ao_primary_telephone[LANGUAGE_NONE][0]['number'] = $phone;
+      $entity->field_ao_primary_telephone[LANGUAGE_NONE][0]['country_codes'] = $country_code;
+    }
+    else {
+      watchdog('lb_import', t('Invalid phone @phone for @contactcontact on row @row', array('@phone' => $phone, '@contact' => $contact_type, '@row' => $row)));
+    }
+  }
+
+  if (!empty($fax)) {
+    $target_value = array(
+      'number' => $fax,
+      'country_codes' => $country_code,
+      'extension' => '',
+    );
+    if (lb_custom_data_import_validate_phone($target_value)) {
+      //$wrapper->field_lb_fax->set($target_value);
+      $entity->field_lb_fax[LANGUAGE_NONE][0]['number'] = $fax;
+      $entity->field_lb_fax[LANGUAGE_NONE][0]['country_codes'] = $country_code;
+    }
+    else {
+      watchdog('lb_import', t('Invalid fax @phone for @contactcontact on row @row', array('@phone' => $fax, '@contact' => $contact_type, '@row' => $row)));
+    }
+  }
+
+  if (!empty($tollfree)) {
+    $target_value = array(
+      'number' => $tollfree,
+      'country_codes' => $country_code,
+      'extension' => '',
+    );
+    if (lb_custom_data_import_validate_phone($target_value)) {
+      //$wrapper->field_lb_toll_free_telephone->set($target_value);
+      $entity->field_lb_toll_free_telephone[LANGUAGE_NONE][0]['number'] = $tollfree;
+      $entity->field_lb_toll_free_telephone[LANGUAGE_NONE][0]['country_codes'] = $country_code;
+    }
+    else {
+      watchdog('lb_import', t('Invalid toll free @phone for @contactcontact on row @row', array('@phone' => $fax, '@contact' => $contact_type, '@row' => $row)));
+    }
+  }
+
+  if (!empty($website)) {
+    $entity->field_ao_website[LANGUAGE_NONE][0]['url'] = $website;
+  }
+  if (!empty($parent_company)) {
+    $entity->field_lb_parent_company[LANGUAGE_NONE][0]['value'] = $parent_company;
+  }
+  // add field_lb_contractor_type for supplier/manufacturer
+  switch($contact_type) {
+  	case 'supplier':
+  	  $target_value = array('value' => 'lb_supplier');
+  	  if (empty($entity->field_lb_contractor_type[LANGUAGE_NONE]) || !in_array($target_value, $entity->field_lb_contractor_type[LANGUAGE_NONE])) {
+  	    $entity->field_lb_contractor_type[LANGUAGE_NONE][] = $target_value;
+  	  }
+  	  break;
+  	case 'manufacturer':
+  	  $target_value = array('value' => 'lb_manufacturer');
+  	  if (empty($entity->field_lb_contractor_type[LANGUAGE_NONE]) || !in_array($target_value, $entity->field_lb_contractor_type[LANGUAGE_NONE])) {
+  	    $entity->field_lb_contractor_type[LANGUAGE_NONE][] = $target_value;
+  	  }
+  	  break;
+  }
+
+
+  foreach ($form_data_values as $key => $values) {
+    if (isset($values->form_key) && isset($values->form_value)) {
+      $form_value = $values->form_value;
+      $boolean_keys = array('a1', 'a2', 'a3', 'b1', 'b2', 'b4', 'b5a', 'b5b', 'b5c');
+      if (in_array($values->form_key, $boolean_keys)) {
+        switch (strtolower(trim($form_value))) {
+        	case 'yes':
+        	  $form_value = 1;
+        	  break;
+        	case 'no':
+        	  $form_value = 0;
+        	  break;
+        }
+      }
+      switch ($values->form_key) {
+      	case 'trading_name':
+          $entity->field_lb_trading_name[LANGUAGE_NONE][0]['value'] = $form_value;
+      	  break;
+      	case 'email_consumers':
+          $entity->field_lb_consumer_email[LANGUAGE_NONE][0]['email'] = $form_value;
+      	  break;
+      	case 'date_est':
+      	  $time = strtotime($form_value);
+      	  if ($time) {
+      	    $date = date('Y-m-d h:i:s', $time);
+            $entity->field_lb_date_established[LANGUAGE_NONE][0]['value'] = $date;
+      	  }
+      	  break;
+      	case 'company_legal_status':
+          $entity->field_lb_legal_status[LANGUAGE_NONE][0]['value'] = $form_value;
+      	  break;
+      	case 'a1':
+          $entity->field_lb_manufactures_own[LANGUAGE_NONE][0]['value'] = $form_value;
+          break;
+      	case 'a2':
+          $entity->field_lb_manufactures_other[LANGUAGE_NONE][0]['value'] = $form_value;
+          break;
+      	case 'a3':
+          $entity->field_lb_contracts_manufacturing[LANGUAGE_NONE][0]['value'] = $form_value;
+          break;
+      	case 'b1':
+          $entity->field_lb_tests_goods[LANGUAGE_NONE][0]['value'] = $form_value;
+          break;
+      	case 'b2':
+          $entity->field_lb_tests_ingredients[LANGUAGE_NONE][0]['value'] = $form_value;
+          break;
+      	case 'b4':
+          $entity->field_lb_dirty_affiliates[LANGUAGE_NONE][0]['value'] = $form_value;
+          break;
+      	case 'b5a':
+          $entity->field_lb_dirty_contractor[LANGUAGE_NONE][0]['value'] = $form_value;
+          break;
+      	case 'b5b':
+          $entity->field_lb_dirty_subcontractor[LANGUAGE_NONE][0]['value'] = $form_value;
+          break;
+      	case 'b5c':
+          $entity->field_lb_tests_before_cutoff[LANGUAGE_NONE][0]['value'] = $form_value;
+          break;
+      	case 'contact_person':
+      	case 'email':
+          // not needed as there is no rollback with this
+          //lb_custom_data_import_create_custom_contact($form_data_values, $entity, $row, $country_code);
+          break;
+      }
+    }
+  }
+  // Create org relations
+  $org_id = (!empty($row['id'])) ? $row['id'] : NULL;
+  $rel_id = (!empty($row['supplier_id'])) ? $row['supplier_id'] : ((!empty($row['man_id'])) ? $row['man_id'] : NULL);
+
+  $migrate_steps_array = array('ccdi_6_crm_core_contact_company_1', 'ccdi_7_crm_core_contact_company_1');
+  if (isset($org_id) && isset($rel_id) && (in_array($migrate_step, $migrate_steps_array))) {
+    $rel_name = (!empty($row['supplier_id'])) ? 'lb_supplier' : ((!empty($row['man_id'])) ? 'lb_manufacturer' : NULL);
+
+    $orig_company_id = db_select('migrate_map_ccdi_5_crm_core_contact_company_1', 'map')
+              ->fields('map', array('destid1'))
+              ->condition('map.sourceid1', $org_id)
+              ->execute()
+              ->fetchField();
+
+    if (!empty($orig_company_id)) {
+      // Save the contact so it will have an id
+      if (empty($entity->contact_id)) {
+        crm_core_contact_save($entity);
+      }
+      if ($rel_name != NULL) {
+        lb_custom_data_import_helper_create_relation($entity->contact_id, $orig_company_id, $rel_name);
+      }
+    }
+  }
+
+  // Create declaration activities for sup/man.
+  // cannot do this here
+  /*
+  if (in_array($migrate_step, $migrate_steps_array)) {
+    $activity_type = '';
+    $activity_title = '';
+    if (!empty($contact_type)) {
+      switch ($contact_type) {
+        case 'supplier':
+          $activity_type = 'declaration_raw_material';
+          $activity_title = t('Declaration of Raw Material Compliance');
+          break;
+        case 'manufacturer':
+          $activity_type = 'declaration_product_compliance';
+          $activity_title = t('Declaration of Product Compliance');
+          break;
+      }
+
+    }
+
+    // get participants
+    $participants = lb_custom_data_import_get_participants($entity, $row, $migrate_step, $entity->type);
+    watchdog('sup_man_decl', t('participants @part', array('@part' => print_r($participants,true))));
+
+    //$entity_type = 'crm_core_activity';
+    //$declaration_entity = lb_custom_data_import_create_extra_activity($entity_type,  array('type' => $activity_type, 'title' => $activity_title), $row, $migrate_step, $entity->type, NULL, $participants);
+    ////$request_entity->field_activity_request_status[LANGUAGE_NONE][0]['value'] = 'pending';
+    //crm_core_activity_save($request_entity);
+  }*/
+}
+
+function lb_custom_data_import_user_alter(&$entity, &$row) {
+  $form_data_values = array();
+  $email_address = $full_name = NULL;
+  if (!empty($row['id'])) {
+    $form_data_values = lb_custom_data_import_helper_get_form_data_values($row['id']);
+  }
+  foreach ($form_data_values as $key => $values) {
+    if (!empty($values->form_key) && !empty($values->form_value)) {
+      switch ($values->form_key) {
+    	  case 'email':
+    	    $email_address = trim($values->form_value);
+    	    break;
+    	  case 'contact_person':
+    	    $full_name = trim($values->form_value);
+    	    break;
+      }
+    }
+  }
+  // set email to same as contact email
+  if (!empty($email_address)) {
+    $entity->mail = $email_address;
+  }
+  // Add crm_core_user_sync relation to contact.
+
+  $contact_id = (!empty($row['id'])) ? $row['id'] : NULL;
+
+  $migrate_step = (isset($entity->migrate['machineName'])) ? $entity->migrate['machineName'] : '';
+  $migrate_steps_array = array('ccdi_5_user_user_1');
+  if (isset($contact_id) && (in_array($migrate_step, $migrate_steps_array))) {
+    $rel_name = 'crm_core_user_sync';
+
+    $orig_contact_id = db_select('migrate_map_ccdi_5_crm_core_contact_individual_1', 'map')
+              ->fields('map', array('destid1'))
+              ->condition('map.sourceid1', $contact_id)
+              ->execute()
+              ->fetchField();
+
+    if (!empty($orig_contact_id)) {
+      // contact id may be set in migrate_map, but contact may not exist if it's deleted
+      // in individual_alter (no name/email in form_data table and lb_users)
+      if (crm_core_contact_load($orig_contact_id) == FALSE) {
+        watchdog('lb_import_user', 'Error finding contact to sync to user on entity @entity on row @row', array('@entity' => print_r($entity,true), '@row' => print_r($row, true)));
+        return FALSE;
+      }
+      if (empty($entity->uid)) {
+        user_save($entity);
+      }
+      //watchdog('lb_import_user', t('entity @entity on row @row', array('@entity' => print_r($entity,true), '@row' => print_r($row, true))));
+
+      // Check is relation already exists.
+      $results = relation_relation_exists(array(
+        array('entity_type' => 'user', 'entity_id' => $entity->uid),
+        array('entity_type' => 'crm_core_contact', 'entity_id' => $orig_contact_id),
+      ), $rel_name);
+      if ($results === FALSE) {
+        $relation = relation_create($rel_name, array(
+          0 => array(
+            'entity_type' => 'user',
+            'entity_id' => $entity->uid,
+            'r_index' => 0,
+          ),
+          1 => array(
+            'entity_type' => 'crm_core_contact',
+            'entity_id' => $orig_contact_id,
+            'r_index' => 1,
+          ),
+        ));
+        $relation->crm_core_relationship_status[LANGUAGE_NONE][0]['value'] = 1;
+        relation_save($relation);
+      }
+    }
+  }
+}
+
+function lb_custom_data_import_activity_alter(&$entity, &$row) {
+  // don't create duplicate activities
+  $activity_exists = lb_custom_data_import_activity_check_dupe($entity, $row);
+  if ($activity_exists) {
+   //watchdog('declaration', t('activity already exists @entity and row @row', array('@entity' => print_r($entity, true), '@row' => print_r($row,true))));
+    return false;
+  }
+  $wrapper = entity_metadata_wrapper('crm_core_activity', $entity);
+  $attributes = $wrapper->getPropertyInfo();
+
+  $notes = array();
+
+  $migrate_step = (isset($entity->migrate['machineName'])) ? $entity->migrate['machineName'] : '';
+
+  if ($entity->type == 'lb_company_application_approved') {
+    // return..need to step through all activities first..
+    // should remove from crm_core_data_import
+    return false;
+  }
+
+  if ($entity->type == 'lb_application') {
+    // Get the status..default is pending
+    $status = 'pending';
+    // Set status to lower case
+    if (!empty($row['status'])) {
+      $status = strtolower(trim($row['status']));
+      switch ($status) {
+      	case 'expired':
+      	  $status = 'canceled';
+      	  break;
+      	case 'passed':
+      	  $status = 'approved';
+      	  break;
+      }
+    }
+
+    // get participants
+    $participants = lb_custom_data_import_get_participants($entity, $row, $migrate_step, $entity->type);
+
+    // create an lb_application_request
+    $entity_type = 'crm_core_activity';
+    $request_entity = lb_custom_data_import_create_extra_activity($entity_type,  array('type' => 'lb_application_request', 'title' => t('Application Request')), $row, $migrate_step, $entity->type, $status, $participants);
+    $request_entity->field_activity_request_status[LANGUAGE_NONE][0]['value'] = 'pending';
+    crm_core_activity_save($request_entity);
+
+    // need to fill in lb_request_outcome target_id later
+    if ($status != 'inactive') {
+      // can proceed
+      // create an lb_application_request_approved
+      $approved_entity = lb_custom_data_import_create_extra_activity($entity_type,  array('type' => 'lb_application_request_approved', 'title' => t('Approved')), $row, $migrate_step, $entity->type, $status, $participants);
+      $approved_entity->field_lb_application_request[LANGUAGE_NONE] = array(array('target_id' => $request_entity->activity_id));
+      crm_core_activity_save($approved_entity);
+      $request_entity->field_lb_request_outcome[LANGUAGE_NONE] = array(array('target_id' => $approved_entity->activity_id));
+      $request_entity->field_activity_request_status[LANGUAGE_NONE][0]['value'] = 'approved';
+      crm_core_activity_save($request_entity);
+
+      // add : lb_company_application_initiated
+      $app_init_entity = lb_custom_data_import_create_extra_activity($entity_type,  array('type' => 'lb_company_application_initiated', 'title' => t('Company Application Initiated')), $row, $migrate_step, $entity->type, $status, $participants);
+
+      // set extra field on request certification (this entity)
+      $entity->field_lb_application_request[LANGUAGE_NONE] = array(array('target_id' => $request_entity->activity_id));
+      $entity->field_lb_application_outcome[LANGUAGE_NONE] = array(array('target_id' => $app_init_entity->activity_id));
+
+      if ($status != 'pending') {
+        // add  lb_company_application_submitted
+        $app_submit_entity = lb_custom_data_import_create_extra_activity($entity_type,  array('type' => 'lb_company_application_submitted', 'title' => t('Application Submitted')), $row, $migrate_step, $entity->type, $status, $participants);
+        if (empty($entity->activity_id)) {
+          crm_core_activity_save($entity);
+        }
+        $app_submit_entity->field_lb_application[LANGUAGE_NONE] = array(array('target_id' => $entity->activity_id));
+        crm_core_activity_save($app_submit_entity);
+
+        // set extra field on request certification (this entity)
+        $entity->field_lb_application_submitted[LANGUAGE_NONE] = array(array('target_id' => $app_submit_entity->activity_id));
+        $entity->field_lb_application_outcome[LANGUAGE_NONE] = array(array('target_id' => $app_submit_entity->activity_id));
+
+        if ($status == 'approved' || $status == 'canceled') {
+          // add  lb_company_application_approved
+          $app_approved_entity = lb_custom_data_import_create_extra_activity($entity_type,  array('type' => 'lb_company_application_approved', 'title' => t('Company Application Approved')), $row, $migrate_step, $entity->type, $status, $participants);
+          if (empty($entity->activity_id)) {
+            crm_core_activity_save($entity);
+          }
+          $app_approved_entity->field_lb_application[LANGUAGE_NONE] = array(array('target_id' => $entity->activity_id));
+
+          // set recommitment date
+          if (!empty($row['approval_dt']) && trim($row['approval_dt']) != '') {
+            $app_approved_entity->field_activity_date[LANGUAGE_NONE][0]['value'] = date("Y-m-d h:i:s", $row['approval_dt']);
+            $date = date("Y-m-d h:i:s", strtotime(date("Y-m-d", $row['approval_dt']) . " + 1 year"));
+            $app_approved_entity->field_lb_recommitment_date[LANGUAGE_NONE][0]['value'] = $date;
+          }
+          crm_core_activity_save($app_approved_entity);
+
+          // set extra field on request certification (this entity)
+          $entity->field_lb_application_outcome[LANGUAGE_NONE] = array(array('target_id' => $app_approved_entity->activity_id));
+
+          if ($status == 'canceled') {
+            // add : lb_recommitment_due
+            $recommit_entity = lb_custom_data_import_create_extra_activity($entity_type,  array('type' => 'lb_recommitment_due', 'title' => t('Recommitment Due')), $row, $migrate_step, $entity->type, $status, $participants);
+            $recommit_entity->field_lb_application[LANGUAGE_NONE] = array(array('target_id' => $entity->activity_id));
+            crm_core_activity_save($recommit_entity);
+            $entity->field_lb_application_outcome[LANGUAGE_NONE] = array(array('target_id' => $recommit_entity->activity_id));
+          }
+        }
+      }
+
+        // set lb_current_application on company participant
+        if (!empty($participants['id'])) {
+
+          if (empty($entity->activity_id)) {
+            crm_core_activity_save($entity);
+          }
+          $company_entity = array_shift(entity_load('crm_core_contact', array($participants['id'])));
+          $company_entity->field_lb_current_application[LANGUAGE_NONE] = array(array('target_id' => $entity->activity_id));
+          crm_core_contact_save($company_entity);
+        }
+    }
+    else {
+      // nothing else to do
+      return FALSE;
+    }
+  }
+
+
+
+  // old workflow below..
+  if ($entity->type == 'lb_company_application_approved') {
+    // Set title
+    $entity->title = t('Company application approved');
+  }
+  if ($entity->type == 'lb_application') {
+    // Set title
+    $entity->title = t('Application for certification');
+    // alter time for proper order in recent activity feed
+    $time = strtotime('7 minutes ago');
+    $base_date = NULL;
+    if (!empty($row['approval_dt']) && trim($row['approval_dt']) != '') {
+      $base_date = $row['approval_dt'];
+    }
+    if ($base_date != NULL) {
+      $time = strtotime(date("Y-m-d h:i:s", $base_date) . " - 7 minutes");
+    }
+    $entity->created = $time;
+    if ($time) {
+      $date = date('Y-m-d h:i:s', $time);
+      $entity->field_activity_date[LANGUAGE_NONE][0]['value'] = $date;
+    }
+    // Set status to lower case
+    if (!empty($row['status'])) {
+      $status = strtolower(trim($row['status']));
+      switch ($status) {
+      	case 'expired':
+      	  $status = 'canceled';
+      	  break;
+      	case 'passed':
+      	  $status = 'approved';
+      	  break;
+      }
+      $entity->field_lb_application_status[LANGUAGE_NONE][0]['value'] = $status;
+
+    }
+  }
+  if ($entity->type == 'lb_company_application_approved') {
+    // set recommitment date
+    if (!empty($row['approval_dt']) && trim($row['approval_dt']) != '') {
+      $date = date("Y-m-d h:i:s", strtotime(date("Y-m-d", $row['approval_dt']) . " + 1 year"));
+      $entity->field_lb_recommitment_date[LANGUAGE_NONE][0]['value'] = $date;
+    }
+  }
+  if ($entity->type == 'lb_application' || $entity->type == 'lb_company_application_approved') {
+    // Set participants
+    $entity->field_activity_participants[LANGUAGE_NONE] = array();
+    $participants = array('id', 'contact_id');
+    foreach ($participants as $party) {
+      if (!empty($row[$party])) {
+        $table = NULL;
+        switch ($party) {
+        	case 'id':
+        	  $table = 'migrate_map_'. str_replace('crm_core_activity_'. $entity->type, 'crm_core_contact_company', $migrate_step); //ccdi_4_crm_core_contact_company_1';
+        	  break;
+        	case 'contact_id':
+        	  $table = 'migrate_map_'. str_replace('crm_core_activity_'. $entity->type, 'crm_core_contact_individual', $migrate_step); //ccdi_4_crm_core_contact_individual_1';
+        	  break;
+        }
+        if ($table != NULL) {
+          $dest_id = lb_custom_data_import_helper_lookup_destination($table, $row['id']); //$row[$party]);
+          if ($dest_id) {
+            $entity->field_activity_participants[LANGUAGE_NONE][] = array('target_id' => $dest_id);
+            // add company/individual fields as well
+            switch ($party) {
+            	case 'id':
+            	  $entity->field_lb_company[LANGUAGE_NONE][] = array('target_id' => $dest_id);
+            	  break;
+            	case 'contact_id':
+            	  $entity->field_lb_primary_contact[LANGUAGE_NONE][] = array('target_id' => $dest_id);
+            	  break;
+            }
+          }
+        }
+      }
+    }
+
+    // lb_form_data values
+    // get form_data values from db
+    $form_data_values = array();
+
+  $migrate_steps_array = array('ccdi_4_crm_core_activity_lb_application_1', 'ccdi_5_crm_core_activity_lb_application_1');
+    if (!empty($row['id']) && (in_array($migrate_step, $migrate_steps_array))) {
+      $form_data_values = lb_custom_data_import_helper_get_form_data_values($row['id']);
+    }
+
+    foreach ($form_data_values as $key => $values) {
+      if (isset($values->form_key) && isset($values->form_value)) {
+        $form_value = $values->form_value;
+        $boolean_keys = array('a1', 'a2', 'a3','c1', 'c2', 'c3');
+        if (in_array($values->form_key, $boolean_keys)) {
+          switch (strtolower(trim($form_value))) {
+        	  case 'yes':
+        	    $form_value = 1;
+        	    break;
+        	  case 'no':
+        	    $form_value = 0;
+        	    break;
+          }
+        }
+        switch ($values->form_key) {
+        	case 'a1':
+            $entity->field_lb_manufactures_own[LANGUAGE_NONE][0]['value'] = $form_value;
+            break;
+        	case 'a2':
+            $entity->field_lb_manufactures_other[LANGUAGE_NONE][0]['value'] = $form_value;
+            break;
+        	case 'a3':
+            $entity->field_lb_contracts_manufacturing[LANGUAGE_NONE][0]['value'] = $form_value;
+            break;
+      	  case 'c1':
+            $entity->field_lb_agree_monitoring[LANGUAGE_NONE][0]['value'] = $form_value;
+      	    break;
+      	    // Recommit should be blank and use c2 for agree_audit.
+        	case 'c2':
+            // $entity->field_lb_agree_recommit[LANGUAGE_NONE][0]['value'] = $form_value;
+        	  // break;
+        	// case 'c3':
+            $entity->field_lb_agree_audit[LANGUAGE_NONE][0]['value'] = $form_value;
+        	  break;
+        	case 'auth_signature':
+            $entity->field_lb_sig_name[LANGUAGE_NONE][0]['value'] = $form_value;
+            break;
+        	case 'signed_title':
+            $entity->field_lb_sig_title[LANGUAGE_NONE][0]['value'] = $form_value;
+            break;
+        	case 'signed_company_name':
+            $entity->field_lb_sig_company[LANGUAGE_NONE][0]['value'] = $form_value;
+            break;
+        	case 'signed_email_address':
+            $entity->field_lb_sig_mail[LANGUAGE_NONE][0]['email'] = $form_value;
+            break;
+        	case 'signed_date':
+    	      $time = strtotime($form_value);
+    	      if ($time) {
+    	        $date = date('Y-m-d h:i:s', $time);
+              $entity->field_lb_sig_date[LANGUAGE_NONE][0]['value'] = $date;
+    	      }
+            break;
+        }
+      }
+    }
+  }
+ //watchdog('declaration', t('type @t', array('@t' => $entity->type)));
+  // Declarations.
+  if ($entity->type == 'declaration_raw_material' || $entity->type == 'declaration_product_compliance') {
+    //watchdog('declaration', t('ready on decl'));
+    // If there's no _signature/_modified_dt, there's no declaration to import.
+    $contractor_type = '';
+
+    $migrate_steps_array = array('ccdi_6_crm_core_activity_declaration_raw_material_1', 'ccdi_7_crm_core_activity_declaration_product_compliance_1');
+
+    switch($entity->type) {
+      case 'declaration_raw_material':
+        $contractor_type = 'supplier';
+  	    break;
+      case 'declaration_product_compliance':
+        $contractor_type = 'man';
+        break;
+    }
+    if (in_array($migrate_step, $migrate_steps_array)) {
+      if (empty($row[$contractor_type . '_signature']) && empty($row[$contractor_type . '_modified_dt'])) {
+        return false;
+      }
+    }
+    // @todo: should field_activity_date match sup/man_modified_dt?
+    // @todo: fix printed name parsing, and add title
+    $full_name = $first_name = $last_name = '';
+    $activity_title = '';
+
+    // use printed name first
+    switch($entity->type) {
+      case 'declaration_raw_material':
+  	    $full_name = (!empty($row['supplier_printed_name'])) ? trim($row['supplier_printed_name']) : ((!empty($row['supplier_contact'])) ? trim($row['supplier_contact']) : NULL);
+        $activity_title = t('Declaration of Raw Material Compliance');
+  	    break;
+      case 'declaration_product_compliance':
+        $full_name = (!empty($row['man_printed_name'])) ? trim($row['man_printed_name']) : ((!empty($row['man_contact'])) ? trim($row['man_contact']) : NULL);
+        $activity_title = t('Declaration of Product Compliance');
+        break;
+    }
+    if (!empty($full_name)) {
+      $name_parts = lb_custom_data_import_parse_full_name($full_name);
+      $first_name = (!empty($name_parts['full_name'])) ? $name_parts['full_name'] : ((!empty($name_parts['first_name'])) ? $name_parts['first_name'] : NULL);
+      $last_name = (!empty($name_parts['last_name'])) ? $name_parts['last_name'] : NULL;
+  	}
+    $entity->title = $activity_title;
+    // Given name
+    if (!empty($first_name)){
+      $entity->field_lb_printed_name[LANGUAGE_NONE][0]['given'] = $first_name;
+    }
+    // Family name
+    if (!empty($last_name)){
+      $entity->field_lb_printed_name[LANGUAGE_NONE][0]['family'] = $last_name;
+    }
+    // @todo: add ref to orig company
+    $org_id = (!empty($row['id'])) ? $row['id'] : NULL;
+
+    //$migrate_steps_array = array('ccdi_6_crm_core_activity_declaration_raw_material_1', 'ccdi_7_crm_core_activity_declaration_product_compliance_1');
+    if (isset($org_id) && (in_array($migrate_step, $migrate_steps_array))) {
+    //$rel_name = (!empty($row['supplier_id'])) ? 'lb_supplier' : ((!empty($row['man_id'])) ? 'lb_manufacturer' : NULL);
+
+      $orig_company_id = db_select('migrate_map_ccdi_5_crm_core_contact_company_1', 'map')
+              ->fields('map', array('destid1'))
+              ->condition('map.sourceid1', $org_id)
+              ->execute()
+              ->fetchField();
+
+      if (!empty($orig_company_id)) {
+        $entity->field_lb_company[LANGUAGE_NONE] = array(array('target_id' => $orig_company_id));
+      }
+    }
+   // Set participants
+    $entity->field_activity_participants[LANGUAGE_NONE] = array();
+    $participants = array('supplier_id', 'man_id');
+    foreach ($participants as $party) {
+      if (!empty($row[$party])) {
+        $table = NULL;
+        switch ($party) {
+        	case 'supplier_id':
+        	  $table = 'migrate_map_'. str_replace('crm_core_activity_'. $entity->type, 'crm_core_contact_company', $migrate_step); //ccdi_4_crm_core_contact_company_1';
+        	  break;
+        	case 'man_id':
+        	  $table = 'migrate_map_'. str_replace('crm_core_activity_'. $entity->type, 'crm_core_contact_company', $migrate_step); //ccdi_4_crm_core_contact_individual_1';
+        	  break;
+        }
+        if ($table != NULL) {
+          $dest_id = lb_custom_data_import_helper_lookup_destination($table, $row[$party]);
+          if ($dest_id) {
+            $entity->field_activity_participants[LANGUAGE_NONE][] = array('target_id' => $dest_id);
+            // add company/individual fields as well
+            //switch ($party) {
+            //	case 'id':
+            //	  $entity->field_lb_company[LANGUAGE_NONE][] = array('target_id' => $dest_id);
+            //	  break;
+            //	case 'contact_id':
+            //	  $entity->field_lb_primary_contact[LANGUAGE_NONE][] = array('target_id' => $dest_id);
+            //	  break;
+            //}
+          }
+        }
+      }
+    }
+  }
+}
+
+/*
+ * Helper function, given a name string will try to extract first and last name.
+ * Returns array keyed with name elements, i.e first, last.
+ */
+
+function lb_custom_data_import_parse_full_name($name) {
+  $name_array = array();
+  // clear extra spaces first
+  $name_clean = preg_replace('/(\s)+/', ' ', $name);
+  if (is_string($name_clean)) {
+    $name_parts = explode(' ', $name_clean);
+    switch (count($name_parts)) {
+    	case 1:
+    	  $name_array['first_name'] = $name_parts[0];
+    	  break;
+    	case 2:
+    	  $name_array['first_name'] = $name_parts[0];
+    	  $name_array['last_name'] = $name_parts[1];
+    	  break;
+    	case 3:
+    	  $name_array['first_name'] = $name_parts[0];
+    	  $name_array['middle_name'] = $name_parts[1];
+    	  $name_array['last_name'] = $name_parts[2];
+    	  break;
+    	default:
+    	  $name_array['full_name'] = $name;
+    	  //watchdog('lb_debug_names', t('returning full name @name', array('@name'=>$name)));
+    	  break;
+    }
+  }
+  return $name_array;
+}
+
+/*
+ * Helper function to lookup source/destination
+ */
+function lb_custom_data_import_helper_lookup_destination($table, $source_id){
+
+  //watchdog('testing', t('table @table id @res', array('@table' => print_r($table,true), '@res' => print_r($source_id,true))));
+  $dest_id = db_select($table, 'map')
+    ->fields('map', array('destid1'))
+    ->condition('map.sourceid1', $source_id)
+    ->execute()
+    ->fetchField();
+  if (is_numeric($dest_id) && $dest_id > 0) {
+    return $dest_id;
+  }
+  return FALSE;
+}
+
+/*
+ * Helper function to get form_data values directly from db
+ */
+function lb_custom_data_import_helper_get_form_data_values($id) {
+  db_set_active('lb_export');
+  $form_data_values = array();
+  $form_data_fields = array(
+      'name_of_company',
+      'address',
+      'telephone_num',
+      'fax_num',
+      'telephone_num_consumer',
+      'website',
+      'contact_person',
+      'position_held',
+      'email',
+      'company_legal_status',
+      'company_sub_parent',
+      'trading_name',
+      'email_consumers',
+      'date_est',
+      'a1',
+      'a2',
+      'a3',
+      'b1',
+      'b2',
+      'b4',
+      'b5a',
+      'b5b',
+      'b5c',
+      'c1',
+      'c2',
+      'c3',
+      'auth_signature',
+      'signed_title',
+      'signed_company_name',
+      'signed_email_address',
+      'signed_date'
+  );
+
+  $form_data_values = db_query("SELECT u.id, fd.id, fd.form_key, fd.form_value FROM {lb_users} u JOIN {lb_form_data} fd ON fd.id = u.id WHERE fd.form_key IN (:keys) AND u.id = :id", array(':keys' => $form_data_fields, ':id' => $id))->fetchAll();
+
+  db_set_active();
+  return $form_data_values;
+}
+/*
+ * Helper function to manually create relations
+ */
+function lb_custom_data_import_helper_create_relation($id1, $id2, $relation) {
+  // Check is relation already exists.
+  $results = relation_relation_exists(array(
+      array('entity_type' => 'crm_core_contact', 'entity_id' => $id1),
+      array('entity_type' => 'crm_core_contact', 'entity_id' => $id2),
+    ), $relation);
+  if ($results === FALSE) {
+    $relation = relation_create($relation, array(
+      0 => array(
+        'entity_type' => 'crm_core_contact',
+        'entity_id' => $id1,
+        'r_index' => 0,
+      ),
+      1 => array(
+        'entity_type' => 'crm_core_contact',
+        'entity_id' => $id2,
+        'r_index' => 1,
+      ),
+    ));
+    $relation->crm_core_relationship_status[LANGUAGE_NONE][0]['value'] = 1;
+    relation_save($relation);
+  }
+}
+
+function lb_custom_data_import_validate_phone($field_item_value) {
+  return cck_phone_validate_number($field_item_value['country_codes'], $field_item_value['number'], $field_item_value['extension']);
+}
+
+function lb_custom_data_import_set_country_code($country, $existing = NULL) {
+  // Address
+  $country_code = 'us';
+  if ($country != NULL) {
+    switch (strtolower($country)) {
+    	case 'canada':
+    	  $country_code = 'ca';
+    	  break;
+    }
+  }
+  else {
+    if (!empty($existing)) {
+      $country_code = strtolower($existing);
+    }
+    else {
+      $country_code = '';
+    }
+  }
+  return $country_code;
+}
+
+function lb_data_custom_data_import_get_entity_by_name($name, $type, $company_type, $debug=false) {
+  switch ($type) {
+  	case 'company':
+  	  $tokens = array(':type' => $type, ':name' => $name);
+  	  $query = "SELECT fd.entity_id
+        FROM {field_data_contact_name} fd";
+  	  if ($company_type == 'supplier' || $company_type == 'manufacturer') {
+  	    $query .= " JOIN {field_data_field_lb_contractor_type} ct on ct.entity_id = fd.entity_id";
+  	  }
+  	  $query .= " WHERE fd.bundle = :type
+        AND (fd.contact_name_given = :name
+        OR fd.contact_name_family = :name)";
+  	  $results = db_query($query, $tokens)->fetchAll();
+
+  	  if ($company_type == 'supplier' || $company_type == 'manufacturer') {
+  	    //watchdog('company_debug', t('company search @entity', array('@entity' => print_r($results,true))));
+  	    //return NULL;
+  	    // can delete this after yous done
+  	  }
+      foreach($results as $result) {
+        return $result->entity_id;
+      }
+      break;
+  	case 'individual':
+  	  // search by name and email
+  	  $tokens = array(':type' => $type);
+  	  $query ="SELECT *
+  	    FROM {field_data_field_ao_email_address} e
+  	    JOIN {field_data_contact_name} n ON n.entity_id = e.entity_id
+  	    WHERE e.bundle = :type";
+  	  if (!empty($name['email_address'])) {
+  	    $query .= " AND e.field_ao_email_address_email = :email";
+  	    $tokens[':email'] = $name['email_address'];
+  	  }
+  	  else {
+  	    $query .= " AND (e.field_ao_email_address_email IS NULL OR e.field_ao_email_address_email = '')";
+  	  }
+  	  if (!empty($name['first_name'])) {
+  	    $query .= " AND n.contact_name_given = :first";
+  	    $tokens[':first'] = $name['first_name'];
+  	  }
+  	  else {
+  	    $query .= " AND (n.contact_name_given IS NULL OR n.contact_name_given = '')";
+  	  }
+  	  if (!empty($name['last_name'])) {
+  	    $query .= " AND n.contact_name_family = :last";
+  	    $tokens[':last'] = $name['last_name'];
+  	  }
+  	  else {
+  	    $query .= " AND (n.contact_name_family IS NULL OR n.contact_name_family = '')";
+  	  }
+  	  $results = db_query($query, $tokens)->fetchAll();
+  	  if ($debug) {
+  	    //watchdog('lb_data_debug_dupes', t('got results @r on name @name', array('@r' => print_r($results,true), '@name'=>print_r($name,true))));
+  	  }
+      foreach($results as $result) {
+        return $result->entity_id;
+      }
+  	  break;
+  }
+  return FALSE;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function lb_custom_data_import_theme($existing, $type, $theme, $path) {
+
+  // Replace each dash with an underscore in the hook name.
+  $themes['views_view_field__contact_import_view__uid'] = array(
+    // Drop the .tpl.php extension on the template name here.
+    'template'  => 'templates/views-view-field--contact-import-view--uid',
+    // The original hook must be declared.
+    // This will be the first one on the list in views UI Theme:information page.
+    'original hook' => 'views_view_field',
+    // You need this whether you declare your own preprocess function or not.
+    // Always list the first two and optionally list your own function last.
+    'preprocess functions' => array(
+      // This is the global preprocess function used by all templates.
+      'template_preprocess',
+      // This one is specific to the type of template,
+      // named 'template_preprocess_' followed by 'original hook' name.
+      'template_preprocess_views_view_field',
+      // This one will be defined in mymodule.
+      'lb_custom_data_import_preprocess_views_view_field__contact_import_view__uid',
+    ),
+    'arguments' => array('view' => NULL, 'field' => NULL, 'row' => NULL),
+  );
+  // Replace each dash with an underscore in the hook name.
+  $themes['views_view_field__contact_import_view__nothing'] = array(
+    'template'  => 'templates/views-view-field--contact-import-view--uid',
+    'original hook' => 'views_view_field',
+    'preprocess functions' => array(
+      'template_preprocess',
+      'template_preprocess_views_view_field',
+      'lb_custom_data_import_preprocess_views_view_field__contact_import_view__nothing',
+    ),
+    'arguments' => array('view' => NULL, 'field' => NULL, 'row' => NULL),
+  );
+  return $themes;
+}
+
+function lb_custom_data_import_preprocess_views_view_field__contact_import_view__uid(&$vars) {
+
+}
+
+
+function lb_custom_data_import_preprocess_views_view_field__contact_import_view__nothing(&$vars) {
+
+  //disable expected count for now
+  return ;
+  db_set_active('lb_export');
+  // companies: 2887 (value in count)
+  $company = db_query("SELECT count(DISTINCT u.company_name) as count
+    FROM `lb_users` u
+    WHERE u.company_name IS NOT NULL
+    AND u.company_name != ''")->fetchField();
+
+  //company_contacts: 2911 (2912-1 for admin dupe, value in count)
+  $company_contacts = db_query("SELECT count(*) as count
+      FROM `lb_users` u2
+      WHERE (
+        u2.id
+      ) NOT IN (
+        SELECT u1.id
+        FROM `lb_users` u1
+        INNER JOIN (
+          SELECT u.id, u.first_name, u.last_name, u.email_address
+          FROM `lb_users` u
+          GROUP BY u.email_address, u.last_name, u.first_name
+          HAVING (count(*) >1)
+        ) AS j ON u1.first_name = j.first_name
+        AND u1.last_name = j.last_name
+        AND u1.email_address = j.email_address
+        WHERE u1.id != j.id
+      )
+      AND u2.username != 'admin'")->fetchField();
+
+
+  //suppliers: 616 (value in c3)
+  $supplier = db_query("SELECT c1 - c2 AS c3
+      FROM (
+        (SELECT count( * ) AS c1
+         FROM (SELECT DISTINCT s1.company_name
+               FROM `lb_suppliers` s1
+               WHERE s1.company_name IS NOT NULL
+               AND s1.company_name != ''
+               UNION
+               SELECT DISTINCT s.supplier_name
+               FROM `lb_suppliers` s
+               WHERE s.company_name = '' OR s.company_name IS NULL
+              ) AS d1
+         ) AS c1,
+        (SELECT count( * ) AS c2
+         FROM (SELECT DISTINCT u1.company_name
+               FROM `lb_users` u1
+               WHERE (u1.company_name)
+               IN (SELECT DISTINCT s3.company_name
+                   FROM `lb_suppliers` s3
+                   WHERE s3.company_name IS NOT NULL
+                   AND s3.company_name != ''
+                   UNION
+                   SELECT DISTINCT s2.supplier_name
+                   FROM `lb_suppliers` s2
+                   WHERE s2.company_name = '' OR s2.company_name IS NULL
+                  )
+             ) AS d2
+         ) AS c2)")->fetchField();
+
+  // supplier contacts: 897 (value in count)
+  $supplier_contacts = db_query("select a1- a2 as a3 from (
+(select count(*) as a1 from (select * from `lb_suppliers` bs2 where (bs2.supplier_id) not in (select bs.supplier_id from `lb_suppliers` bs inner join (SELECT *
+FROM (
+SELECT distinct u.printed_name, u.email_address, u.supplier_id, count(*) as count
+FROM `lb_suppliers` u group by u.printed_name, u.email_address
+having (count(*)>1)
+UNION all
+SELECT distinct u2.contact AS printed_name, u2.email_address, u2.supplier_id, count(*) as count
+FROM `lb_suppliers` u2 group by printed_name, u2.email_address
+having (count(*)>1)
+) AS j group by j.printed_name, j.email_address having (count(*)>1)) as bj on (bj.printed_name = bs.printed_name or bj.printed_name = bs.contact) and bj.email_address = bs.email_address where bj.supplier_id != bs.supplier_id) group by bs2.printed_name, bs2.contact, bs2.email_address) as d1) as a1,
+(select  count(*) as a2 from (select s.supplier_id, s.id, s.contact, s.printed_name, s.email_address from (SELECT trim( CONCAT( trim( u.first_name ) , ' ', trim( u.last_name ) ) ) AS printed1, CONCAT( trim(u.first_name), ' ', trim(u.last_name) ) AS printed2, trim( CONCAT( u.first_name, ' ', u.last_name )) AS printed3, CONCAT( u.first_name, ' ', u.last_name ) AS printed4, u.first_name AS printed5,  u.last_name AS printed6, trim( u.first_name ) AS printed7,  trim( u.last_name ) AS printed8, u.email_address
+FROM `lb_users` u) as uj left join `lb_suppliers` s on (s.printed_name = uj.printed1 or s.printed_name = uj.printed2 or s.printed_name = uj.printed3  or s.printed_name = uj.printed4 or s.printed_name = uj.printed5 or s.printed_name = uj.printed6 or s.printed_name = uj.printed7 or s.printed_name = uj.printed8 or s.contact = uj.printed1 or s.contact = uj.printed2 or s.contact = uj.printed3 or s.contact = uj.printed4 or s.contact = uj.printed5 or s.contact = uj.printed6 or s.contact = uj.printed7 or s.contact = uj.printed8) and s.email_address = uj.email_address where s.id is not null and s.supplier_id is not null) as d2) as a2
+)")->fetchField();
+
+
+  //man: 300 (value in c4)
+  $man = db_query("SELECT c1 - c2 AS c3
+FROM (
+(
+
+SELECT count( * ) AS c1
+FROM (
+
+SELECT DISTINCT s1.company_name
+FROM `lb_manufacturers` s1
+WHERE s1.company_name IS NOT NULL
+AND s1.company_name != ''
+UNION SELECT DISTINCT s.man_name
+FROM `lb_manufacturers` s
+WHERE s.company_name = ''
+OR s.company_name IS NULL
+) AS d1
+) AS c1, (
+
+SELECT count( * ) AS c2
+FROM (
+
+SELECT DISTINCT u1.company_name
+FROM (
+
+SELECT DISTINCT s1.company_name
+FROM `lb_manufacturers` s1
+WHERE s1.company_name IS NOT NULL
+AND s1.company_name != ''
+UNION SELECT DISTINCT s.man_name
+FROM `lb_manufacturers` s
+WHERE s.company_name = ''
+OR s.company_name IS NULL
+) AS u1
+WHERE (
+u1.company_name
+)
+IN (
+
+SELECT DISTINCT u.company_name
+FROM `lb_users` u
+UNION SELECT DISTINCT s1.company_name
+FROM `lb_suppliers` s1
+WHERE s1.company_name IS NOT NULL
+AND s1.company_name != ''
+UNION SELECT DISTINCT s.supplier_name
+FROM `lb_suppliers` s
+WHERE s.company_name = ''
+OR s.company_name IS NULL
+)
+) AS d2
+) AS c2
+)")->fetchField();
+
+  //man contacts: 398 (value in count)
+  $man_contacts = db_query("SELECT count( * ) AS count
+FROM (
+
+SELECT DISTINCT u.printed_name, u.email_address
+FROM `lb_manufacturers` u
+WHERE u.printed_name != ''
+AND u.printed_name IS NOT NULL
+UNION
+SELECT DISTINCT u2.contact AS printed_name, u2.email_address
+FROM `lb_manufacturers` u2
+WHERE u2.printed_name = ''
+OR u2.printed_name IS NULL
+) AS j
+WHERE (
+j.printed_name, j.email_address
+) NOT
+IN (
+
+SELECT DISTINCT trim( CONCAT( trim( u.first_name ) , ' ', trim( u.last_name ) ) ) AS printed, u.email_address
+FROM `lb_users` u
+UNION
+SELECT DISTINCT CONCAT( trim(u1.first_name), ' ', trim(u1.last_name) ) AS printed, u1.email_address
+FROM `lb_users` u1
+UNION
+SELECT DISTINCT trim( CONCAT( u1.first_name, ' ', u1.last_name )) AS printed, u1.email_address
+FROM `lb_users` u1
+UNION
+SELECT DISTINCT CONCAT( u1.first_name, ' ', u1.last_name ) AS printed, u1.email_address
+FROM `lb_users` u1
+UNION SELECT DISTINCT u2.first_name AS printed, u2.email_address
+FROM `lb_users` u2
+UNION SELECT DISTINCT u3.last_name AS printed, u3.email_address
+FROM `lb_users` u3
+UNION SELECT DISTINCT trim( u4.first_name ) AS printed, u4.email_address
+FROM `lb_users` u4
+UNION SELECT DISTINCT trim( u5.last_name ) AS printed, u5.email_address
+FROM `lb_users` u5
+)
+AND (
+j.printed_name, j.email_address
+) NOT
+IN (
+
+SELECT DISTINCT u.printed_name, u.email_address
+FROM `lb_suppliers` u
+WHERE u.printed_name != ''
+AND u.printed_name IS NOT NULL
+UNION
+SELECT DISTINCT u2.contact AS printed_name, u2.email_address
+FROM `lb_suppliers` u2
+WHERE u2.printed_name = ''
+OR u2.printed_name IS NULL
+)")->fetchField();
+
+  db_set_active();
+
+  $contact_dupe_count = db_query("
+      SELECT *
+      FROM {field_data_contact_name} c
+      JOIN {field_data_field_ao_email_address} e
+      ON e.entity_id = c.entity_id
+      WHERE c.bundle = 'individual'
+      GROUP BY c.contact_name_given, c.contact_name_family,
+        e.field_ao_email_address_email
+      HAVING ( count(*) > 1)")->rowCount();
+  $contact_import_count = db_query("SELECT count(*) AS count
+      FROM {crm_core_contact} c
+      WHERE c.type = 'individual'")->fetchField();
+
+  $output = t('</br>Total companies: @company </br>
+      Total suppliers: @supplier </br>
+      Total manufacturers: @man </br>
+      <b>Total company records = @total_companies</b> </br></br>
+      Total company contacts: @company_contacts </br>
+      Total supplier contacts: @supplier_contacts </br>
+      Total manufacturer contacts: @man_contacts </br>
+      <b>Total contact records = @total_contacts</b> </br></br>
+      <b>Total user records = @total_users</b> </br></br>
+      <b>Total activity records = @total_activities</b> </br></br>
+      Results from import: </br>
+      <b>Total duplicate contact records = @contact_dupe_count</b> </br></br>',
+      array(
+          '@company' => $company,
+          '@supplier' => $supplier,
+          '@man' => $man,
+          '@total_companies' => $company + $supplier + $man,
+          '@company_contacts' => $company_contacts,
+          '@supplier_contacts' => $supplier_contacts,
+          '@man_contacts' => $man_contacts,
+          '@total_contacts' => $company_contacts + $supplier_contacts + $man_contacts,
+          '@contact_dupe_count' => $contact_dupe_count,
+          '@total_users' => $company_contacts,
+          '@total_activities' => $company*2,
+  ));
+  $vars['output'] = $output;
+}
+
+function lb_custom_data_import_activity_check_dupe($entity, $row) {
+  $org_id = (!empty($row['id'])) ? $row['id'] : NULL;
+  if (isset($org_id)) {
+    $orig_company_id = db_select('migrate_map_ccdi_5_crm_core_contact_company_1', 'map')
+              ->fields('map', array('destid1'))
+              ->condition('map.sourceid1', $org_id)
+              ->execute()
+              ->fetchField();
+
+    if (!empty($orig_company_id)) {
+      $results = db_query("SELECT count(*) as count, field_activity_participants_target_id as target
+        FROM {field_data_field_activity_participants} p
+        WHERE p.field_activity_participants_target_id = :id
+        AND p.bundle = :bundle",
+        array(':id' => $orig_company_id, ':bundle' => $entity->type))->fetchAll();
+
+      foreach($results as $result) {
+        return $result->target;
+      }
+    }
+  }
+
+  return FALSE;
+}
+
+function lb_custom_data_import_create_extra_activity($entity_type, $entity_array, $row, $migrate_step, $str, $status, $participants) {
+
+  $entity_new = entity_create($entity_type, $entity_array);
+  //$wrapper_new = entity_metadata_wrapper($entity_type, $entity_new);
+
+  // @todo: set date?
+  // change time of activity for display order
+
+  $base_date = NULL;
+  // Set base date if approval date is present.
+  if (!empty($row['approval_dt']) && trim($row['approval_dt']) != '') {
+    $base_date = $row['approval_dt'];
+    //$app_approved_entity->field_activity_date[LANGUAGE_NONE][0]['value'] = date("Y-m-d h:i:s", $row['approval_dt']);
+    //$date = date("Y-m-d h:i:s", strtotime(date("Y-m-d", $row['approval_dt']) . " + 1 year"));
+    //$app_approved_entity->field_lb_recommitment_date[LANGUAGE_NONE][0]['value'] = $date;
+  }
+  switch($entity_array['type']) {
+    case 'lb_application_request':
+      $time = strtotime('10 minutes ago');
+      if ($base_date != NULL) {
+        $time = strtotime(date("Y-m-d h:i:s", $base_date) . " - 10 minutes");
+      }
+      break;
+    case 'lb_application_request_approved':
+      $time = strtotime('9 minutes ago');
+      if ($base_date != NULL) {
+        $time = strtotime(date("Y-m-d h:i:s", $base_date) . " - 9 minutes");
+      }
+      break;
+    case 'lb_company_application_initiated':
+      $time = strtotime('8 minutes ago');
+      if ($base_date != NULL) {
+        $time = strtotime(date("Y-m-d h:i:s", $base_date) . " - 8 minutes");
+      }
+      break;
+    case 'lb_company_application_submitted':
+      $time = strtotime('6 minutes ago');
+      if ($base_date != NULL) {
+        $time = strtotime(date("Y-m-d h:i:s", $base_date) . " - 6 minutes");
+      }
+      break;
+    case 'lb_company_application_approved':
+      $time = strtotime('5 minutes ago');
+      if ($base_date != NULL) {
+        $time = strtotime(date("Y-m-d h:i:s", $base_date) . " - 5 minutes");
+      }
+      break;
+    case 'lb_recommitment_due':
+      $time = strtotime('4 minutes ago');
+      if ($base_date != NULL) {
+        $time = strtotime(date("Y-m-d h:i:s", $base_date) . " - 4 minutes");
+      }
+      break;
+    case 'lb_application':
+      $time = strtotime('7 minutes ago');
+      if ($base_date != NULL) {
+        $time = strtotime(date("Y-m-d h:i:s", $base_date) . " - 7 minutes");
+      }
+      break;
+    default:
+      $time = strtotime('1 minute ago');
+      if ($base_date != NULL) {
+        $time = strtotime(date("Y-m-d h:i:s", $base_date) . " - 1 minute");
+      }
+  }
+  $entity_new->created = $time;
+  // Set date for field_activity_date
+  if ($time) {
+    $date = date('Y-m-d h:i:s', $time);
+    //$entity->field_lb_sig_date[LANGUAGE_NONE][0]['value'] = $date;
+    $entity_new->field_activity_date[LANGUAGE_NONE][0]['value'] = $date;
+  }
+
+  // add participants
+  lb_custom_data_import_add_participants($entity_new, $participants);
+
+  // set status
+  //$entity_new->field_lb_application_status[LANGUAGE_NONE][0]['value'] = $status;
+  //crm_core_activity_save($entity_lb_application_request);
+  $existing_entity = lb_custom_data_import_activity_check_dupe($entity_new, $row);
+  if (!empty($existing_entity)) {
+    $found_entity = entity_load($entity_type, array($existing_entity));
+    if (!empty($found_entity)) {
+      foreach ($found_entity as $found) {
+        return $found;
+      }
+    }
+    else {
+      //watchdog('lb_data_activity', t('found empty @entity on row @row', array('@entity'=> print_r($found_entity,true), '@row'=>$row)));
+    }
+  }
+  crm_core_activity_save($entity_new);
+  return $entity_new;
+}
+
+function lb_custom_data_import_add_participants(&$entity, $participants) {
+  $company_only = array('lb_company_application_initiated');
+  if (in_array($entity->type, $company_only)) {
+    unset($participants['contact_id']);
+  }
+  // Set participants
+  if (empty($entity->field_activity_participants[LANGUAGE_NONE])) {
+    $entity->field_activity_participants[LANGUAGE_NONE] = array();
+  }
+
+  foreach ($participants as $party => $dest_id) {
+    $entity->field_activity_participants[LANGUAGE_NONE][] = array('target_id' => $dest_id);
+    // add company/individual fields as well
+    switch ($party) {
+    	case 'id':
+    	  $entity->field_lb_company[LANGUAGE_NONE][] = array('target_id' => $dest_id);
+    	  break;
+    	case 'contact_id':
+    	  $entity->field_lb_primary_contact[LANGUAGE_NONE][] = array('target_id' => $dest_id);
+    	  break;
+    }
+  }
+}
+
+
+function lb_custom_data_import_get_participants(&$entity, $row, $migrate_step, $str) {
+  $return = array();
+  $participants = array('id', 'contact_id');
+
+  foreach ($participants as $party) {
+    if (!empty($row[$party])) {
+      $table = NULL;
+      switch ($party) {
+      	case 'id':
+      	  $table = 'migrate_map_'. str_replace('crm_core_activity_'. $str, 'crm_core_contact_company', $migrate_step); //ccdi_4_crm_core_contact_company_1';
+      	  break;
+      	case 'contact_id':
+      	  $table = 'migrate_map_'. str_replace('crm_core_activity_'. $str, 'crm_core_contact_individual', $migrate_step); //ccdi_4_crm_core_contact_individual_1';
+      	  break;
+      }
+      if ($table != NULL) {
+        // Use row[id] when individual contacts are matching by id and not contact_id.
+        $dest_id = lb_custom_data_import_helper_lookup_destination($table, $row['id']);
+
+        if ($dest_id) {
+          $return[$party] = $dest_id;
+        }
+      }
+    }
+  }
+  return $return;
+}
+
+/**
+ * Helper function to create contact on the fly.
+ *
+ * Not needed as it's never used.
+ *
+ * @param unknown $form_data_values
+ *   An array of values retrieved from db.
+ * @param unknown $entity
+ *   A contact to relate the created entity, ie. org/primary contact.
+ * @param unknown $row
+ *   The row in the csv being imported.
+ * @param string $country_code
+ *   The computed country code for ao fields.
+ */
+function lb_custom_data_import_create_custom_contact($form_data_values, $entity, $row, $country_code = '') {
+  $first_name = $last_name = $full_name = $phone = $email_address = $position = NULL;
+  $debug = FALSE;
+
+  foreach ($form_data_values as $key => $values) {
+    if (!empty($values->form_key) && !empty($values->form_value)) {
+      switch ($values->form_key) {
+        case 'telephone_num':
+          $phone = trim($values->form_value);
+          break;
+
+        case 'email':
+          $email_address = trim($values->form_value);
+          break;
+
+        case 'contact_person':
+          $full_name = trim($values->form_value);
+          break;
+
+        case 'position_held':
+          $position = trim($values->form_value);
+          break;
+      }
+    }
+  }
+
+  // Ignore empty values.
+  if (empty($full_name) && empty($email_address)) {
+    return;
+  }
+
+  if (!empty($full_name)) {
+    $name_parts = lb_custom_data_import_parse_full_name($full_name);
+    $first_name = (!empty($name_parts['full_name'])) ? $name_parts['full_name'] : ((!empty($name_parts['first_name'])) ? $name_parts['first_name'] : NULL);
+    $last_name = (!empty($name_parts['last_name'])) ? $name_parts['last_name'] : NULL;
+    if (!empty($name_parts['full_name'])) {
+      $debug = TRUE;
+    }
+    $debug = TRUE;
+  }
+
+  $entity_contact = NULL;
+  $name_check = array(
+    'first_name' => $first_name,
+    'last_name' => $last_name,
+    'email_address' => $email_address,
+  );
+  if (!empty($name_check)) {
+    // Check if there is a contact with this name already.
+    $found_entity = lb_data_custom_data_import_get_entity_by_name($name_check, 'individual', NULL, $debug);
+    if (!empty($found_entity)) {
+      $entity_contact = array_shift(entity_load('crm_core_contact', array($found_entity)));
+    }
+    else {
+      $entity_contact = entity_create('crm_core_contact', array('type' => 'individual'));
+    }
+  }
+
+  // Given name.
+  if (!empty($first_name)) {
+    $entity_contact->contact_name[LANGUAGE_NONE][0]['given'] = $first_name;
+  }
+  // Family name.
+  if (!empty($last_name)) {
+    $entity_contact->contact_name[LANGUAGE_NONE][0]['family'] = $last_name;
+  }
+  // Email.
+  if (!empty($email_address)) {
+    $entity_contact->field_ao_email_address[LANGUAGE_NONE][0]['email'] = $email_address;
+  }
+  // Position.
+  if (!empty($position)) {
+    $entity_contact->field_lb_position_held[LANGUAGE_NONE][0]['email'] = $position;
+  }
+
+  // Phone numbers.
+  if (!empty($phone)) {
+    $target_value = array(
+      'number' => $phone,
+      'country_codes' => $country_code,
+      'extension' => '',
+    );
+    if (lb_custom_data_import_validate_phone($target_value)) {
+      $entity_contact->field_ao_primary_telephone[LANGUAGE_NONE][0]['country_codes'] = $country_code;
+      $entity_contact->field_ao_primary_telephone[LANGUAGE_NONE][0]['number'] = $phone;
+    }
+    else {
+      watchdog('lb_import', 'Invalid phone @phone for @contactcontact on row @row', array(
+        '@phone' => $phone,
+        '@contact' => print_r($entity_contact, TRUE),
+        '@row' => $row,
+      ));
+    }
+  }
+  crm_core_contact_save($entity_contact);
+
+  // Create contact relationship.
+  $rel_name = 'lb_primary_contact';
+  // Save the contact so it will have an id.
+  if (empty($entity->contact_id)) {
+    crm_core_contact_save($entity);
+  }
+  lb_custom_data_import_helper_create_relation($entity_contact->contact_id, $entity->contact_id, $rel_name);
+
+}
+
+/**
+ * Implements hook_mail_alter().
+ *
+ * Send emails to correct address in the event they are imported with dedupe
+ * which appends _2, _3 to each dupelicate.
+ */
+function lb_custom_data_import_mail_alter(&$message) {
+  // Using reroute_email now, not needed.
+  // $message['to'] = 'devteam@trellon.com';
+  $to = $message['to'];
+  if (!empty($to)) {
+    $regexp = '/(_(\d)+)$/i';
+    $iResults = preg_match_all($regexp, $to, $bMatches);
+
+    $matched = $bMatches[0][0];
+    if (!empty($matched)) {
+      $realmail = str_replace($matched, '', $to);
+      $message['to'] = $realmail;
+    }
+  }
+  watchdog('mail_send', print_r($message, TRUE));
+  // Remove watchdog when testing is done.
+}

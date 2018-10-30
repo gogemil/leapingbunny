@@ -1,0 +1,13 @@
+name = Flot Example
+description = Provides an usage example for the flot module.
+core = 7.x
+package = Charts
+
+files[] = flot_example.module
+
+; Information added by drush on 2015-03-13
+version = "7.x-1.0+4-dev"
+core = "7.x"
+project = "flot"
+datestamp = "1426266517"
+

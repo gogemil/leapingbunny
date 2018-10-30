@@ -1,0 +1,25 @@
+/**
+ * @file
+ * Theme for dashboard
+ *
+ */
+BODY.page-crm-core-dashboard {
+  
+  .activity-feed {
+    @extend .activty-feed-container;    
+  }
+  
+  .view-ao-dashboard-act-stream {
+
+  } 
+
+  .summary-pane {
+    @extend .summary-widget-container;
+    .pane-title {
+    }
+    
+    
+  }
+
+
+}

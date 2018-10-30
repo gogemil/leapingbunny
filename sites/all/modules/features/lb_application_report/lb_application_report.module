@@ -1,0 +1,600 @@
+<?php
+/**
+ * @file
+ * Code for the LB Application Report feature.
+ */
+
+include_once 'lb_application_report.features.inc';
+
+/**
+ * Implements hook_action_info().
+ */
+function lb_application_report_action_info() {
+  return array(
+    'lb_application_report_approve_request' => array(
+      'type' => 'entity',
+      'label' => t('Pending'),
+      'configurable' => FALSE,
+      'triggers' => array('any'),
+    ),
+    'lb_application_report_deny_request' => array(
+      'type' => 'entity',
+      'label' => t('Deny request'),
+      'configurable' => FALSE,
+      'vbo_configurable' => TRUE,
+      'triggers' => array('any'),
+    ),
+    'lb_application_report_approve_application' => array(
+      'type' => 'entity',
+      'label' => t('Approve application'),
+      'configurable' => FALSE,
+      'triggers' => array('any'),
+    ),
+    'lb_application_report_recommitment_due' => array(
+      'type' => 'entity',
+      'label' => t('Recommitment due'),
+      'configurable' => FALSE,
+      'triggers' => array('any'),
+    ),
+    /*'lb_application_report_deny_application' => array(
+      'type' => 'entity',
+      'label' => t('Deny application'),
+      'configurable' => FALSE,
+      'triggers' => array('any'),
+    ),*/
+  );
+}
+
+/**
+ * Finds the latest activity associated with a company.
+ */
+function lb_application_report_get_activity_by_company($activity_bundle, $company) {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'crm_core_activity')
+    ->entityCondition('bundle', $activity_bundle)
+    ->fieldCondition('field_lb_company', 'target_id', $company->contact_id)
+    ->propertyOrderBy('created', 'DESC');
+  $result = $query->execute();
+  if (isset($result['crm_core_activity'])) {
+    $activity_id = key($result['crm_core_activity']);
+    return entity_load_single('crm_core_activity', $activity_id);
+  }
+  else {
+    return FALSE;
+  }
+}
+
+/**
+ * Creates and saves a new activity.
+ */
+function lb_application_report_create_activity($bundle, $fields) {
+  $activity_type = crm_core_activity_type_load($bundle);
+  $activity = entity_create('crm_core_activity', array('type' => $bundle, 'title' => $activity_type->label));
+  $activity_wrapper = entity_metadata_wrapper('crm_core_activity', $activity);
+  foreach ($fields as $field_name => $field_value) {
+    $activity_wrapper->{$field_name}->set($field_value);
+  }
+  $activity_wrapper->save();
+
+  return $activity;
+}
+
+/**
+ * Given a company or application, find all associated entities.
+ */
+function lb_application_report_get_entities($activity_bundle, $entity) {
+  switch ($entity->type) {
+    case 'company':
+      // Find matching activity.
+      $company = $entity;
+      if (!$activity = lb_application_report_get_activity_by_company($activity_bundle, $company)) {
+        drupal_set_message(t('Could not find matching activity.'), 'error');
+        return FALSE;
+      }
+      break;
+
+    case $activity_bundle:
+      // Find matching company.
+      $activity = $entity;
+      $company_id = $activity->field_lb_company[LANGUAGE_NONE][0]['target_id'];
+      $company = entity_load_single('crm_core_contact', $company_id);
+      break;
+  }
+  $contact_id = $activity->field_lb_primary_contact[LANGUAGE_NONE][0]['target_id'];
+  $contact = entity_load_single('crm_core_contact', $contact_id);
+
+  return array($company, $activity, $contact);
+}
+
+/**
+ * Action to approve request.
+ *
+ * Takes a company or application as an argument.
+ */
+function lb_application_report_approve_request(&$entity, $context) {
+  // Find the corresponding company, request, and contact.
+  list($company, $request, $contact) = lb_application_report_get_entities('lb_application_request', $entity);
+
+
+  // Create the approval activity.
+  $approval_fields = array(
+    'field_activity_participants' => array($contact->contact_id, $company->contact_id),
+    'field_lb_primary_contact' => $contact->contact_id,
+    'field_lb_company' => $company->contact_id,
+    'field_lb_application_request' => $request->activity_id,
+  );
+  $approval = lb_application_report_create_activity('lb_application_request_approved', $approval_fields);
+
+  // Set outcome on request activity.
+  $request_wrapper = entity_metadata_wrapper('crm_core_activity', $request);
+  $request_wrapper->field_lb_request_outcome->set($approval->activity_id);
+  $request_wrapper->save();
+
+  // Create user account.
+  $contact_mail = $contact->field_ao_email_address[LANGUAGE_NONE][0]['email'];
+  $user = entity_create('user', array());
+  // To prepare the email address as a username, trim any potential leading
+  // and trailing spaces and replace simple illegal characters with hyphens.
+  // @see user_validate_name().
+  $user->name = preg_replace('/[^\x{80}-\x{F7} a-z0-9@_.\'-]/i', '_', trim($contact_mail));
+  $user->mail = $contact_mail;
+  $user->status = 1;
+  // @todo: Uncomment this when CRM Core will get updated to next release.
+  // And also remove this crap with variable.
+  // $user->crm_core_no_auto_sync = TRUE;
+  $sync = variable_get('crm_core_user_sync_auto_sync_user_create', TRUE);
+  if ($sync) {
+    variable_set('crm_core_user_sync_auto_sync_user_create', FALSE);
+  }
+  entity_save('user', $user);
+  crm_core_user_sync_sync($user, $contact);
+  variable_set('crm_core_user_sync_auto_sync_user_create', $sync);
+  // Create the primary contact account activity.
+  $primary_fields = array(
+    'field_activity_participants' => array($contact->contact_id),
+  );
+  lb_application_report_create_activity('lb_primary_contact_account_creat', $primary_fields);
+  $reset_url = user_pass_reset_url($user);
+
+  // Invoke rules for approving request.
+  rules_invoke_component('rules_lb_application_request_approved', $company->contact_id, $contact->contact_id, $user->uid, $reset_url);
+
+  drupal_set_message(t('Company application request approved.'));
+}
+
+/**
+ * Action to deny request.
+ *
+ * Takes a company or application as an argument.
+ */
+function lb_application_report_deny_request(&$entity, $context) {
+  // Find the corresponding company, request, and contact.
+  list($company, $request, $contact) = lb_application_report_get_entities('lb_application_request', $entity);
+
+  // Create the activity.
+  $denial_fields = array(
+    'field_activity_participants' => array($contact->contact_id, $company->contact_id),
+    'field_lb_primary_contact' => $contact->contact_id,
+    'field_lb_company' => $company->contact_id,
+    'field_lb_application_request' => $request->activity_id,
+    'field_lb_justification' => $context['justification'],
+  );
+  $denial = lb_application_report_create_activity('lb_application_request_denied', $denial_fields);
+
+  // Set outcome on request activity.
+  $request_wrapper = entity_metadata_wrapper('crm_core_activity', $request);
+  $request_wrapper->field_lb_request_outcome->set($denial->activity_id);
+  // Update request status.
+  $request_wrapper->field_activity_request_status = $context['justification'];
+  $request_wrapper->save();
+
+  // Invoke rules.
+  if ($context['justification'] == 'needs_more_info') {
+    rules_invoke_component('rules_lb_application_request_needs_more_info', $company->contact_id, $contact->contact_id, $denial->activity_id);
+  }
+  elseif ($context['justification'] == 'foreign') {
+    rules_invoke_component('rules_lb_application_request_denied', $company->contact_id, $contact->contact_id, $denial->activity_id);
+  }
+
+  drupal_set_message(t('Company application request denied.'));
+}
+
+/**
+ * VBO form to deny a request.
+ */
+function lb_application_report_deny_request_form($settings) {
+  $form = array();
+  $field = field_info_field('field_lb_justification');
+  $allowed_values = list_allowed_values($field);
+  $form['justification'] = array(
+    '#type' => 'select',
+    '#title' => t('Choose the reason for denial'),
+    '#options' => $allowed_values,
+    '#required' => TRUE,
+    '#default_value' => isset($settings['settings']['justification']) ? $settings['settings']['justification'] : '',
+  );
+  return $form;
+}
+
+/**
+ * Submit handler for VBO form.
+ */
+function lb_application_report_deny_request_submit($form, $form_state) {
+  $return = array();
+  $return['justification'] = $form_state['values']['justification'];
+  return $return;
+}
+
+/**
+ * Action to approve application.
+ *
+ * Takes a company or application as an argument.
+ */
+function lb_application_report_approve_application(&$entity, $context) {
+
+  // Find the corresponding company, application, and contact.
+  list($company, $application, $contact) = lb_application_report_get_entities('lb_application', $entity);
+
+  // Create the activity.
+  $activity_fields = array(
+    'field_activity_participants' => array($contact->contact_id, $company->contact_id),
+    'field_lb_primary_contact' => $contact->contact_id,
+    'field_lb_company' => $company->contact_id,
+    'field_lb_application' => $application->activity_id,
+    'field_lb_recommitment_date' => REQUEST_TIME + 365 * 24 * 60 * 60,
+  );
+
+  // Verify if the company was previously approved.
+  $approvement = lb_application_report_get_activity_by_company('lb_company_application_approved', $company);
+
+  $approval = lb_application_report_create_activity('lb_company_application_approved', $activity_fields);
+
+  // Set the outcome on the application.
+  $application_wrapper = entity_metadata_wrapper('crm_core_activity', $application);
+  $application_wrapper->field_lb_application_outcome->set($approval->activity_id);
+  // Set application status.
+  $application_wrapper->field_lb_application_status = 'approved';
+  $application_wrapper->save();
+
+  // If not previously approved, invoke Application Approved rules.
+  if (empty($approvement)) {
+    rules_invoke_component('rules_lb_company_application_approved', $company->contact_id, $contact->contact_id);
+    drupal_set_message(t('Company application approved.'));
+  }
+  else {
+    // If previously approved, invoke Recommitment Approved rules.
+    rules_invoke_component('rules_lb_recommitment_application_approved', $company->contact_id, $contact->contact_id);
+
+    // Remove the previous schedule emails
+    $result = db_query('SELECT rs.tid  FROM {rules_scheduler} rs WHERE rs.identifier LIKE :idt', array(':idt' => "recommitment_due_".$company->contact_id."_email_%"));
+    foreach ($result as $record) {
+      rules_scheduler_task_delete($record->tid);
+    }
+
+    drupal_set_message(t('Company recommitment approved.'));
+  }
+}
+
+/**
+ * Action to deny application.
+ *
+ * Takes a company or application as an argument.
+ */
+function lb_application_report_deny_application(&$entity, $context) {
+  // Find the corresponding company, application, and contact.
+  list($company, $application, $contact) = lb_application_report_get_entities('lb_application', $entity);
+
+  // Create the activity.
+  $activity_fields = array(
+    'field_activity_participants' => array($contact->contact_id, $company->contact_id),
+    'field_lb_primary_contact' => $contact->contact_id,
+    'field_lb_company' => $company->contact_id,
+    'field_lb_application' => $application->activity_id,
+  );
+  $denial = lb_application_report_create_activity('lb_company_application_rejected', $activity_fields);
+
+  // Set the outcome on the application.
+  $application_wrapper = entity_metadata_wrapper('crm_core_activity', $application);
+  $application_wrapper->field_lb_application_outcome->set($denial->activity_id);
+  // Set application status.
+  $application_wrapper->field_lb_application_status = 'denied';
+  $application_wrapper->save();
+
+  // Invoke rules.
+  rules_invoke_component('rules_lb_company_application_rejected', $company->contact_id, $contact->contact_id);
+
+  drupal_set_message(t('Company application denied.'));
+}
+
+/**
+ * Action to set application status as Recommitment Due.
+ */
+function lb_application_report_recommitment_due(&$entity, $context) {
+  // Find the corresponding company, request, and contact.
+  list($company, $request, $contact) = lb_application_report_get_entities('lb_application', $entity);
+  $application = lb_application_report_get_activity_by_company('lb_application', $company);
+
+  // Create the activity.
+  $fields = array(
+    'field_activity_participants' => array($contact->contact_id, $company->contact_id),
+    'field_lb_primary_contact' => $contact->contact_id,
+    'field_lb_company' => $company->contact_id,
+    'field_lb_application' => $application->activity_id,
+  );
+  $recommit_activity = lb_application_report_create_activity('lb_recommitment_due', $fields);
+
+  // Set outcome on request activity.
+  $application_wrapper = entity_metadata_wrapper('crm_core_activity', $application);
+  $application_wrapper->field_lb_application_outcome->set($recommit_activity->activity_id);
+  $application_wrapper->save();
+
+  // Invoke rules.
+  rules_invoke_component('lb_registration_lb_application_recommitment_due', $company->contact_id, $contact->contact_id);
+
+  drupal_set_message(t('Company application was set to Recommitment Due.'));
+}
+
+/**
+ * Implements hook_crm_core_report_register().
+ */
+function lb_application_report_crm_core_report_register() {
+
+  $reports = array(
+    'lb_requests' => array(
+      'title' => t('Requests'),
+      'reports' => array(),
+      'widgets' => array(),
+    ),
+    'lb_applications' => array(
+      'title' => t('Applications'),
+      'reports' => array(),
+      'widgets' => array(),
+    ),
+  );
+
+  // Requests page.
+  $reports['lb_requests']['reports']['all'] = array(
+    'title' => t('Requests to Apply for Certification'),
+    'path' => 'crm-core/reports/lb_requests/applications/requests',
+    'description' => t('Lists all requests for applications.'),
+  );
+
+  // Approved requests.
+  $reports['lb_requests']['reports']['approved'] = array(
+    'title' => t('Accepted Requests'),
+    'path' => 'crm-core/reports/lb_requests/applications/requests-approved',
+    'description' => t('Lists all requests for applications.'),
+  );
+
+  // Denied requests.
+  $reports['lb_requests']['reports']['denied'] = array(
+    'title' => t('Denied Requests'),
+    'path' => 'crm-core/reports/lb_requests/applications/requests-denied',
+    'description' => t('Lists all requests for applications.'),
+  );
+
+  // Requested Shopping Guides.
+  $reports['lb_requests']['reports']['guides'] = array(
+    'title' => t('Requested Shopping Guides'),
+    'path' => 'crm-core/reports/lb_requests/shopping-guides/requests',
+    'description' => t('Lists all requested shopping guides.'),
+  );
+
+  // Applications.
+  $reports['lb_applications']['reports']['all'] = array(
+    'title' => t('Applications for Certification'),
+    'path' => 'crm-core/reports/lb_applications/all',
+    'description' => t('Lists all applications.'),
+  );
+
+  // Pending applications.
+  $reports['lb_applications']['reports']['pending'] = array(
+    'title' => t('Pending Applications'),
+    'path' => 'crm-core/reports/lb_applications/pending',
+    'description' => t('Lists all applications that have been entered but are not yet complete.'),
+  );
+
+  // Completed applications.
+  $reports['lb_applications']['reports']['completed'] = array(
+    'title' => t('Completed Applications'),
+    'path' => 'crm-core/reports/lb_applications/submitted',
+    'description' => t('Lists all applications that have been completed and are waiting for approval.'),
+  );
+
+  // Approved applications.
+  $reports['lb_applications']['reports']['approved'] = array(
+    'title' => t('Approved Applications'),
+    'path' => 'crm-core/reports/lb_applications/approved',
+    'description' => t('Lists all applications that have been approved.'),
+  );
+
+  // Denied applications.
+  /*$reports['lb_applications']['reports']['denied'] = array(
+    'title' => t('Denied Applications'),
+    'path' => 'crm-core/reports/lb_applications/denied',
+    'description' => t('Lists all applications that have been denied.'),
+  );*/
+
+  // Recommitted applications.
+  $reports['lb_applications']['reports']['recommitments'] = array(
+    'title' => t('Applications for Recommitment'),
+    'path' => 'crm-core/reports/lb_applications/recommitments',
+    'description' => t('Lists all applications for recommitment.'),
+  );
+
+  // Active applications.
+  $reports['lb_applications']['reports']['active'] = array(
+    'title' => t('Applications for Active Companies'),
+    'path' => 'crm-core/reports/lb_applications/active',
+    'description' => t('Lists all active applications.'),
+  );
+
+  // Closed applications.
+  $reports['lb_applications']['reports']['closed'] = array(
+    'title' => t('Closed Applications'),
+    'path' => 'crm-core/reports/lb_applications/closed',
+    'description' => t('Lists all applications that have been closed.'),
+  );
+
+  // Removed applications.
+  $reports['lb_applications']['reports']['removed'] = array(
+    'title' => t('Removed Applications'),
+    'path' => 'crm-core/reports/lb_applications/removed',
+    'description' => t('Lists all applications that have been removed.'),
+  );
+
+
+  return $reports;
+}
+
+/**
+ * Implements hook_init().
+ */
+function lb_application_report_init() {
+  // Change icon for application reports.
+  if (arg(0) == 'crm-core' && arg(1) == 'reports') {
+    drupal_add_css(drupal_get_path('module', 'lb_application_report') . '/css/lb_application_report.css');
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function lb_application_report_preprocess_page(&$vars) {
+  // Set breadcrumbs for all application reports.
+  if (arg(0) == 'crm-core' && arg(1) == 'reports' && arg(2) == 'lba' && arg(3) == 'applications') {
+    $breadcrumb = array(
+      l(t('Home'), '<front>'),
+      l(t('CRM Core'), 'crm-core'),
+      l(t('Reports'), 'crm-core/reports'),
+    );
+
+    // If report is different from overview.
+    if (arg(4)) {
+      $breadcrumb[] = l(t('Application reports'), 'crm-core/reports/lba/applications');
+    }
+
+    drupal_set_breadcrumb($breadcrumb);
+  }
+}
+
+/**
+ * Implements hook_preprocess_views_view_field().
+ */
+function lb_application_report_preprocess_views_view_field(&$vars) {
+  $view = $vars['view'];
+  if ($view->name == 'lb_application_request' && $vars['field']->real_field == 'label') {
+    if ($vars['output'] == 'Application request approved') {
+      $vars['output'] = t('Pending');
+    }
+  }
+}
+
+/*
+ * Implementation of hook_views_pre_view().
+ */
+function lb_application_report_views_pre_view(&$view, &$display_id, &$args) {
+  $views_allowed = array('lb_applications_for_certification', 'lb_applications_for_certification_pending', 'lb_applications_for_certification_submitted', 'lb_applications_for_certification_approved', 'lb_applications_for_certification_denied', 'lb_recommitments', 'lb_applications_for_certification_closed', 'lb_applications_for_certification_removed', 'lb_application_request', 'lb_application_request_approved', 'lb_application_requests_denied', 'requested_shopping_guides', 'leaping_bunny_mailing_list_signup', 'leaping_bunny_mailing_list_pledge_signup', 'lb_licensing_form');
+  $header_ids_allowed = array('result', 'area');
+  if (in_array($view->name, $views_allowed)) {
+    $display = $view->current_display;
+    foreach ($header_ids_allowed as $header_id) {
+      $changed = lb_application_report_helper_change_header($view, $display, $header_id);
+      if ($changed) {
+        break;
+      }
+    }
+  }
+}
+
+function lb_application_report_helper_change_header(&$view, $display, $header_id) {
+  $header_item = $view->get_item($display, 'header', $header_id);
+  $content = $header_item['content'];
+  $regexp = '/(<a href=\"((.)+)\">)/i';
+  $iResults = preg_match_all($regexp, $content, $bMatches);
+  $matched = $bMatches[2][0];
+  if (!empty($matched)) {
+    $matched1 = ltrim($matched, '/');
+    $full_path = base_path() . $matched1;
+    $content = str_replace($matched, $full_path, $content);
+    $options = array(
+          'id' => $header_id,
+          'table' => 'views',
+          'field' => $header_id,
+          'empty' => FALSE,
+          'content' => $content,
+          'format' => 2,
+          'tokenize' => 0,
+    );
+    $view->set_item($display, 'header', $header_id, $options);
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/*
+ * Implements hook_views_pre_render().
+ *
+ * Change labels in views.
+ */
+function lb_application_report_views_pre_render(&$view) {
+  $allowed_views = array('lb_application_section_a', 'lb_application_section_c', 'lb_application_section_d', 'lb_application_section_d_company', 'lb_application_section_e');
+  $exclude_numbering = array('lb_application_section_e');
+  if (in_array($view->name, $allowed_views)) {
+    switch ($view->name) {
+      case 'lb_application_section_a':
+        $fields = array(
+          'field_lb_manufactures_own',
+          'field_lb_manufactures_other',
+          'field_lb_contracts_manufacturing',
+        );
+        $entity_type = 'crm_core_activity';
+        $bundle = 'lb_application';
+
+        break;
+      case 'lb_application_section_c':
+        $fields = array(
+          'field_lb_tests_goods',
+          'field_lb_tests_ingredients',
+          'field_lb_dirty_affiliates',
+          'field_lb_dirty_contractor',
+          'field_lb_dirty_subcontractor',
+          'field_lb_tests_before_cutoff',
+        );
+        $entity_type = 'crm_core_contact';
+        $bundle = 'company';
+
+        break;
+      case 'lb_application_section_d':
+      case 'lb_application_section_d_company':
+        $fields = array(
+          'field_lb_agree_monitoring',
+          'field_lb_agree_recommit',
+          'field_lb_agree_audit',
+        );
+        $entity_type = 'crm_core_activity';
+        $bundle = 'lb_application';
+
+        break;
+      case 'lb_application_section_e':
+        $fields = array(
+          'field_lb_distributors',
+        );
+        $entity_type = 'crm_core_contact';
+        $bundle = 'company';
+
+        break;
+    }
+
+    foreach ($fields as $i => $field_name) {
+      if (!empty($view->display_handler->handlers['field'][$field_name])) {
+        $field_instance = field_info_instance($entity_type, $field_name, $bundle);
+        $label = $field_instance['description'];
+        if (!(in_array($view->name, $exclude_numbering))) {
+          $label =  ++$i . '. ' . $field_instance['description'];
+        }
+        $view->display_handler->handlers['field'][$field_name]->options['label'] =  $label;
+      }
+    }
+  }
+}

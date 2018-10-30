@@ -1,0 +1,54 @@
+<?php
+/**
+ * @file
+ * Code for the LB views feature.
+ */
+
+include_once 'lb_views.features.inc';
+
+/**
+ * Implements hook_theme().
+ */
+function lb_views_theme($existing, $type, $theme, $path) {
+
+  // Replace each dash with an underscore in the hook name.
+  $themes['views_view_field__workbench_moderation__needs_review_page__title'] = array(
+    // Drop the .tpl.php extension on the template name here.
+    'template'  => 'templates/views-view-field--workbench-moderation--title',
+    // The original hook must be declared.
+    // This will be the first one on the list in views UI Theme:information page.
+    'original hook' => 'views_view_field',
+    // You need this whether you declare your own preprocess function or not.
+    // Always list the first two and optionally list your own function last.
+    'preprocess functions' => array(
+      // This is the global preprocess function used by all templates.
+      'template_preprocess',
+      // This one is specific to the type of template,
+      // named 'template_preprocess_' followed by 'original hook' name.
+      'template_preprocess_views_view_field',
+      // This one will be defined in mymodule.
+      'lb_views_preprocess_views_view_field__workbench_moderation__title',
+    ),
+    'arguments' => array('view' => NULL, 'field' => NULL, 'row' => NULL),
+  );
+  return $themes;
+}
+
+/**
+ * Implements hook_preprocess_views_view_field().
+ */
+function lb_views_preprocess_views_view_field__workbench_moderation__title(&$vars) {
+  $nid = $vars['row']->node_workbench_moderation_node_history_nid;
+  $changed = $vars['row']->node_workbench_moderation_node_history_changed;
+  if (is_numeric($nid)) {
+    $node = node_load($nid);
+    $created = $node->created;
+    $changed = $node->changed;
+    if ($created == $changed) {
+      $vars['output'] .= ' <span class="marker">new</span>';
+    }
+    elseif ($changed > $created) {
+      $vars['output'] .= ' <span class="marker">updated</span>';
+    }
+  }
+}

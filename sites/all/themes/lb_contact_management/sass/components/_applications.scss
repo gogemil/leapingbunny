@@ -1,0 +1,42 @@
+/**
+ * @file
+ * Controls the appearance of applications
+ */
+
+/**
+ * FORM
+ * Displays form labels to the left of the value
+ */
+.form-label-to-left {
+ > SPAN {
+    display: inline-block;
+    vertical-align: top;
+    font-weight: bold;
+    margin: 0em rhtythm(1) 0em 0em;
+  }
+  DIV.field-content {
+    display: inline-block;
+    vertical-align: top;
+  }
+}
+
+/**
+ * FORM: DATA FORM
+ * Style for a form with a lot of data
+ */
+.form-data-form {
+  background-color: White;
+  padding: rhythm(1);
+  border: 1px solid $d-gray;
+
+  .views-field {
+    @extend .form-label-to-left;
+  }
+
+
+}
+
+
+#lb-company-application {
+  @extend .form-data-form;
+}

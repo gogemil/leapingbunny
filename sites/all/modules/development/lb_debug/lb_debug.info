@@ -1,0 +1,4 @@
+name = LB Debug
+description = Implement debugging helpers. This module dump and log all post,get and session data which could introduce a security vulnerability, it is not recommended to keep it on production.
+core = 7.x
+package = LB

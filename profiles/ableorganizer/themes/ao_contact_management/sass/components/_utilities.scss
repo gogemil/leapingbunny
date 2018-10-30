@@ -1,0 +1,153 @@
+/**
+ * @file
+ * Functions and mixins used throughout the theme
+ * 
+ * Defines the following mixins:
+ * 
+ * - Container: for ensuring a consistent formatting on container elements.
+ * - Border: for ensuring a consistent set of borders applied to any element.
+ */
+
+/**
+ * DEFAULT VARIABLES
+ * Default settings, see mixin documentation for explanations.
+ */
+// containers
+$ao-container-height: false !default;
+$ao-container-width: false !default;
+$ao-container-bg-color: false !default;
+$ao-container-background: false !default;
+$ao-container-margin: false !default;
+$ao-container-padding: false !default;
+$ao-container-border: false !default;
+$ao-container-border-top: false !default;
+$ao-container-border-bottom: false !default;
+$ao-container-border-left: false !default;
+$ao-container-border-right: false !default;
+$ao-container-border-radius: false !default;
+ 
+// borders 
+$ao-set-border: false !default;
+$ao-set-border-top: false !default;
+$ao-set-border-bottom: false !default;
+$ao-set-border-left: false !default;
+$ao-set-border-right: false !default;
+
+
+/**
+ * CONTAINER
+ * Applies a general set of styles to a containing element. Ensures a consistent set of styles.
+ * 
+ * Variables:
+ * 
+ */
+@mixin ao-container (
+  $ao-container-height: $ao-container-height,
+  $ao-container-width: $ao-container-width,
+  $ao-container-bg-color: $ao-container-bg-color,
+  $ao-container-background: $ao-container-background,
+  $ao-container-margin: $ao-container-margin,
+  $ao-container-padding: $ao-container-padding,
+  $ao-container-border: $ao-set-border,
+  $ao-container-border-top: $ao-container-border-top,
+  $ao-container-border-bottom: $ao-container-border-bottom,
+  $ao-container-border-left: $ao-container-border-left,
+  $ao-container-border-right: $ao-container-border-right,
+  $ao-container-border-radius: $ao-container-border-radius
+) {
+
+  // height, width
+  @if $ao-container-height != false {
+    height: $ao-container-height;
+  }
+  @if $ao-container-width != false {
+    height: $ao-container-width;
+  }
+
+  // margin, padding
+  @if $ao-container-margin != false {
+    margin: $ao-container-margin;
+  }
+  @if $ao-container-padding != false {
+    padding: $ao-container-padding;
+  }
+
+  // backgrounds
+  @if $ao-container-bg-color != false {
+    background-color: $ao-container-bg-color;
+  }
+  @if $ao-container-background != false {
+    background: $ao-container-background;
+  }
+
+  // borders
+  @if $ao-container-border != false or $ao-container-border-top != false or $ao-container-border-bottom != false or $ao-container-border-left != false or $ao-container-border-right != false {
+    @include ao-set-borders (
+      $ao-set-border: $ao-container-border,
+      $ao-set-border-top: $ao-container-border-top,
+      $ao-set-border-bottom: $ao-container-border-bottom,
+      $ao-set-border-left: $ao-container-border-left,
+      $ao-set-border-right: $ao-container-border-right
+    );
+  }
+  @if $ao-container-border-radius != false {
+    @include border-radius($ao-container-border-radius);
+  }
+
+}
+
+
+/**
+ * SET BORDERS
+ * Creates borders for an element
+ * 
+ * Variables:
+ * 
+ * $ao-set-border: Use this when you want a constant border around the element. This will be used when all other elements are false. Defaults to false.
+ * $ao-set-border-top: Set the top border. Defaults to false.
+ * $ao-set-border-bottom: Set the bottom border. Defaults to false.
+ * $ao-set-border-left: Set the left border. Defaults to false.
+ * $ao-set-border-right: Set the right border. Defaults to false.
+ */
+@mixin ao-set-borders (
+  $ao-set-border: $ao-set-border,
+  $ao-set-border-top: $ao-set-border-top,
+  $ao-set-border-bottom: $ao-set-border-bottom,
+  $ao-set-border-left: $ao-set-border-left,
+  $ao-set-border-right: $ao-set-border-right
+){
+
+  $border-top: false;
+  $border-bottom: false;
+  $border-left: false;
+  $border-right: false;
+  
+  @if $ao-set-border-top != false {
+    $border-top: $ao-set-border-top;
+  }
+  @if $ao-set-border-bottom != false {
+    $border-bottom: $ao-set-border-bottom;
+  }
+  @if $ao-set-border-left != false {
+    $border-left: $ao-set-border-left;
+  }
+  @if $ao-set-border-right != false {
+    $border-right: $ao-set-border-right;
+  }
+  @if $ao-set-border != false and $border-top == false and $border-bottom == false and $border-left == false and $border-right == false {
+    border: $ao-set-border;
+  } @else {
+    @if $border-top != false {
+      border-top: $border-top;
+    }
+    @if $border-bottom != false {
+      border-bottom: $border-bottom;
+    }
+    @if $border-left != false {
+      border-left: $border-left;
+    }
+    @if $border-right != false {
+      border-right: $border-right;
+    }
+  }
+}

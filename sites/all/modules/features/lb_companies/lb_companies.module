@@ -1,0 +1,122 @@
+<?php
+/**
+ * @file
+ * Code for the LB Companies feature.
+ */
+
+include_once 'lb_companies.features.inc';
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function lb_companies_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'content_types') {
+    return 'plugins/' . $plugin_type;
+  }
+  if ($owner == 'ctools' && $plugin_type == 'contexts') {
+    return 'plugins/contexts';
+  }
+  return NULL;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Forbid field field_lb_current_application from manual changing,
+ */
+function lb_companies_form_crm_core_contact_ui_form_alter(&$form, &$form_state) {
+
+  $form['contact_name'][LANGUAGE_NONE][0]['#title'] = t('Contact Name');
+  if ($form['#entity']->type == 'company') {
+    drupal_set_title(t('Company information'));
+    $form['contact_name'][LANGUAGE_NONE][0]['#title'] = t('Company Name');
+    $form['contact_name']['#attributes']['class'][] = 'show-this';
+  }
+
+  $form['contact_name'][LANGUAGE_NONE][0]['#components']['given']['title'] .= '<span class="form-required" title="This field is required.">*</span>';
+  $form['contact_name'][LANGUAGE_NONE][0]['#components']['family']['title'] .= '<span class="form-required" title="This field is required.">*</span>';
+
+  $form['field_lb_current_application']['#access'] = FALSE;
+  // Hide group fields from company.
+  $form['group_group']['#access'] = FALSE;
+  $form['group_group']['#required'] = FALSE;
+  $form['og_roles_permissions']['#access'] = FALSE;
+  $form['og_roles_permissions']['#required'] = FALSE;
+  // Hide contractor type field.
+  $form['field_lb_contractor_type']['#access'] = FALSE;
+
+  // Add numbering.
+  $app_fields = array(
+    'field_lb_manufactures_own',
+    'field_lb_manufactures_other',
+    'field_lb_contracts_manufacturing',
+  );
+
+  foreach ($app_fields as $i => $field_name) {
+    if (!empty($form[$field_name])) {
+      _lb_registration_replace_title_with_desc($field_name, $form);
+      _lb_registration_reverse_options($field_name, $form);
+      _lb_registration_add_num_prefix($field_name, $form, ++$i);
+    }
+  }
+
+  $fields = array(
+    'field_lb_tests_goods',
+    'field_lb_tests_ingredients',
+    'field_lb_dirty_affiliates',
+    'field_lb_dirty_contractor',
+    'field_lb_dirty_subcontractor',
+    'field_lb_tests_before_cutoff',
+  );
+  foreach ($fields as $i => $field) {
+    if (!empty($form[$field])) {
+      _lb_registration_replace_title_with_desc($field, $form, NULL);
+      _lb_registration_reverse_options($field, $form, NULL);
+      _lb_registration_add_num_prefix($field, $form, ++$i);
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function lb_companies_preprocess_page(&$vars) {
+  if (current_path() == 'crm-core/reports/lb_companies/all') {
+    $breadcrumb = array(
+      l(t('Home'), '<front>'),
+      l(t('CRM Core'), 'crm-core'),
+      l(t('Reports'), 'crm-core/reports'),
+    );
+
+    drupal_set_breadcrumb($breadcrumb);
+  }
+}
+
+/**
+ * Implements hook_crm_core_report_register().
+ */
+function lb_companies_crm_core_report_register() {
+
+  $reports = array(
+    'lb_companies' => array(
+      'title' => t('Companies'),
+      'reports' => array(),
+      'widgets' => array(),
+    ),
+  );
+
+  $reports['lb_companies']['reports']['companies'] = array(
+    'title' => t('Registered companies'),
+    'path' => 'crm-core/reports/lb_companies/all',
+    'description' => t('Lists all companies.'),
+  );
+
+  $reports['lb_companies']['reports']['custom'] = array(
+    'title' => t('Registered companies (custom)'),
+    'path' => 'crm-core/reports/lb_companies/all/custom',
+    'description' => t('Lists all companies (custom).'),
+  );
+
+  return $reports;
+}
+

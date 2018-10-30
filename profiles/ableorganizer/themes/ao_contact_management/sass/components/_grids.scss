@@ -1,0 +1,113 @@
+/**
+ * @file
+ * Grids
+ *
+ * Defines styles for displaying grids
+ */
+ 
+/**
+ * DEFAULT VARIABLES
+ * Default settings for grids
+ * See mixin documentation for explanations.
+ */
+// ao-grid
+$ao-grid-padding:       false !default;
+$ao-grid-border:        false !default;
+$ao-grid-item-selector: '> DIV' !default;
+ 
+// ao-grid-item
+$ao-grid-item-cols:           3 !default;
+$ao-grid-item-parent-cols:    1 !default;
+$ao-grid-item-grid-width:     100% !default;
+$ao-grid-item-grid-padding:   false !default;
+$ao-grid-item-gutter-width:   0% !default;
+$ao-grid-item-gutter-alpha:   false !default;
+$ao-grid-item-gutter-omega:   true !default;
+
+/**
+ * GRID 
+ * Creates a responsive grid using Zen Grids and zen-grid-flow-item. 
+ * Grid items are evenly spaced.
+ * Compensates for some bugs in the v1 version of Zen Grids.
+ *
+ * $ao-grid-padding: Padding for the grid. Defaults to false.
+ * $ao-grid-border: Border for the grid. Defaults to false.
+ * $ao-grid-item-selector: Selector for the items appearing in the grid. Required field.
+ *
+ * $ao-grid-item-cols: The number of columns for the grid. Defaults to 3.
+ * $ao-grid-item-parent-cols: The number of columns the grid spans. Defaults to 1.
+ * $ao-grid-item-grid-width: The width of the grid. Defaults to 100%.
+ * $ao-grid-item-grid-padding: The padding inside the grid. Defaults to false.
+ * $ao-grid-item-gutter-width: The width of the guttern to pass in.
+ * $ao-grid-item-gutter-alpha: Include an alpha gutter. TRUE or FALSE. Defaults to false.
+ * $ao-grid-item-gutter-omega: Include an omega gutter. TRUE or FALSE. Defaults to true.
+ *
+ */
+@mixin ao-grid (
+
+  $ao-grid-padding: $ao-grid-padding,
+  $ao-grid-border: $ao-grid-border,
+  $ao-grid-item-selector: $ao-grid-item-selector,
+
+  $ao-grid-item-cols: $ao-grid-item-cols,
+  $ao-grid-item-parent-cols: $ao-grid-item-parent-cols,
+  $ao-grid-item-grid-width: $ao-grid-item-grid-width,
+  $ao-grid-item-grid-padding: $ao-grid-item-grid-padding,
+  $ao-grid-item-gutter-width: $ao-grid-item-gutter-width,
+  $ao-grid-item-gutter-alpha: $ao-grid-item-gutter-alpha,
+  $ao-grid-item-gutter-omega: $ao-grid-item-gutter-omega
+  
+){
+
+  // Style the Grid
+  @if $ao-grid-border != false {
+    border: $ao-grid-border;
+  }
+  @if $ao-grid-padding != false {
+    padding: $ao-grid-padding;
+  }
+  @include zen-grid-container();
+
+  // style the selector
+  #{$ao-grid-item-selector}{
+  
+    // we use inline blocks by default
+    display: inline-block;
+    vertical-align: top;
+      
+    // apply zen grid flow item
+    @include zen-grid-flow-item( 
+      $column-span: 1,
+      $parent-column-count: 3,
+      $column-count: $ao-grid-item-cols,
+      $grid-width: $ao-grid-item-grid-width,
+      $gutter-width: $ao-grid-item-gutter-width,
+      $alpha-gutter: $ao-grid-item-gutter-alpha,
+      $omega-gutter: $ao-grid-item-gutter-omega
+    );
+    
+    // reduce the width to account for the margins.
+    $item-width: $ao-grid-item-grid-width / $ao-grid-item-cols;
+    $gutter-width: $ao-grid-item-gutter-width / $ao-grid-item-cols;
+    width: $item-width - $gutter-width;
+    
+    // adjust the left margin
+    // this consistently comes out bad
+    @if $ao-grid-item-gutter-alpha == true {
+      margin-left: $ao-grid-item-gutter-width*0.5;
+    }
+    
+  }
+  
+}
+
+/**
+ * GRID ITEM BREAK
+ * Breaks an item out of a grid.
+ *
+ */
+@mixin ao-grid-item-break () {
+  width: 100%;
+}
+
+

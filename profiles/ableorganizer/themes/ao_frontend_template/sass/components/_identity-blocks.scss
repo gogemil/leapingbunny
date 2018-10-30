@@ -1,0 +1,89 @@
+/**
+ * @file
+ * Identity Blocks
+ *
+ * Styles elements used in the header and footer
+ */
+
+.ao_built_by_block, .ao_built_with_block {
+  DIV {
+    display: inline-block;
+    height: 33px;
+    vertical-align: bottom;
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-left: -4px;
+  }
+  .ao_bb_from, .ao_bb_trellon SPAN, .ao_bw_text, .ao_bw_drupal SPAN, .ao_bw_plus, .ao_bw_crm_core SPAN {
+    background-image: url(../images/footer_sprites.png);
+    background-repeat: no-repeat;
+  }
+  .ao_bw_text {
+    width: 114px;
+    background-position: 0px -5px;
+  }
+  .ao_bw_drupal SPAN {
+    width: 128px;
+    background-position: 0px -45px;
+    display: block;
+    height: 33px;
+    &:hover {
+      background-position: 0px -245px;
+    }
+  }
+  .ao_bw_plus {
+    width: 20px;
+    background-position: -2px -88px;
+  }
+  .ao_bw_crm_core SPAN {
+    width: 160px;
+    background-position: 0px -125px;
+    display: block;
+    height: 33px;
+    &:hover {
+      background-position: 0px -285px;
+    }
+  }
+  .ao_bb_from {
+    width: 200px;
+    background-position: 0px -165px;
+  }
+  .ao_bb_trellon SPAN {
+    background-position: 0px -205px;
+    width: 160px;
+    display: block;
+    height: 33px;
+    &:hover {
+      background-position: 0px -325px;
+    }
+  }
+}
+
+
+/* move to theme */
+.ao_built_with {
+  @extend .ao_built_with_block;
+}
+.ao_built_by {
+  @extend .ao_built_by_block;
+}
+
+#block-boxes-ao-built-with {
+  position: absolute;
+  left: 2em;
+  top: 1em;
+}
+#block-boxes-ao-by-trellon {
+  position: absolute;
+  right: 2em;
+  top: 1em;
+}
+#block-boxes-ao-footer-message {
+  position: absolute;
+  top: 60px;
+  font-size: $h5-font-size;
+  color: #777;
+  text-align: center;
+  width: 100%;
+}

@@ -1,0 +1,119 @@
+<?php
+
+
+/**
+ * Implements hook_menu().
+ */
+function lb_company_report_menu() {
+  $items = array();
+
+  $items['admin/reports/companies'] = array(
+    'title' => 'Supplier/Manufacturer reports',
+    'page callback' => '_lb_company_report_get_report_page',
+    'access arguments' => array('administer nodes'),
+  );
+
+  return $items;
+}
+
+function _lb_company_report_get_report_page() {
+  $contacts_with_duplicate_relations = array();
+  $results = db_query("SELECT contact_name_family, count(entity_id) FROM `field_data_contact_name`  WHERE bundle='company' AND contact_name_family IS NOT NULL and contact_name_family != '' GROUP BY contact_name_family HAVING count(entity_id) > 1
+ORDER BY count(entity_id)  DESC");
+
+  // Get relations involving duplicate contacts.
+  /*foreach($results AS $result) {
+    $contact_ids = db_query("SELECT cn.entity_id AS contact_id FROM `field_data_contact_name` AS cn WHERE cn.contact_name_family = :name", array(':name' => $result->contact_name_family))->fetchAllKeyed();
+    $ids = array_keys($contact_ids);
+
+    $relation_query = relation_query('crm_core_contact', $ids);
+    $relation_query->entityCondition('bundle', array(
+      'lb_manufacturer',
+      'lb_supplier'
+    ), IN);
+    $relation_results = $relation_query->execute();
+    $rids = array_keys($relation_results);
+
+    if (count($rids) > 0) {
+      $relation_to_contact_query = db_query("SELECT endpoints_entity_id, count(entity_id) FROM `field_data_endpoints` WHERE entity_id IN(" . implode(',', $rids) . ") and endpoints_r_index = 1   GROUP BY endpoints_entity_id, bundle HAVING count(entity_id) > 1");
+
+      if ($relation_to_contact_query->rowCount() > 0) {
+        foreach ($relation_to_contact_query->fetchAll() AS $relation) {
+          if (!in_array($relation->endpoints_entity_id, $contacts_with_duplicate_relations)) {
+            $contacts_with_duplicate_relations[] = $relation->endpoints_entity_id;
+          }
+        }
+
+      }
+    }
+  }*/
+
+  $companies_with_dupes = array();
+  $query = db_query("SELECT cn2.contact_name_family AS company_name, e2.endpoints_entity_id AS company_id, count(e.endpoints_entity_id), cn.contact_name_family FROM `field_data_endpoints` AS e INNER JOIN `field_data_contact_name` AS cn ON e.endpoints_entity_id = cn.entity_id INNER JOIN `field_data_endpoints` AS e2 ON e2.entity_id = e.entity_id INNER JOIN `field_data_contact_name` AS cn2 ON e2.endpoints_entity_id = cn2.entity_id  WHERE e.bundle IN ('lb_supplier', 'lb_manufacturer') AND e.endpoints_r_index=0 AND cn.bundle = 'company' AND e2.endpoints_r_index=1 GROUP BY contact_name_family, company_id, e.bundle HAVING COUNT(e.endpoints_entity_id) > 1
+ORDER BY company_name ASC");
+
+  $result = $query->fetchAll();
+
+  $rows = array();
+  foreach($result AS $dup) {
+    $rows[] = array(l($dup->company_name, 'crm-core/contact/' . $dup->company_id), $dup->contact_name_family);
+    $companies_with_dupes[$dup->company_id] = $dup->company_name;
+  }
+
+  $content = '<br /><h3>Potential companies with duplicated suppliers or manufacturers</h3>';
+  $content .= '<h4>' . count($rows) . ' results</h4>';
+  $content .= theme('table', array('header' => array('Company Name', 'Suspected duplicate'), 'rows' => $rows));
+
+  // Check if name on declaration matches company contact name.
+  //$query = db_query("SELECT p.entity_id AS activity, p.field_activity_participants_target_id AS contact_id, cn.field_lb_company_name_raw_value AS activity_company_name, cn2.contact_name_family AS contact_name, cn3.contact_name_family AS company_name FROM `field_data_field_activity_participants` as p INNER JOIN field_data_field_lb_company_name_raw AS cn ON cn.entity_id = p.entity_id INNER JOIN `field_data_contact_name` AS cn2 ON p.field_activity_participants_target_id = cn2.entity_id INNER JOIN field_data_field_lb_company AS co ON co.entity_id = p.entity_id INNER JOIN `field_data_contact_name` AS cn3 ON cn3.entity_id = co.field_lb_company_target_id WHERE p.bundle IN('raw_material_compliance', 'declaration_product_compliance') AND LOWER(cn.field_lb_company_name_raw_value) != LOWER(cn2.contact_name_family) AND co.entity_type='crm_core_activity'");
+
+  $query = db_query("SELECT p.entity_id AS activity, p.field_activity_participants_target_id AS contact_id, cn.field_lb_company_name_raw_value AS activity_company_name, cn2.contact_name_family AS contact_name, cn3.contact_name_family AS company_name, cn3.entity_id AS company_id FROM `field_data_field_activity_participants` as p INNER JOIN field_data_field_lb_company_name_raw AS cn ON cn.entity_id = p.entity_id INNER JOIN `field_data_contact_name` AS cn2 ON p.field_activity_participants_target_id = cn2.entity_id INNER JOIN field_data_field_lb_company AS co ON co.entity_id = p.entity_id INNER JOIN `field_data_contact_name` AS cn3 ON cn3.entity_id = co.field_lb_company_target_id WHERE p.bundle IN('raw_material_compliance', 'declaration_product_compliance') AND LOWER(cn.field_lb_company_name_raw_value) != LOWER(cn2.contact_name_family) AND co.entity_type='crm_core_activity' AND LOWER(cn.field_lb_company_name_raw_value) NOT LIKE CONCAT('%', LOWER(cn2.contact_name_family), '%') AND LOWER(cn2.contact_name_family) NOT LIKE CONCAT('%', LOWER(cn.field_lb_company_name_raw_value), '%')");
+  $rows = array();
+  foreach($query->fetchAll() AS $dup) {
+    if(      levenshtein(strtolower($dup->contact_name), strtolower($dup->activity_company_name)) > 7) {
+      $rows[] = array(
+        l($dup->company_name, 'crm-core/contact/' . $dup->company_id),
+        $dup->contact_name,
+        $dup->activity_company_name,
+      );
+      $companies_with_dupes[$dup->company_id] = $dup->company_name;
+    }
+  }
+
+  $content .= '<h3>Companies where supplier/manufacturer name does not match declaration company name</h3>';
+  $content .= '<h4>' . count($rows) . ' results</h4>';
+  $content .= theme('table', array('header' => array('Company Name', 'Supplier/manufacturer name', 'Declaration company name'), 'rows' => $rows));
+
+  $query = db_query("SELECT DISTINCT a.activity_id AS activity_id, sn.field_lb_sig_name_value AS sig_name, p.field_activity_participants_target_id AS contractor_id, cn.contact_name_family AS contractor_name, e2.endpoints_entity_id AS primary_contact_id, CONCAT(cn2.contact_name_given, ' ', cn2.contact_name_family) AS primary_contact_name, cn3.entity_id AS company_id, cn3.contact_name_family AS company_name FROM crm_core_activity AS a INNER JOIN field_data_field_lb_sig_name AS sn ON a.activity_id = sn.entity_id INNER JOIN field_data_field_activity_participants AS p ON p.entity_id = a.activity_id INNER JOIN field_data_contact_name AS cn ON p.field_activity_participants_target_id = cn.entity_id INNER JOIN field_data_endpoints AS e ON e.endpoints_entity_id = cn.entity_id INNER JOIN field_data_endpoints AS e2 ON e.entity_id = e2.entity_id INNER JOIN field_data_contact_name AS cn2 ON e2.endpoints_entity_id  = cn2.entity_id INNER JOIN field_data_field_lb_company AS co ON co.entity_id = a.activity_id INNER JOIN field_data_contact_name AS cn3 ON co.field_lb_company_target_id = cn3.entity_id  WHERE a.type IN ('declaration_raw_material', 'declaration_product_compliance') AND e.endpoints_r_index=1  AND e2.endpoints_r_index=0 AND LOWER(sn.field_lb_sig_name_value) NOT LIKE CONCAT('%', LOWER(CONCAT(cn2.contact_name_given, ' ', cn2.contact_name_family)), '%') AND LOWER(CONCAT(cn2.contact_name_given, ' ', cn2.contact_name_family)) NOT LIKE CONCAT('%', LOWER(sn.field_lb_sig_name_value), '%') ORDER BY company_name ASC");
+  $rows = array();
+  foreach($query->fetchAll() AS $dup) {
+    if(levenshtein(strtolower($dup->primary_contact_name), strtolower($dup->sig_name)) > 5) {
+      $rows[] = array(
+        l($dup->company_name, 'crm-core/contact/' . $dup->company_id),
+        l($dup->contractor_name, 'crm-core/contact/' . $dup->contractor_id),
+        $dup->primary_contact_name,
+        $dup->sig_name,
+        l('view', 'crm-core/activity/' . $dup->activity_id),
+      );
+      $companies_with_incorrect[$dup->company_id] = $dup->company_name;
+    }
+  }
+
+  // Check if company contact name matches signatory.
+  $content .= '<h3>Companies where supplier/manufacturer primary contact name does not match declaration signatory name</h3>';
+  $content .= '<h4>' . count($rows) . ' results</h4>';
+  $content .= '<ul>';
+  $content .= '<li><strong>There may be legitimate reasons for the supplier/manufacturer contact and declaration signatory not to match.  Inclusion in this report is not necessarily and indicator of data corruption.</strong></li>';
+  $content .= '<li><strong>Companies may appear multiple times in this report if there are multiple suppliers or manufacturers that are suspect.</strong></li>';
+
+  $content .= '</ul>';
+  $content .= theme('table', array('header' => array('Company Name', 'Supplier/manufacturer name', 'Supplier/manufacturer primary contact', 'Signatory name', 'Declaration'), 'rows' => $rows));
+
+  $build = '<h4>' . count($companies_with_dupes) . ' companies that may have duplicate suppliers or manufacturers </h4>';
+  $build .= '<h4>' . count($companies_with_incorrect) . ' companies that may have incorrect suppliers or manufacturers </h4><br /><hr />';
+
+  $build .= $content;
+
+
+  return $build;
+}

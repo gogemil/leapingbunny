@@ -1,0 +1,176 @@
+<?php
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Check new data.
+ */
+function lb_data_health_entity_insert($entity, $type) {
+  try {
+    lb_data_health_verify_entity($entity, $type);
+  } catch (Exception $e) {
+    watchdog_exception('LB Data Health exception', $e);
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Check updated data.
+ */
+function lb_data_health_entity_update($entity, $type) {
+  try {
+    lb_data_health_verify_entity($entity, $type);
+  } catch (Exception $e) {
+    watchdog_exception('LB Data Health exception', $e);
+  }
+}
+
+/**
+ * Entry point verifying entity.
+ */
+function lb_data_health_verify_entity($entity, $type) {
+
+  if ($type == 'crm_core_contact' && $entity->type == 'individual') {
+    lb_data_health_verify_crm_core_contact_for_multiply_suppliers_or_manufacturers($entity);
+  }
+
+  if ($type == 'crm_core_activity'
+    && in_array($entity->type, ['declaration_product_compliance', 'declaration_raw_material'])) {
+    lb_data_health_verify_crm_core_declaration_activity_for_fields($entity);
+  }
+
+
+  if ($type == 'relation') {
+    // ToDo: trace cases when we got duplicated relationships.
+    // ToDO: implement it
+  }
+}
+
+/**
+ * Check is activity participant has a same name that company name field.
+ */
+function lb_data_health_verify_crm_core_declaration_activity_for_fields(\CRMCoreActivityEntity $activity) {
+  $types = array('declaration_product_compliance', 'declaration_raw_material');
+
+  if (!in_array($activity->type, $types)) {
+    $e = new InvalidArgumentException('Expect \'declaration_product_compliance\' or \'declaration_raw_material\' crm_core_activity type');
+    throw $e;
+  }
+
+  try {
+    $activity_wrapper = entity_metadata_wrapper('crm_core_activity', $activity);
+    $company_name_raw = $activity_wrapper->field_lb_company_name_raw->value();
+
+    $contact_wrapper = entity_metadata_wrapper('crm_core_contact', $activity_wrapper->field_activity_participants->value()[0]);
+    $company_name = $contact_wrapper->contact_name->family->value();
+
+    if ($company_name_raw !== $company_name) {
+      lb_debug_log_trace('created/updated an activity with a wrong company name', $activity);
+    }
+
+  } catch (Exception $e) {
+    watchdog_exception('LB Data Health exception', $e);
+  }
+}
+
+/**
+ * For all contacts with given contact email find related suppliers\manufacturers
+ * dump trace if suppliers\manufacturers are different by ids.
+ *
+ * ToDo: rest it by re-save the corrupted contacts
+ */
+function lb_data_health_verify_crm_core_contact_for_multiply_suppliers_or_manufacturers(\CRMCoreContactEntity $contact) {
+  // Check only individuals that belongs to different suppliers/manufacturers
+  if ($contact->type !== 'individual') {
+    $e = new InvalidArgumentException('Expect \'individual\' crm_core_contact type');
+    throw $e;
+  }
+
+  // Load suppliers/manufacturer company contact (or a few)
+  $suppliers_manufacturers = lb_data_health_load_suppliers_manufacturers_of_individual($contact);
+
+
+  // Find individual contacts with same email.
+  $contact_wrapper = entity_metadata_wrapper('crm_core_contact', $contact);
+  $email = $contact_wrapper->field_ao_email_address->value();
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'crm_core_contact')
+    ->entityCondition('bundle', 'individual')
+    ->fieldCondition('field_ao_email_address', 'email', $email);
+
+  $result = $query->execute();
+  // The contact if fine if there no
+  if (!empty($result['crm_core_contact'])) {
+    $similar_contact_ids = array_keys($result['crm_core_contact']);
+    $similar_contacts = crm_core_contact_load_multiple($similar_contact_ids);
+  }
+
+  foreach ($similar_contacts as $similar_contact) {
+    $similar_contact_suppliers_manufacturers = lb_data_health_load_suppliers_manufacturers_of_individual($similar_contact);
+
+    $suppliers_manufacturers += $similar_contact_suppliers_manufacturers;
+  }
+
+  // Now in $suppliers_manudacturers array we collect all suppliers/manudacturers companies that have as primary contact
+  // an individual contact with email from the passed in $contact.
+  // In normal, there should be a single record.
+  // If contact belongs to several suppliers/manufacturers in a same time some may goes wrong.
+  if (count($suppliers_manufacturers) > 1) {
+    lb_debug_log_trace('Contact belongs to several suppliers/manufacturers in a same time', $contact);
+  }
+
+}
+
+/**
+ * For individual crm_core_contact load related supplier and manufacturer contacts.
+ *
+ * @param \CRMCoreContactEntity
+ *
+ * @return array The endpoint entities
+ */
+function lb_data_health_load_suppliers_manufacturers_of_individual(\CRMCoreContactEntity $contact) {
+
+  if ($contact->type !== 'individual') {
+    $e = new InvalidArgumentException('Expect individual contact type');
+    throw $e;
+  }
+
+  $query = relation_query('crm_core_contact', $contact->contact_id);
+  $rels = $query->execute();
+
+  $rids = array();
+  foreach ($rels as $rel) {
+    if ($rel->relation_type == 'lb_primary_contact') {
+      $rids[] = $rel->rid;
+    }
+  }
+  $rels = relation_load_multiple($rids);
+
+  $result_endpoints = array();
+  foreach ($rels as $index => $rel) {
+    $endpoints = relation_get_endpoints($rel, 'crm_core_contact');
+    // filter and leave only suppliers and manufacturers
+    unset($endpoints['crm_core_contact'][$contact->contact_id]);
+    $endpoints = $endpoints['crm_core_contact'];
+
+    foreach($endpoints as $endpoint_contact_id => $endpoint_contact) {
+      if ($endpoint_contact->type != 'company') {
+        unset($endpoints[$endpoint_contact_id]);
+        continue;
+      }
+
+      $endpoint_contact_wrapper = entity_metadata_wrapper('crm_core_contact', $endpoint_contact);
+      $contractor_type = $endpoint_contact_wrapper->field_lb_contractor_type->value()[0];
+      if (!in_array($contractor_type, array('lb_manufacturer', 'lb_supplier'))) {
+        unset($endpoints[$endpoint_contact_id]);
+        continue;
+      }
+    }
+
+    $result_endpoints += $endpoints;
+
+  }
+
+  return $result_endpoints;
+}

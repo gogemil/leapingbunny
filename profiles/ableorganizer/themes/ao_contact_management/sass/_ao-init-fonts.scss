@@ -1,0 +1,258 @@
+/**
+ * @file
+ * AbleOrganizer Font Initialization
+ *
+ * Creates font styles used throughout the site
+ */
+
+/* DEFAULT FONT STYLES */
+$normal: ao-fontography-register-style(
+  $ao-fonto-style-name: normal,
+  $ao-fonto-style-color: false,
+  $ao-fonto-style-size: false,
+  $ao-fonto-style-lines: false,
+  $ao-fonto-style-family: false
+);
+$regular: ao-fontography-register-style(
+  $ao-fonto-style-name: regular,
+  $ao-fonto-style-margin: 0em 0em rhythm(.5) 0em,
+  $ao-fonto-style-color: false,
+  $ao-fonto-style-size: false,
+  $ao-fonto-style-lines: false,
+  $ao-fonto-style-family: false
+);
+$breadcrumb: ao-fontography-register-style(
+  $ao-fonto-style-name: breadcrumb,
+  $ao-fonto-style-size: 0.9em
+);
+$hero: ao-fontography-register-style(
+  $ao-fonto-style-name: hero,
+  $ao-fonto-style-color: White,
+  $ao-fonto-style-text-shadow: 1px 1px 3px rgba(0,0,0,.5)
+);
+
+/* CONTACT MANAGEMENT */
+$header-font-contact-management: ao-fontography-register-style(
+  $ao-fonto-style-name: header-font-contact-management,
+  $ao-fonto-style-color: White,
+  $ao-fonto-style-padding: 0em,
+  $ao-fonto-style-margin: rhythm(0.25) 0em,
+  $ao-fonto-style-weight: normal
+);
+$contact-management-btn-font: ao-fontography-register-style(
+  $ao-fonto-style-name: contact-management-btn-font,
+  $ao-fonto-style-size: 12px,
+  $ao-fonto-style-color: White,
+  $ao-fonto-style-weight: normal,
+  $ao-fonto-style-text-decoration: none,
+  $ao-fonto-style-letter-spacing: 2px
+);
+$contact-management-btn-font-small: ao-fontography-register-style(
+  $ao-fonto-style-name: contact-management-btn-font-small,
+  $ao-fonto-style-size: 10px
+);
+$contact-management-btn-font-large: ao-fontography-register-style(
+  $ao-fonto-style-name: contact-management-btn-font-large,
+  $ao-fonto-style-size: 14px
+);
+
+/* TABLES */
+$table-font-basic: ao-fontography-register-style(
+  $ao-fonto-style-name: table-font-basic,
+  $ao-fonto-style-color: #555,
+  $ao-fonto-style-size: 14px
+);
+$table-font-header-basic: ao-fontography-register-style(
+  $ao-fonto-style-size: 0.8em,
+  $ao-fonto-style-name: table-font-header-basic,
+  $ao-fonto-style-text-transform: uppercase,
+  $ao-fonto-style-padding: rhythm(.25) 0em,
+  $ao-fonto-style-color: $base-purple,
+  $ao-fonto-style-white-space: nowrap,
+  $ao-fonto-style-text-align: center
+);
+
+/* ACTIVITY FEEDS */
+$activity-item-text: ao-fontography-register-style(
+  $ao-fonto-style-name: activity-item-text,
+  $ao-fonto-style-size: $base-font-size*0.95
+);
+
+$activity-item-date: ao-fontography-register-style(
+  $ao-fonto-style-name: activity-item-date,
+  $ao-fonto-style-size: 13px,
+  $ao-fonto-style-margin: rhythm(.3) 0em 0em,
+  $ao-fonto-style-text-transform: uppercase,
+  $ao-fonto-style-color: #777799
+);
+
+/* NAVIGATION LINKS */
+$form-fieldset-label: ao-fontography-register-style(
+  $ao-fonto-style-name:     navigation-link,
+  $ao-fonto-style-size:     $base-font-size*1.1,
+  $ao-fonto-style-weight:   600,
+  $ao-fonto-style-lines:    1,
+  $ao-fonto-style-margin:   0em 0em rhythm(1),
+  $ao-fonto-style-color:    #555,
+  $ao-fonto-style-text-decoration: none
+);
+
+/* FORMS */
+$form-fieldset-label: ao-fontography-register-style(
+  $ao-fonto-style-name:     form-fieldset-label,
+  $ao-fonto-style-size:     $base-font-size,
+  $ao-fonto-style-lines:    1,
+  $ao-fonto-style-margin:   0em 0em rhythm(1),
+  $ao-fonto-style-color:    #555,
+  $ao-fonto-style-weight:   600
+);
+$form-title-special: ao-fontography-register-style(
+  $ao-fonto-style-name:     form-title-special,
+  $ao-fonto-style-padding:  0em,
+  $ao-fonto-style-margin:   0em 0em rhythm(.5),
+  $ao-fonto-style-border-bottom:   1px solid #CCC
+);
+
+/* BLOCKS */
+$block-title: ao-fontography-register-style(
+  $ao-fonto-style-name:             block-title,
+  $ao-fonto-style-padding:          0em,
+  $ao-fonto-style-margin:           0em 0em 0.75em
+);
+$block-title-sample-title: ao-fontography-register-style(
+  $ao-fonto-style-name:             block-title-sample-title,
+  $ao-fonto-style-text-align:       center,
+  $ao-fonto-style-margin:           0em 0em 0.5em,
+  $ao-fonto-style-text-shadow:      White 2px 2px 0
+);
+$block-title-sample-content: ao-fontography-register-style(
+  $ao-fonto-style-name:             block-content-sample-content,
+  $ao-fonto-style-text-align:       left,
+  $ao-fonto-style-text-shadow:      White 2px 2px 0
+);
+$block-title-sample-list: ao-fontography-register-style(
+  $ao-fonto-style-name:             block-content-sample-list,
+  $ao-fonto-style-text-align:       left,
+  $ao-fonto-style-font-style:       italic,
+  $ao-fonto-style-margin:           0em 0em 1em
+);
+
+/* BUTTONS */
+$button-default: ao-fontography-register-style(
+  $ao-fonto-style-name:     button-default,
+  $ao-fonto-style-size:     13.25px,
+  $ao-fonto-style-lines:    1.333,
+  $ao-fonto-style-margin:   0em,
+  $ao-fonto-style-color:    #333,
+  $ao-fonto-style-weight:   normal,
+  $ao-fonto-style-text-decoration:  none
+);
+
+$button-large: ao-fontography-register-style(
+  $ao-fonto-style-name:     button-large,
+  $ao-fonto-style-size:     1.3em,
+  $ao-fonto-style-lines:    1,
+  $ao-fonto-style-margin:   0em,
+  $ao-fonto-style-color:    #333,
+  $ao-fonto-style-weight:   normal,
+  $ao-fonto-style-text-decoration:  none
+);
+
+$button-blue: ao-fontography-register-style(
+  $ao-fonto-style-name:     button-blue,
+  $ao-fonto-style-size:     16px,
+  $ao-fonto-style-lines:    1.333,
+  $ao-fonto-style-padding:  0.25em 1em,
+  $ao-fonto-style-margin:   0em,
+  $ao-fonto-style-color:    White,
+  $ao-fonto-style-weight:   normal
+);
+
+/* MENUS */
+$main-nav-contact-management: ao-fontography-register-style(
+  $ao-fonto-style-name:     main-nav-contact-management,
+  $ao-fonto-style-size:     1.1em,
+  $ao-fonto-style-letter-spacing:     0.04em,
+  $ao-fonto-style-lines:    1,
+  $ao-fonto-style-padding:  0em,
+  $ao-fonto-style-margin:   0em,
+  $ao-fonto-style-color:    White,
+  $ao-fonto-style-weight:   600,
+  $ao-fonto-style-text-decoration: none
+);
+
+/* TABLES */
+$summary-table-header: ao-fontography-register-style(
+  $ao-fonto-style-name:             summary-table-header,
+  $ao-fonto-style-size:             0.8em,
+  $ao-fonto-style-weight:           600,
+  $ao-fonto-style-color:            $base-purple,
+  $ao-fonto-style-text-transform:   uppercase
+);
+$summary-table-data: ao-fontography-register-style(
+  $ao-fonto-style-name:             summary-table-data,
+  $ao-fonto-style-size:             1.4em,
+  $ao-fonto-style-weight:           600,
+  $ao-fonto-style-color:            #555,
+  $ao-fonto-style-text-transform:   uppercase
+);
+
+/* PANELS */
+$standard-panel-title: ao-fontography-register-style(
+  $ao-fonto-style-name:             standard-panel-title,
+  $ao-fonto-style-family:           $panel-pane-title-font,
+  $ao-fonto-style-size:             $h3-font-size,
+  $ao-fonto-style-text-transform:   uppercase,
+  $ao-fonto-style-letter-spacing:   -0.05em,
+  $ao-fonto-style-color:            $base-blue,
+  $ao-fonto-style-padding:          0em .2em .2em,
+  $ao-fonto-style-margin:           0em 0em .8em
+);
+$summary-panel-title: ao-fontography-register-style(
+  $ao-fonto-style-name:             summary-panel-title,
+  $ao-fonto-style-family:           $panel-pane-title-font,
+  $ao-fonto-style-size:             $h3-font-size,
+  $ao-fonto-style-text-transform:   uppercase,
+  $ao-fonto-style-text-align:       center,
+  $ao-fonto-style-letter-spacing:   -0.05em,
+  $ao-fonto-style-color:            $blue-almost-black,
+  $ao-fonto-style-padding:          rhythm(.5) 0em 0em,
+  $ao-fonto-style-margin:           0em 0em rhythm(.25)
+);
+$standard-panel-title-large: ao-fontography-register-style(
+  $ao-fonto-style-name:             standard-panel-title-large,
+  $ao-fonto-style-family:           $panel-pane-title-font,
+  $ao-fonto-style-size:             1.5em,
+  $ao-fonto-style-text-transform:   uppercase,
+  $ao-fonto-style-text-align:       uppercase,
+  $ao-fonto-style-letter-spacing:   -0.05em,
+  $ao-fonto-style-color:            $base-blue,
+  $ao-fonto-style-padding:          rhythm(.5) 0em 0em,
+  $ao-fonto-style-margin:           0em 0em rhythm(.25)
+);
+
+/* BREADCRUMBS */
+$breadcrumbs: ao-fontography-register-style(
+  $ao-fonto-style-name:             breadcrumbs,
+  $ao-fonto-style-size:             0.8em,
+  $ao-fonto-style-lines:            .75,
+  $ao-fonto-style-color:            rgba(255,255,255,.3),
+  $ao-fonto-style-text-decoration:  none
+);
+
+/*
+
+  font-size: 1em;
+  padding: 0.5em 0.5em;
+  margin: 0px auto;
+  color: $base-purple;
+  white-space: nowrap;
+  overflow: hidden;
+  text-align: center;
+  text-transform: uppercase;  
+  
+*/
+
+
+
+

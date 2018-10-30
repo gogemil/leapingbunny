@@ -1,0 +1,70 @@
+/**
+ * @file
+ * MENUS
+ *
+ * Theme for predefined menus.
+ */
+/**
+ * VBO MENUS
+ *
+ * Displays Menus for Views Bulk Operations
+ */
+.ao-vbo-menu {
+  float: right;
+  @include ao-fontography(
+    $ao-fonto-style: contact-management-btn-font-large,
+    $ao-fonto-rhythm-unit: px
+  );
+  UL.links {
+    background-color: #00a03c;
+    margin: 0em;
+    padding: 0em;
+    border-radius: 8px 0px 8px 8px;
+    overflow: hidden;
+    LI {
+      list-style-type: none;
+      list-style-image: none;
+      margin: .1em 0em;
+      padding: .2em .6em;
+      @include ao-fontography(
+        $ao-fonto-style: contact-management-btn-font-large,
+        $ao-fonto-rhythm-unit: px
+      );
+      &:hover {
+        background-color: #34d06e;
+      }
+      &:last-child {
+        margin-bottom: rhythm(.25);
+      }
+    }
+  }
+  
+  &.btn-disabled {
+    .btn-expandable {
+      display: none;
+    }
+  }
+  &.btn-expander {
+    @include ao-drop-down (
+      $ao-menu-style: false,
+      $ao-menu-trigger-selector: false,
+      $ao-menu-trigger-style: false,
+      $ao-menu-menu-style: false,
+      $ao-menu-element-style: false,
+      $ao-menu-justify: right,
+      $ao-menu-include-transitions: true,
+      $ao-menu-menu-selector: '.btn-expandable',
+      $ao-menu-element-selector: LI,
+      $ao-menu-border: false,
+      $ao-menu-border-radius: 8px 0px 8px 8px,
+      $ao-menu-border-shadow: false,
+      $ao-menu-top-offset: 2em
+    );    
+  }  
+  // checkboxes
+  .form-type-checkbox {
+    margin: 0em;
+    @include border-radius(4px);        
+    text-align: center;
+  }
+}

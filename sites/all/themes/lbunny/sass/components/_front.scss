@@ -1,0 +1,88 @@
+.front {
+  #frontpage-bunny {
+    p {
+      margin: 0;
+    }
+  }
+
+  #search-for-companies {
+    p {
+      font-family: "source_sans_proregular","source_sans_proregular",Verdana,Tahoma,"DejaVu Sans",sans-serif;
+      font-size: 44px;
+      line-height: 0.9;
+      margin: 0;
+      text-align: center;
+      text-transform: uppercase;
+
+      a {
+        font-family: 'source_sans_probold', $verdana;
+        @extend %blue-button;
+        font-size: 30px;
+        padding: 12px 15px 11px 15px;
+      }
+    }
+  }
+
+  .view-lb-recent-promotions {
+    margin: 1.5em 0;
+  }
+
+  .pane-crm-core-profile-ccp-mailing-list-signup {
+    border-color: $light-gray3;
+    border-bottom-style: dashed;
+    border-bottom-width: 2px;
+    border-top-style: dashed;
+    border-top-width: 2px;
+    margin: 2em 0;
+    padding: 2em;
+    text-align: center;
+
+    .pane-title {
+      color: $green;
+      font-size: 2em;
+      letter-spacing: -0.04em;
+      line-height: 1em;
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    #signup-header {
+      text-transform: uppercase;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+
+    .form-item {
+      label {
+        display: none;
+      }
+    }
+
+    .form-item-crm-core-contact-individual-contact-name-given,
+    .form-item-crm-core-contact-individual-contact-name-family,
+    #edit-field-ao-email-address {
+      display: inline-block;
+      margin: 0 1%;
+      width: 25%;
+
+      input {
+        background: $light-gray3;
+        border: none;
+        color: #fff;
+      }
+    }
+
+    #edit-submit {
+      font-family: 'source_sans_probold', $verdana;
+      @extend %green-button;
+      background: $green;
+      color: $white;
+      display: inline-block;
+      text-decoration: none;
+      &:hover {
+        background: $light-green;
+      }
+      @include transition-duration(300ms);
+    }
+  }
+}

@@ -1,0 +1,174 @@
+/**
+ * @file
+ * Basic theme for sample content in AO
+ */
+
+/* style the hero */
+section#above-content-one {
+  height: 300px;
+}
+
+BODY.front .hero_text {
+  H2 {
+    font-size: 3em;
+    margin: 0em;
+  }
+  P {
+    font-size: $h2-font-size;
+    line-height: $h1-font-size;
+    margin: 0em 0em 1em;
+  }
+}
+
+
+
+/* style the features marquee */
+.ao-featlist {
+  display: inline-block;
+  width: 48%;
+  margin-right: 1%;
+  vertical-align: top;
+  
+  &:last-child {
+    margin-right: 0%;
+  }
+  
+  UL {
+    margin: 0em;
+    LI {
+      margin: 0em 0em .5em;
+    }
+  }
+  
+}
+.ao_profeat_holder {
+  @extend .features-marquee;
+}
+
+
+
+
+
+/* panel titles for the home page */
+BODY.front .page__title {
+  display: none;  
+}
+BODY.front section#above-content-two h2,
+BODY.front section#main h2,
+BODY.front section#below-content-one h2,
+BODY.front section#below-content-two h2 {  
+  
+  $header_line: #BFC5Ce;
+  
+  text-align: center;
+  margin: 0em 0em 1em;
+  font-weight: normal;
+  @include background-image(linear-gradient(top, $transparent 0%, $transparent 48%, $header_line 49%, $header_line 50%, $transparent 51%, $transparent 100%));
+  font-size: $h1-font-size;
+  font-weight: 700;
+  color: $gray-1;
+  
+  SPAN {
+    padding: 0em .5em;
+  }
+}
+
+/* apply colors to regions on the front page */
+/* add styling to down arrows */
+/* hide tabs on the front page */
+/* control the display of images on the front page */
+/* style H2 elements in specific sections */
+BODY.front {
+  
+  .tabs-primary {
+    display: none;
+  }
+  
+  .ao-down-arrow {
+    width: 0;
+    height: 0;
+    position: absolute;
+    border-left: 36px solid transparent;
+    border-right: 36px solid transparent;
+    top: -16px;
+    left: 50%;
+    margin-left: -36px;
+  }
+  .boxes-box-content,
+  .block {
+    border: 1px solid transparent;
+  }
+  
+  section#above-content-one {
+    background: $ao_orange url(../images/people.png) top center no-repeat;
+  }
+  section#above-content-two {
+    background-color: #f9f9f9;
+    h2 {
+      margin-top: 1em;
+      margin-bottom: 0em;
+      SPAN {  
+        background-color: #f9f9f9;
+      }
+    }
+    .ao-down-arrow {
+      border-top: 36px solid #f9f9f9;
+    }
+  }
+  section#main {
+    background-color: $ao_blue;
+    padding-top: 2em;
+    
+    IMG {
+      max-width: 100%;
+      margin: 0em auto;
+      width: 85%;
+      display: block;
+    }
+    
+    h2 {
+      margin-top: 0em;
+      color: white;
+      @include background-image(linear-gradient(top, $transparent 0%, $transparent 48%, rgba(255,255,255,0.4) 49%, rgba(255,255,255,0.4) 50%, $transparent 51%, $transparent 100%));
+      
+      SPAN {  
+        background-color: $ao_blue;
+      }
+    }
+    .ao-down-arrow {
+      border-top: 36px solid #f9f9f9;
+      top: -46px;
+    }
+  }
+  section#below-content-one {
+    background-color: $ao_orange2;
+    h2 {
+      margin-top: 1em;
+      $header_line: #9FA5Ae;
+      @include background-image(linear-gradient(top, $transparent 0%, $transparent 48%, $header_line 49%, $header_line 50%, $transparent 51%, $transparent 100%));
+    SPAN {  
+        background-color: $ao_orange2;
+      }
+    }
+    .ao-down-arrow {
+      border-top: 36px solid $ao_blue;
+    }
+  }
+  section#below-content-two {
+    background-color: $ao_aqua;
+    text-align: center;
+    h2 {
+      margin-top: 1em;
+      SPAN {
+        background-color: $ao_aqua;
+      }
+    }
+    .ao-info-item {
+      @extend .info-item;
+    }
+    .ao-down-arrow {
+      border-top: 36px solid $ao_orange2;
+    }
+  }
+}
+

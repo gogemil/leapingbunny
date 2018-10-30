@@ -1,0 +1,35 @@
+From b48294f99b704a53d43b0373d1a5a6775bc19516 Mon Sep 17 00:00:00 2001
+From: Kristian Kaa <kaakristian@gmail.com>
+Date: Mon, 16 Mar 2015 09:45:28 +0100
+Subject: [PATCH] Fixed whitespace
+
+---
+ sites/all/modules/contrib/views_datasource/views_json.module | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/views_json.module b/views_json.module
+index c5230b5..88fc95e 100644
+--- a/views_json.module
++++ b/views_json.module
+@@ -159,11 +159,13 @@ function _views_json_render_fields($view, $row) {
+       if (empty($field->base_table)) {
+         $entity_info = entity_get_info($field->table);
+         if (isset($entity_info['entity keys'])) {
+-          $label_field = $entity_info['entity keys']['label'];
+-          if ($field->real_field == $label_field) {
+-            // Decode html entities in label field as views does this by default for those fields.
+-            $field_output = html_entity_decode($field_output, ENT_QUOTES);
+-            $field_output = mb_check_encoding($field_output, 'UTF-8') ? $field_output : utf8_encode($field_output);
++          if (isset($entity_info['entity keys']['label'])) {
++            $label_field = $entity_info['entity keys']['label'];
++            if ($field->real_field == $label_field) {
++              // Decode html entities in label field as views does this by default for those fields.
++              $field_output = html_entity_decode($field_output, ENT_QUOTES);
++              $field_output = mb_check_encoding($field_output, 'UTF-8') ? $field_output : utf8_encode($field_output);
++            }
+           }
+         }
+       }
+-- 
+1.9.5 (Apple Git-50.3)
+

@@ -1,0 +1,513 @@
+/**
+ * @file
+ * 
+ * Controls the layout of the default content for AbleOrganizer
+ */
+/* init */
+/* font sizes */
+/* basic colors */
+/* text colors */
+/* fonts */
+/* partials */
+/* layouts */
+/* Component (SMACSS module) rules */
+/**
+ * @file
+ * Components for displaying features of AO
+ */
+/* displays a feature listing as a bubble */
+/* line 8, ../sass/components/_features.scss */
+.features-bubble, .features-marquee .ao_profeat, .ao_profeat_holder .ao_profeat {
+  display: inline-block;
+  vertical-align: top;
+  padding: 0em .5em;
+  text-align: center;
+}
+/* line 14, ../sass/components/_features.scss */
+.features-bubble H3, .features-marquee .ao_profeat H3, .ao_profeat_holder .ao_profeat H3 {
+  color: #436ab3;
+  text-align: center;
+  font-weight: normal;
+  text-transform: uppercase;
+  margin-top: 0.25em;
+  margin-bottom: 0px;
+  font-family: "Montserrat", Helvetica, "Nimbus Sans L", sans-serif;
+  font-size: 16px;
+}
+/* line 24, ../sass/components/_features.scss */
+.features-bubble P, .features-marquee .ao_profeat P, .ao_profeat_holder .ao_profeat P {
+  margin: .5em 0em;
+  font-size: 13.28px;
+}
+/* line 29, ../sass/components/_features.scss */
+.features-bubble .ao_profeat_icon_outer, .features-marquee .ao_profeat .ao_profeat_icon_outer, .ao_profeat_holder .ao_profeat .ao_profeat_icon_outer {
+  height: 140px;
+  width: 140px;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  background-color: transparent;
+  margin: 0em auto .25em;
+  cursor: pointer;
+  border: 1px solid White;
+  position: relative;
+  vertical-align: middle;
+  -moz-transition-property: all;
+  -o-transition-property: all;
+  -webkit-transition-property: all;
+  transition-property: all;
+  -moz-transition-duration: 0.2s;
+  -o-transition-duration: 0.2s;
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+  -moz-transition-timing-function: ease-in-out;
+  -o-transition-timing-function: ease-in-out;
+  -webkit-transition-timing-function: ease-in-out;
+  transition-timing-function: ease-in-out;
+}
+/* line 43, ../sass/components/_features.scss */
+.features-bubble .ao_profeat_icon_outer:hover, .features-marquee .ao_profeat .ao_profeat_icon_outer:hover, .ao_profeat_holder .ao_profeat .ao_profeat_icon_outer:hover {
+  border: 1px solid #CCC;
+}
+/* line 48, ../sass/components/_features.scss */
+.features-bubble .ao_profeat_icon, .features-marquee .ao_profeat .ao_profeat_icon, .ao_profeat_holder .ao_profeat .ao_profeat_icon {
+  height: 110px;
+  width: 110px;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+  background-color: #8f95Ae;
+  margin: 0em auto;
+  cursor: pointer;
+  position: absolute;
+  left: 15px;
+  top: 15px;
+  -moz-transition-property: all;
+  -o-transition-property: all;
+  -webkit-transition-property: all;
+  transition-property: all;
+  -moz-transition-duration: 0.2s;
+  -o-transition-duration: 0.2s;
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+  -moz-transition-timing-function: ease-in-out;
+  -o-transition-timing-function: ease-in-out;
+  -webkit-transition-timing-function: ease-in-out;
+  transition-timing-function: ease-in-out;
+}
+/* line 62, ../sass/components/_features.scss */
+.features-bubble .ao_profeat_icon SPAN, .features-marquee .ao_profeat .ao_profeat_icon SPAN, .ao_profeat_holder .ao_profeat .ao_profeat_icon SPAN {
+  background-image: url("../images/ao-frontend-icons.png");
+  height: 60px;
+  width: 60px;
+  display: inline-block;
+  margin: 24px auto 0px;
+}
+/* line 71, ../sass/components/_features.scss */
+.features-bubble .ao_profeat_button, .features-marquee .ao_profeat .ao_profeat_button, .ao_profeat_holder .ao_profeat .ao_profeat_button {
+  font-size: 16px;
+  padding: 0.5em 1.5em;
+  display: inline-block;
+  cursor: pointer;
+  -moz-border-radius: 0.5em;
+  -webkit-border-radius: 0.5em;
+  border-radius: 0.5em;
+  *zoom: 1;
+  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF00B0F3', endColorstr='#FF00668D');
+  background-color: #00b0f3;
+  border: 0;
+  color: white;
+  font-size: 16px;
+  padding: 0.25em 1em;
+  display: inline-block;
+  cursor: pointer;
+  -moz-border-radius: 0.5em;
+  -webkit-border-radius: 0.5em;
+  border-radius: 0.5em;
+  margin-top: .5em;
+  margin-left: auto;
+  margin-right: auto;
+}
+/* line 15, ../../../../../../../../../Users/mhaggerty/.rvm/gems/ruby-2.1.0/gems/sassy-buttons-0.2.6/stylesheets/sassy-buttons/_sassy-button-pseudo-states.sass */
+.features-bubble .ao_profeat_button:hover, .features-marquee .ao_profeat .ao_profeat_button:hover, .ao_profeat_holder .ao_profeat .ao_profeat_button:hover {
+  text-decoration: none;
+}
+/* line 42, ../../../../../../../../../Users/mhaggerty/.rvm/gems/ruby-2.1.0/gems/sassy-buttons-0.2.6/stylesheets/sassy-buttons/_sassy-button-pseudo-states.sass */
+.features-bubble .ao_profeat_button:hover, .features-marquee .ao_profeat .ao_profeat_button:hover, .ao_profeat_holder .ao_profeat .ao_profeat_button:hover {
+  background-color: #009ed9;
+}
+/* line 44, ../../../../../../../../../Users/mhaggerty/.rvm/gems/ruby-2.1.0/gems/sassy-buttons-0.2.6/stylesheets/sassy-buttons/_sassy-button-pseudo-states.sass */
+.features-bubble .ao_profeat_button:active, .features-marquee .ao_profeat .ao_profeat_button:active, .ao_profeat_holder .ao_profeat .ao_profeat_button:active {
+  background-color: #0092ca;
+}
+/* line 6, ../../../../../../../../../Users/mhaggerty/.rvm/gems/ruby-2.1.0/gems/sassy-buttons-0.2.6/stylesheets/sassy-buttons/_sassy-button-pseudo-states.sass */
+.features-bubble .ao_profeat_button.disabled, .features-marquee .ao_profeat .ao_profeat_button.disabled, .ao_profeat_holder .ao_profeat .ao_profeat_button.disabled, .features-bubble .ao_profeat_button[disabled], .features-marquee .ao_profeat .ao_profeat_button[disabled], .ao_profeat_holder .ao_profeat .ao_profeat_button[disabled] {
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+  opacity: 0.6;
+  background: false;
+  cursor: default;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+/* line 74, ../../../../../../../../../Users/mhaggerty/.rvm/gems/ruby-2.1.0/gems/sassy-buttons-0.2.6/stylesheets/_sassy-buttons.sass */
+.features-bubble .ao_profeat_button::-moz-focus-inner, .features-marquee .ao_profeat .ao_profeat_button::-moz-focus-inner, .ao_profeat_holder .ao_profeat .ao_profeat_button::-moz-focus-inner {
+  padding: 0 !important;
+  margin: -1px !important;
+}
+
+/*displays the marquee for showing features */
+/* line 83, ../sass/components/_features.scss */
+.features-marquee, .ao_profeat_holder {
+  width: 100%;
+  margin: 0em;
+  /* make the features listings into bubbles */
+}
+/* line 88, ../sass/components/_features.scss */
+.features-marquee .ao_profeat, .ao_profeat_holder .ao_profeat {
+  width: 23%;
+}
+/* line 94, ../sass/components/_features.scss */
+.features-marquee .ao_profeat.ao_profeat_donation .ao_profeat_icon:hover, .ao_profeat_holder .ao_profeat.ao_profeat_donation .ao_profeat_icon:hover {
+  background-color: #399B19;
+}
+/* line 97, ../sass/components/_features.scss */
+.features-marquee .ao_profeat.ao_profeat_donation .ao_profeat_icon SPAN, .ao_profeat_holder .ao_profeat.ao_profeat_donation .ao_profeat_icon SPAN {
+  background-position: -60px -120px;
+}
+/* line 103, ../sass/components/_features.scss */
+.features-marquee .ao_profeat.ao_profeat_event .ao_profeat_icon:hover, .ao_profeat_holder .ao_profeat.ao_profeat_event .ao_profeat_icon:hover {
+  background-color: #1A6099;
+}
+/* line 106, ../sass/components/_features.scss */
+.features-marquee .ao_profeat.ao_profeat_event .ao_profeat_icon SPAN, .ao_profeat_holder .ao_profeat.ao_profeat_event .ao_profeat_icon SPAN {
+  background-position: -120px -120px;
+}
+/* line 112, ../sass/components/_features.scss */
+.features-marquee .ao_profeat.ao_profeat_petition .ao_profeat_icon:hover, .ao_profeat_holder .ao_profeat.ao_profeat_petition .ao_profeat_icon:hover {
+  background-color: #e26427;
+}
+/* line 115, ../sass/components/_features.scss */
+.features-marquee .ao_profeat.ao_profeat_petition .ao_profeat_icon SPAN, .ao_profeat_holder .ao_profeat.ao_profeat_petition .ao_profeat_icon SPAN {
+  background-position: -180px -120px;
+}
+/* line 121, ../sass/components/_features.scss */
+.features-marquee .ao_profeat.ao_profeat_volunteer .ao_profeat_icon:hover, .ao_profeat_holder .ao_profeat.ao_profeat_volunteer .ao_profeat_icon:hover {
+  background-color: #D12424;
+}
+/* line 124, ../sass/components/_features.scss */
+.features-marquee .ao_profeat.ao_profeat_volunteer .ao_profeat_icon SPAN, .ao_profeat_holder .ao_profeat.ao_profeat_volunteer .ao_profeat_icon SPAN {
+  background-position: 0px -120px;
+}
+/* line 131, ../sass/components/_features.scss */
+.features-marquee .ao_profeat_dialog_content, .ao_profeat_holder .ao_profeat_dialog_content {
+  display: none;
+}
+
+/**
+ * Use 5 grid columns for smaller screens.
+ */
+/**
+ * Use 7 grid columns for larger screens.
+ */
+/**
+ * @file
+ * Components for displaying info boxes
+ * This is just used for callouts around sample content
+ */
+/* displays an info item */
+/* line 68, ../sass/ao_basic_setup.scss */
+.info-item, BODY.front section#below-content-two .ao-info-item {
+  text-align: left;
+  display: inline-block;
+  width: 30%;
+  vertical-align: top;
+}
+
+/* controls the display of dialogs */
+/* line 78, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog {
+  color: #777;
+  font-size: 0.9em;
+}
+
+/* line 82, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog .ao_profeat_dialog_title {
+  text-align: center;
+  margin: 0em;
+  background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #436ab3 49%, #436ab3 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #436ab3 49%, #436ab3 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #436ab3 49%, #436ab3 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #436ab3 49%, #436ab3 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  padding: .5em 0em;
+  text-transform: uppercase;
+  font-size: 1.3em;
+}
+
+/* line 95, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog .ao_profeat_dialog_title .title_inner {
+  display: inline-block;
+}
+
+/* line 98, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog .ao_profeat_dialog_title .title_bg {
+  background-color: White;
+  display: inline-block;
+  padding: 0em .5em;
+}
+
+/* line 103, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog .ao_profeat_dialog_title .ao_profeat_dialog_icon {
+  display: inline-block;
+  margin: 0em 0em 0.5em 0em;
+  background-color: #CCC;
+  border-radius: 50%;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  vertical-align: middle;
+}
+
+/* line 114, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog .ao_profeat_dialog_title .ao_profeat_dialog_icon SPAN {
+  background-image: url("../images/ao-frontend-icons.png");
+  height: 30px;
+  width: 30px;
+  margin: 10px auto;
+  display: block;
+}
+
+/* line 121, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog .ao_profeat_dialog_fundraising .ao_profeat_dialog_icon {
+  background-color: #399B19;
+}
+
+/* line 124, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog .ao_profeat_dialog_events .ao_profeat_dialog_icon {
+  background-color: #1A6099;
+}
+
+/* line 127, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog .ao_profeat_dialog_petition .ao_profeat_dialog_icon {
+  background-color: #e26427;
+}
+
+/* line 130, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog .ao_profeat_dialog_volunteer .ao_profeat_dialog_icon {
+  background-color: #D12424;
+}
+
+/* line 133, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog .ao_profeat_dialog_fundraising .ao_profeat_dialog_icon SPAN {
+  background-position: -31px 0px;
+}
+
+/* line 136, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog .ao_profeat_dialog_events .ao_profeat_dialog_icon SPAN {
+  background-position: -61px 0px;
+}
+
+/* line 139, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog .ao_profeat_dialog_petition .ao_profeat_dialog_icon SPAN {
+  background-position: -61px -30px;
+}
+
+/* line 142, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog .ao_profeat_dialog_volunteer .ao_profeat_dialog_icon SPAN {
+  background-position: 0px 0px;
+}
+
+/* line 145, ../sass/ao_basic_setup.scss */
+.ao_profeat_dialog LI {
+  margin: 0em 0em 1em;
+}
+
+/* @TODO: move to theme */
+/* Component (SMACSS module) rules */
+/**
+ * @file
+ * Basic theme for sample content in AO
+ */
+/* style the hero */
+/* line 7, ../sass/themes/_ao_sample_content.scss */
+section#above-content-one {
+  height: 300px;
+}
+
+/* line 12, ../sass/themes/_ao_sample_content.scss */
+BODY.front .hero_text H2 {
+  font-size: 3em;
+  margin: 0em;
+}
+/* line 16, ../sass/themes/_ao_sample_content.scss */
+BODY.front .hero_text P {
+  font-size: 24px;
+  line-height: 32px;
+  margin: 0em 0em 1em;
+}
+
+/* style the features marquee */
+/* line 26, ../sass/themes/_ao_sample_content.scss */
+.ao-featlist {
+  display: inline-block;
+  width: 48%;
+  margin-right: 1%;
+  vertical-align: top;
+}
+/* line 32, ../sass/themes/_ao_sample_content.scss */
+.ao-featlist:last-child {
+  margin-right: 0%;
+}
+/* line 36, ../sass/themes/_ao_sample_content.scss */
+.ao-featlist UL {
+  margin: 0em;
+}
+/* line 38, ../sass/themes/_ao_sample_content.scss */
+.ao-featlist UL LI {
+  margin: 0em 0em .5em;
+}
+
+/* panel titles for the home page */
+/* line 53, ../sass/themes/_ao_sample_content.scss */
+BODY.front .page__title {
+  display: none;
+}
+
+/* line 56, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#above-content-two h2,
+BODY.front section#main h2,
+BODY.front section#below-content-one h2,
+BODY.front section#below-content-two h2 {
+  text-align: center;
+  margin: 0em 0em 1em;
+  font-weight: normal;
+  background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #bfc5ce 49%, #bfc5ce 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #bfc5ce 49%, #bfc5ce 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #bfc5ce 49%, #bfc5ce 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #bfc5ce 49%, #bfc5ce 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  font-size: 32px;
+  font-weight: 700;
+  color: #2f353e;
+}
+/* line 71, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#above-content-two h2 SPAN,
+BODY.front section#main h2 SPAN,
+BODY.front section#below-content-one h2 SPAN,
+BODY.front section#below-content-two h2 SPAN {
+  padding: 0em .5em;
+}
+
+/* apply colors to regions on the front page */
+/* add styling to down arrows */
+/* hide tabs on the front page */
+/* control the display of images on the front page */
+/* style H2 elements in specific sections */
+/* line 83, ../sass/themes/_ao_sample_content.scss */
+BODY.front .tabs-primary {
+  display: none;
+}
+/* line 87, ../sass/themes/_ao_sample_content.scss */
+BODY.front .ao-down-arrow {
+  width: 0;
+  height: 0;
+  position: absolute;
+  border-left: 36px solid transparent;
+  border-right: 36px solid transparent;
+  top: -16px;
+  left: 50%;
+  margin-left: -36px;
+}
+/* line 97, ../sass/themes/_ao_sample_content.scss */
+BODY.front .boxes-box-content,
+BODY.front .block {
+  border: 1px solid transparent;
+}
+/* line 102, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#above-content-one {
+  background: #ffb836 url(../images/people.png) top center no-repeat;
+}
+/* line 105, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#above-content-two {
+  background-color: #f9f9f9;
+}
+/* line 107, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#above-content-two h2 {
+  margin-top: 1em;
+  margin-bottom: 0em;
+}
+/* line 110, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#above-content-two h2 SPAN {
+  background-color: #f9f9f9;
+}
+/* line 114, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#above-content-two .ao-down-arrow {
+  border-top: 36px solid #f9f9f9;
+}
+/* line 118, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#main {
+  background-color: #00b0f3;
+  padding-top: 2em;
+}
+/* line 122, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#main IMG {
+  max-width: 100%;
+  margin: 0em auto;
+  width: 85%;
+  display: block;
+}
+/* line 129, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#main h2 {
+  margin-top: 0em;
+  color: white;
+  background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, rgba(255, 255, 255, 0.4) 49%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, rgba(255, 255, 255, 0.4) 49%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, rgba(255, 255, 255, 0.4) 49%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, rgba(255, 255, 255, 0.4) 49%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+}
+/* line 134, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#main h2 SPAN {
+  background-color: #00b0f3;
+}
+/* line 138, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#main .ao-down-arrow {
+  border-top: 36px solid #f9f9f9;
+  top: -46px;
+}
+/* line 143, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#below-content-one {
+  background-color: #ffcc4d;
+}
+/* line 145, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#below-content-one h2 {
+  margin-top: 1em;
+  background-image: -moz-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #9fa5ae 49%, #9fa5ae 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  background-image: -o-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #9fa5ae 49%, #9fa5ae 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  background-image: -webkit-linear-gradient(top, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #9fa5ae 49%, #9fa5ae 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 48%, #9fa5ae 49%, #9fa5ae 50%, rgba(255, 255, 255, 0) 51%, rgba(255, 255, 255, 0) 100%);
+}
+/* line 149, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#below-content-one h2 SPAN {
+  background-color: #ffcc4d;
+}
+/* line 153, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#below-content-one .ao-down-arrow {
+  border-top: 36px solid #00b0f3;
+}
+/* line 157, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#below-content-two {
+  background-color: #c8effe;
+  text-align: center;
+}
+/* line 160, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#below-content-two h2 {
+  margin-top: 1em;
+}
+/* line 162, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#below-content-two h2 SPAN {
+  background-color: #c8effe;
+}
+/* line 169, ../sass/themes/_ao_sample_content.scss */
+BODY.front section#below-content-two .ao-down-arrow {
+  border-top: 36px solid #ffcc4d;
+}

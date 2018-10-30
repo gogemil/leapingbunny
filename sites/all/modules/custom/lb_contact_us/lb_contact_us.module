@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the LB Contact Us feature.
+ */
+
+include_once 'lb_contact_us.features.inc';

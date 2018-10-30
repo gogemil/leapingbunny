@@ -1,0 +1,82 @@
+/**
+ * @file
+ * Styles specific to the maintenance page
+ */
+BODY.maintenance-page {
+  section.content {
+    padding-top: 0em;
+
+    div#content {
+      padding-top: 1em;
+      background-color: White;
+      border-right: 1px solid $e-gray;
+      @include zen-grid-item(4, 3);
+      
+      input[type=submit] {
+        @extend .btn;
+      }
+      
+      p:first-child{
+        margin-top: 0em;
+      }
+      
+    }
+
+    section.region-sidebar-first {
+      background-color: White;
+      border-left: 1px solid $e-gray;
+      border-right: 1px solid $e-gray;
+      @include zen-grid-item(2, 1);
+      
+      OL.task-list {
+        
+        list-style-type: none;
+        margin: 1em 0em 1em;
+        padding: 0em;
+        text-indent: 1em;
+        white-space: nowrap;
+        width: 100%;
+        
+        LI {
+          padding: .5em 0em .5em 2em;
+          white-space: nowrap;
+          background-image: url(../images/install.png);
+          background-repeat: no-repeat;
+          background-position: -5px -8px;
+          margin-bottom: .3em;
+          
+          &.active {
+            background-position: -5px -110px;
+          }
+          
+          &.done {
+            background-position: -5px -60px;
+          }
+          
+          &:last-child {
+            border-bottom: none;
+          }
+          
+        }
+        
+      }
+      
+    }
+    
+  }
+}
+
+
+/*
+
+.content {
+ @include zen-grid-item(4, 3); // Make this grid item span 4 columns. // Position this grid item in the 3rd column.
+}
+
+.aside2 {
+ 
+}
+
+
+ */
+

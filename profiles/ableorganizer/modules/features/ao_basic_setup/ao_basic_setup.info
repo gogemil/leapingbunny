@@ -1,0 +1,27 @@
+name = AbleOrganizer Basic Setup
+description = Simply sets up front page and instructional content in AbleOrganizer.
+package = AbleOrganizer Sample Content
+core = 7.x
+
+dependencies[] = boxes
+dependencies[] = context
+dependencies[] = ctools
+dependencies[] = features
+dependencies[] = menu
+
+features[box][] = above_content_lower
+features[box][] = hero_content
+features[box][] = lower_zone
+features[box][] = lower_zone_2
+features[context][] = ao_frontpage_context
+features[ctools][] = boxes:box:1
+features[ctools][] = context:context:3
+features[ctools][] = crm_core_profile:crm_core_profile:1
+features[features_api][] = api:2
+
+; Information added by Drupal.org packaging script on 2015-03-13
+version = "7.x-1.0-beta1+234-dev"
+core = "7.x"
+project = "ableorganizer"
+datestamp = "1426266502"
+

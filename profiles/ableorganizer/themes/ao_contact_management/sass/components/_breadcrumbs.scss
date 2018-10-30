@@ -1,0 +1,257 @@
+/**
+ * @file
+ * Breadcrumbs
+ *
+ * Mixin for creating breadcrumbs
+ */
+/**
+ * DEFAULT VARIABLES
+ * Variables controlling the default appearance of breadcrumbs
+ */
+$ao-bc-height: false !default;
+$ao-bc-width: false !default;
+$ao-bc-margin: false !default;
+$ao-bc-padding: false !default;
+$ao-bc-border: false !default;
+$ao-bc-border-top: false !default;
+$ao-bc-border-bottom: false !default;
+$ao-bc-border-left: false !default;
+$ao-bc-border-right: false !default;
+$ao-bc-border-radius: false !default;
+$ao-bc-bg-color: false !default;
+$ao-bc-background: false !default;
+$ao-bc-element-height: false !default;
+$ao-bc-element-width: false !default;
+$ao-bc-element-margin: false !default;
+$ao-bc-element-padding: false !default;
+$ao-bc-element-bg-color: false !default;
+$ao-bc-element-background: false !default;
+$ao-bc-element-border: false !default;
+$ao-bc-element-border-top: false !default;
+$ao-bc-element-border-bottom: false !default;
+$ao-bc-element-border-left: false !default;
+$ao-bc-element-border-right: false !default;
+$ao-bc-element-border-radius: false !default;
+$ao-bc-link-height: false !default;
+$ao-bc-link-width: false !default;
+$ao-bc-link-margin: false !default;
+$ao-bc-link-padding: false !default;
+$ao-bc-link-bg-color: false !default;
+$ao-bc-link-background: false !default;
+$ao-bc-link-border: false !default;
+$ao-bc-link-border-top: false !default;
+$ao-bc-link-border-bottom: false !default;
+$ao-bc-link-border-left: false !default;
+$ao-bc-link-border-right: false !default;
+$ao-bc-link-border-radius: false !default;
+$ao-bc-link-font-style: false !default;
+$ao-bc-link-color: false !default;
+$ao-bc-link-hover-color: false !default;
+$ao-bc-include-transitions: true !default;
+$ao-bc-include-home-icon: true !default;
+$ao-bc-home-icon-height: 23px !default;
+$ao-bc-home-icon-width: 23px !default;
+$ao-bc-home-icon-padding: .15em 0em 0em 6px !default;
+$ao-bc-home-icon-color: rgba(255,255,255,.3) !default;
+$ao-bc-home-icon-hover-color: rgba(255,255,255,.9) !default;
+
+/**
+ * BREADCRUMBS
+ * Sets the style for breadcrumbs on a page.
+ * Assumes breadcrumbs are presented as UL > LI > A
+ *
+ * Variables:
+ *
+ * $ao-bc-border: Border for the breadcrumbs. Defaults to false.
+ * $ao-bc-border-top: Top border for the breadcrumb container. Defaults to false.
+ * $ao-bc-border-bottom: Bottom border for the breadcrumb container. Defaults to false.
+ * $ao-bc-border-left: Left border for the breadcrumb container. Defaults to false.
+ * $ao-bc-border-right: Right border for the breadcrumb container. Defaults to false.
+ * $ao-bc-border-radius: Border radius for the breadcrumb container. Defaults to false.
+ *
+ */
+@mixin ao-breadcrumb (
+
+  $ao-bc-height: $ao-bc-height,
+  $ao-bc-width: $ao-bc-width,
+  $ao-bc-margin: $ao-bc-margin,
+  $ao-bc-padding: $ao-bc-padding,
+  $ao-bc-bg-color: $ao-bc-bg-color,
+  $ao-bc-background: $ao-bc-background,
+  $ao-bc-border: $ao-bc-border,
+  $ao-bc-border-top: $ao-bc-border-top,
+  $ao-bc-border-bottom: $ao-bc-border-bottom,
+  $ao-bc-border-left: $ao-bc-border-left,
+  $ao-bc-border-right: $ao-bc-border-right,
+  $ao-bc-border-radius: $ao-bc-border-radius,
+  $ao-bc-element-height: $ao-bc-element-height,
+  $ao-bc-element-width: $ao-bc-element-width,
+  $ao-bc-element-margin: $ao-bc-element-margin,
+  $ao-bc-element-padding: $ao-bc-element-padding,
+  $ao-bc-element-bg-color: $ao-bc-element-bg-color,
+  $ao-bc-element-background: $ao-bc-element-background,
+  $ao-bc-element-border: $ao-bc-element-border,
+  $ao-bc-element-border-top: $ao-bc-element-border-top,
+  $ao-bc-element-border-bottom: $ao-bc-element-border-bottom,
+  $ao-bc-element-border-left: $ao-bc-element-border-left,
+  $ao-bc-element-border-right: $ao-bc-element-border-right,
+  $ao-bc-element-border-radius: $ao-bc-element-border-radius,
+  $ao-bc-link-height: $ao-bc-link-height,
+  $ao-bc-link-width: $ao-bc-link-width,
+  $ao-bc-link-margin: $ao-bc-link-margin,
+  $ao-bc-link-padding: $ao-bc-link-padding,
+  $ao-bc-link-bg-color: $ao-bc-link-bg-color,
+  $ao-bc-link-background: $ao-bc-link-background,
+  $ao-bc-link-border: $ao-bc-link-border,
+  $ao-bc-link-border-top: $ao-bc-link-border-top,
+  $ao-bc-link-border-bottom: $ao-bc-link-border-bottom,
+  $ao-bc-link-border-left: $ao-bc-link-border-left,
+  $ao-bc-link-border-right: $ao-bc-link-border-right,
+  $ao-bc-link-border-radius: $ao-bc-link-border-radius,
+  $ao-bc-link-font-style: $ao-bc-link-font-style,
+  $ao-bc-link-color: $ao-bc-link-color,
+  $ao-bc-link-hover-color: $ao-bc-link-hover-color,
+  $ao-bc-include-transitions: $ao-bc-include-transitions,
+  $ao-bc-include-home-icon: $ao-bc-include-home-icon,
+  $ao-bc-home-icon-height: $ao-bc-home-icon-height,
+  $ao-bc-home-icon-width: $ao-bc-home-icon-width,
+  $ao-bc-home-icon-padding: $ao-bc-home-icon-padding,
+  $ao-bc-home-icon-color: $ao-bc-home-icon-color,
+  $ao-bc-home-icon-hover-color: $ao-bc-home-icon-hover-color
+
+){
+
+  // transitions
+  @if $ao-bc-include-transitions != false and mixin-exists(ao-transition) {
+    @include ao-transition();
+  }
+
+  // container styles
+  @include ao-container (
+    $ao-container-height: $ao-bc-height,
+    $ao-container-width: $ao-bc-width,
+    $ao-container-bg-color: $ao-bc-bg-color,
+    $ao-container-background: $ao-bc-background,
+    $ao-container-margin: $ao-bc-margin,
+    $ao-container-padding: $ao-bc-padding,
+    $ao-container-border: $ao-bc-border,
+    $ao-container-border-top: $ao-bc-border-top,
+    $ao-container-border-bottom: $ao-bc-border-bottom,
+    $ao-container-border-left: $ao-bc-border-left,
+    $ao-container-border-right: $ao-bc-border-right,
+    $ao-container-border-radius: $ao-bc-border-radius
+  );
+  
+  list-style-type:none;
+  
+  LI {
+  
+    float: left;
+    
+    // element styles
+    @include ao-container (
+      $ao-container-height: $ao-bc-element-height,
+      $ao-container-width: $ao-bc-element-width,
+      $ao-container-bg-color: $ao-bc-element-bg-color,
+      $ao-container-background: $ao-bc-element-background,
+      $ao-container-margin: $ao-bc-element-margin,
+      $ao-container-padding: $ao-bc-element-padding,
+      $ao-container-border: $ao-bc-element-border,
+      $ao-container-border-top: $ao-bc-element-border-top,
+      $ao-container-border-bottom: $ao-bc-element-border-bottom,
+      $ao-container-border-left: $ao-bc-element-border-left,
+      $ao-container-border-right: $ao-bc-element-border-right,
+      $ao-container-border-radius: $ao-bc-element-border-radius
+    );
+    
+    A {
+    
+      display: block;
+      
+      // create variables
+      @include ao-container (
+        $ao-container-height: $ao-bc-link-height,
+        $ao-container-width: $ao-bc-link-width,
+        $ao-container-bg-color: $ao-bc-link-bg-color,
+        $ao-container-background: $ao-bc-link-background,
+        $ao-container-margin: $ao-bc-link-margin,
+        $ao-container-padding: $ao-bc-link-padding,
+        $ao-container-border: $ao-bc-link-border,
+        $ao-container-border-top: $ao-bc-link-border-top,
+        $ao-container-border-bottom: $ao-bc-link-border-bottom,
+        $ao-container-border-left: $ao-bc-link-border-left,
+        $ao-container-border-right: $ao-bc-link-border-right,
+        $ao-container-border-radius: $ao-bc-link-border-radius
+      );
+      
+      // fonts
+      @if mixin-exists(ao-fontography) and $ao-bc-link-font-style != false {
+        @include ao-fontography($ao-bc-link-font-style);
+      }
+      
+      // colors
+      @if $ao-bc-link-color != false {
+        color: $ao-bc-link-color;
+      }
+      @if $ao-bc-link-hover-color != false {
+        &:hover {
+          color: $ao-bc-link-hover-color;
+        }
+      }
+      
+    }
+    
+    // icons
+    @if $ao-bc-include-home-icon != false and mixin-exists(ao-get-icon) {
+    
+      &:first-child {
+      
+        @include ao-get-icon(
+          $ao-icon-name: home,
+          $ao-icon-size: 23px,
+          $ao-icon-float: false,
+          $ao-icon-background: transparent,
+          $ao-icon-color: $ao-bc-home-icon-color,
+          $ao-icon-text-shadow: false,
+          $ao-icon-border: false,
+          $ao-icon-border-radius: false,
+          $ao-icon-margin: 0em,
+          $ao-icon-padding: $ao-bc-home-icon-padding,
+          $ao-icon-height: $ao-bc-home-icon-height,
+          $ao-icon-width: $ao-bc-home-icon-width
+        );
+        
+        &:before {
+          position: absolute;
+          cursor: pointer;
+          user-select: none;
+          pointer-events: none;
+          
+          // need variables
+          top: $ao-bc-home-icon-width/1.5;
+          left: $ao-bc-home-icon-width/4;
+        }
+        
+        &:hover {
+          color: $ao-bc-home-icon-hover-color;
+        }
+        
+        A {
+        
+          // reset the colors and whatnot
+          display: block;
+          color: transparent;
+          overflow: hidden;
+          
+          // need variables
+          height: $ao-bc-home-icon-width*1.25;
+          width: $ao-bc-home-icon-width*1.25;
+          padding-left: 6px;
+          margin-left: 0em;
+          background: none;
+        }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,35 @@
+<?php
+/**
+ * @file
+ * Code for the LB Mailing list reports feature.
+ */
+
+include_once 'lb_mailing_list_reports.features.inc';
+
+/**
+ * Implements hook_crm_core_report_register().
+ */
+function lb_mailing_list_reports_crm_core_report_register() {
+
+  $reports = array(
+    'mailing-list' => array(
+      'title' => t('Mailing List'),
+      'reports' => array(),
+      'widgets' => array(),
+    ),
+  );
+
+  $reports['mailing-list']['reports']['signup'] = array(
+    'title' => t('Mailing List'),
+    'path' => 'crm-core/reports/lb-mailing-list/signup',
+    'description' => t('Mailing list'),
+  );
+
+  $reports['mailing-list']['reports']['pledge-signup'] = array(
+    'title' => t('Pledge signup'),
+    'path' => 'crm-core/reports/lb-mailing-list/pledge-signup',
+    'description' => t('Pledge signup'),
+  );
+
+  return $reports;
+}

@@ -1,0 +1,428 @@
+/**
+ * @file
+ * Controls the appearance and behavior of tables.
+ */
+/**
+ * DEFAULT VARIABLES
+ * Default settings, see mixin documentation for explanations.
+ */
+$ao-table-width: 100% !default;
+$ao-table-border-top: false !default;
+$ao-table-border-bottom: false !default;
+$ao-table-border-left: false !default;
+$ao-table-border-right: false !default;
+$ao-table-border-collapse: collapse !default;
+$ao-table-border-spacing: collapse !default;
+$ao-table-border-radius: false !default;
+$ao-table-margin: false !default;
+$ao-table-padding: false !default;
+$ao-table-header-border-top: false !default;
+$ao-table-header-border-bottom: false !default;
+$ao-table-header-border-left: false !default;
+$ao-table-header-border-right: false !default;
+$ao-table-row-border-top: false !default;
+$ao-table-row-border-bottom: false !default;
+$ao-table-row-border-left: false !default;
+$ao-table-row-border-right: false !default;
+$ao-table-row-hover-color: false !default;
+$ao-table-row-hover-color-even: false !default;
+$ao-table-row-hover-color-odd: false !default;
+$ao-table-cell-border-top: false !default;
+$ao-table-cell-border-bottom: false !default;
+$ao-table-cell-border-left: false !default;
+$ao-table-cell-border-right: false !default;
+$ao-table-cell-background-color: false !default;
+$ao-table-cell-background-color-even: false !default;
+$ao-table-cell-background-color-odd: false !default;
+$ao-table-cell-padding: false !default;
+$ao-table-header-background-color: false !default;
+$ao-table-header-background-image: false !default;
+$ao-table-responsive-style: false !default;
+$ao-table-responsive-breakpoint: false !default;
+$ao-table-column-center: false !default;
+$ao-table-debug: false !default;
+
+
+/**
+ * AO TABLE
+ * Controls the appearance of tables
+ *
+ * Variables:
+ *
+ * $ao-table-responsive-style: presets for responsive tables. Defaults to false.
+ *
+ */
+@mixin ao-table (
+  $ao-table-responsive-style: $ao-table-responsive-style,
+  $ao-table-width: $ao-table-width,
+  $ao-table-margin: $ao-table-margin,
+  $ao-table-padding: $ao-table-padding,
+  $ao-table-border-top: $ao-table-border-top,
+  $ao-table-border-bottom: $ao-table-border-bottom,
+  $ao-table-border-left: $ao-table-border-left,
+  $ao-table-border-right: $ao-table-border-right,
+  $ao-table-border-radius: $ao-table-border-radius,
+  $ao-table-header-border-top: $ao-table-header-border-top,
+  $ao-table-header-border-bottom: $ao-table-header-border-bottom,
+  $ao-table-header-border-left: $ao-table-header-border-left,
+  $ao-table-header-border-right: $ao-table-header-border-right,
+  $ao-table-row-border-top: $ao-table-row-border-top,
+  $ao-table-row-border-bottom: $ao-table-row-border-bottom,
+  $ao-table-row-border-left: $ao-table-row-border-left,
+  $ao-table-row-border-right: $ao-table-row-border-right,
+  $ao-table-row-hover-color: $ao-table-row-hover-color,
+  $ao-table-row-hover-color-even: $ao-table-row-hover-color-even,
+  $ao-table-row-hover-color-odd: $ao-table-row-hover-color-odd,
+  $ao-table-cell-border-top: $ao-table-cell-border-top,
+  $ao-table-cell-border-bottom: $ao-table-cell-border-bottom,
+  $ao-table-cell-border-left: $ao-table-cell-border-left,
+  $ao-table-cell-border-right: $ao-table-cell-border-right,
+  $ao-table-cell-background-color: $ao-table-cell-background-color,
+  $ao-table-cell-background-color-even: $ao-table-cell-background-color-even,
+  $ao-table-cell-background-color-odd: $ao-table-cell-background-color-odd,
+  $ao-table-cell-padding: $ao-table-cell-padding,
+  $ao-table-border-collapse: $ao-table-border-collapse,
+  $ao-table-border-spacing: $ao-table-border-spacing,
+  $ao-table-header-background-image: $ao-table-header-background-image,
+  $ao-table-header-background-color: $ao-table-header-background-color,
+  $ao-table-column-center: $ao-table-column-center,
+  $ao-table-debug: $ao-table-debug
+  
+) {
+
+  @if $ao-table-debug == true {
+    TD {
+      table-debug: true;
+      ao-table-width: $ao-table-width;
+      ao-table-border-collapse: $ao-table-border-collapse;
+      ao-table-cell-border-top: $ao-table-cell-border-top;
+      ao-table-cell-border-bottom: $ao-table-cell-border-bottom;
+      ao-table-cell-border-left: $ao-table-cell-border-left;
+      ao-table-cell-border-right: $ao-table-cell-border-right;
+      ao-table-cell-background-color: $ao-table-cell-background-color;
+      ao-table-cell-background-color-even: $ao-table-cell-background-color-even;
+      ao-table-cell-background-color-odd: $ao-table-cell-background-color-odd;
+      ao-table-cell-padding: $ao-table-cell-padding;
+    }
+  }
+
+  // basic table display
+  @if $ao-table-width != false {
+    width: $ao-table-width;
+  }
+  @if $ao-table-border-top != false {
+    border-top: $ao-table-border-top;
+  }
+  @if $ao-table-border-bottom != false {
+    // border-bottom: $ao-table-border-bottom;
+  }
+  @if $ao-table-border-left != false {
+    border-left: $ao-table-border-left;
+  }
+  @if $ao-table-border-right != false {
+    border-right: $ao-table-border-right;
+  }
+  @if $ao-table-border-collapse != false {
+    border-collapse: $ao-table-border-collapse !important;
+  }
+  @if $ao-table-margin != false {
+    margin: $ao-table-margin;
+  }
+  @if $ao-table-padding != false {
+    padding: $ao-table-padding;
+  }
+  
+  // header
+  TH {
+    @if $ao-table-header-background-image != false {
+      @include background-image($ao-table-header-background-image);
+    }
+    @if $ao-table-header-background-color != false {
+      background-color: $ao-table-header-background-color;
+    }
+    
+    &:first-child {
+      // if there are rounded corners on the table, we need to apply them here as well
+    }
+    &:last-child {
+      // if there are rounded corners on the table, we need to apply them here as well
+    }
+  }
+  
+  // rows
+  TR {
+    @if $ao-table-row-border-top != false {
+      TD, TH {
+        border-top: $ao-table-row-border-top;
+      }
+    }
+    @if $ao-table-row-border-bottom != false {
+      TD, TH {
+        border-bottom: $ao-table-row-border-bottom;
+      }
+    }
+    @if $ao-table-row-border-left != false {
+      TD:first-child, TH:first-child {
+        border-left: $ao-table-row-border-left;
+      }
+    }
+    @if $ao-table-row-border-right != false {
+      TD:last-child, TH:last-child {
+        border-right: $ao-table-row-border-right;
+      }
+    }
+    &.odd {
+      // odd striping goes here
+    }
+    &.even {
+      // even striping goes here
+    }
+    
+    // header cells
+    TH {
+      @if $ao-table-header-border-top != false {
+        border-top: $ao-table-header-border-top;
+      }
+      @if $ao-table-header-border-bottom != false {
+        border-bottom: $ao-table-header-border-bottom;
+      }
+      @if $ao-table-header-border-left != false {
+        border-left: $ao-table-header-border-left;
+      }
+      @if $ao-table-header-border-right != false {
+        border-right: $ao-table-header-border-right;
+      }
+    }
+
+    // cells
+    TD {
+      @if $ao-table-cell-border-top != false {
+        border-top: $ao-table-cell-border-top;
+      }
+      @if $ao-table-cell-border-bottom != false {
+        border-bottom: $ao-table-cell-border-bottom;
+      }
+      @if $ao-table-cell-border-left != false {
+        border-left: $ao-table-cell-border-left;
+      }
+      @if $ao-table-cell-border-right != false {
+        border-right: $ao-table-cell-border-right;
+      }
+      @if $ao-table-cell-background-color != false {
+        background-color: $ao-table-cell-background-color;
+      }
+      @if $ao-table-cell-padding != false {
+        padding: $ao-table-cell-padding;
+      }
+      &:first-child {
+        @if $ao-table-row-border-left != false {
+          border-left: $ao-table-row-border-left;
+        }
+      }
+      &:last-child {
+        @if $ao-table-row-border-right != false {
+          border-right: $ao-table-row-border-right;
+        }
+      }
+    }
+    
+    // row hover
+    @if $ao-table-row-hover-color != false {
+      &.even, &.odd {
+        &:hover {
+          TD {
+            background-color: $ao-table-row-hover-color;
+          }
+        }
+      }
+    }
+    
+    // striping
+    &.even {
+      TD {
+        @if $ao-table-cell-background-color-even != false {
+          background-color: $ao-table-cell-background-color-even;
+        }
+      }
+      @if $ao-table-row-hover-color-even != false {
+        &:hover {
+          TD {
+            background-color: $ao-table-row-hover-color-even;
+          }
+        }
+      }
+    }
+    &.odd {
+      TD {
+        @if $ao-table-cell-background-color-odd != false {
+          background-color: $ao-table-cell-background-color-odd;
+        }
+      }
+      @if $ao-table-row-hover-color-odd != false {
+        &:hover {
+          TD {
+            background-color: $ao-table-row-hover-color-odd;
+          }
+        }
+      }
+    }
+    
+    // table border
+    // the table will not do this itself, we use the cells to do the borders
+    @if $ao-table-border-bottom != false {
+      &:last-child {
+        TD {
+          border-bottom: $ao-table-border-bottom;
+        }
+      }
+    }
+  }
+  
+  // column centering
+  // @TODO: make this a list, allow it to iterate around multiple nth values
+  @if $ao-table-column-center != false {
+    TR {
+      TH:nth-child(#{$ao-table-column-center}), 
+      TD:nth-child(#{$ao-table-column-center}) {
+        text-align: center;
+      }
+    }
+  }  
+  
+  // border radius
+  @if $ao-table-border-radius != false {
+  
+    // the number of items being passed in
+    $table-radius-value-count: length($ao-table-border-radius);
+    
+    // default values
+    $table-radius-top-left: false;
+    $table-radius-top-right: false;
+    $table-radius-bottom-right: false;
+    $table-radius-bottom-left: false;
+    
+    // If one value is set, this radius applies to all 4 corners.
+    // If two values are set, the first applies to top-left and bottom-right corner, the second applies to top-right and bottom-left corner.
+    // Four values apply to the top-left, top-right, bottom-right, bottom-left corner in that order.
+    // Three values: The second value applies to top-right and also bottom-left.
+    
+    // one value
+    @if $table-radius-value-count == 1 {
+      $table-radius-top-left: $ao-table-border-radius;
+      $table-radius-top-right: $ao-table-border-radius;
+      $table-radius-bottom-right: $ao-table-border-radius;
+      $table-radius-bottom-left: $ao-table-border-radius;
+    }
+    
+    // two values
+    @if $table-radius-value-count == 2 {
+      $table-radius-top-left: nth($ao-table-border-radius, 1);
+      $table-radius-top-right: nth($ao-table-border-radius, 2);
+      $table-radius-bottom-right: nth($ao-table-border-radius, 1);
+      $table-radius-bottom-left: nth($ao-table-border-radius, 2);
+    }
+    
+    // three values
+    @if $table-radius-value-count == 3 {
+      $table-radius-top-left: nth($ao-table-border-radius, 1);
+      $table-radius-top-right: nth($ao-table-border-radius, 2);
+      $table-radius-bottom-right: nth($ao-table-border-radius, 3);
+      $table-radius-bottom-left: nth($ao-table-border-radius, 2);
+    }
+    
+    // four values
+    @if $table-radius-value-count == 4 {
+      $table-radius-top-left: nth($ao-table-border-radius, 1);
+      $table-radius-top-right: nth($ao-table-border-radius, 2);
+      $table-radius-bottom-right: nth($ao-table-border-radius, 3);
+      $table-radius-bottom-left: nth($ao-table-border-radius, 4);
+    }
+    
+    // now that we have the values set up, let's apply them
+    @if $table-radius-top-left != false or $table-radius-top-right != false {
+      TR {
+        TH {
+          // this needs to move into a font mixin
+          @include ao-fontography(table-font-header-basic);
+          @if $table-radius-top-left > 0 {
+            &:first-child {
+              @include border-radius($table-radius-top-left 0px 0px 0px);
+            }
+          }
+          @if $table-radius-top-right > 0 {
+            &:last-child {
+              @include border-radius(0px $table-radius-top-right 0px 0px);
+            }
+          }
+        }
+      }
+    }
+    @if $table-radius-bottom-left != false or $table-radius-bottom-right != false {
+      TR {
+        &:last-child {
+          TD {
+            @if $table-radius-bottom-left > 0 {
+              &:first-child {
+                @include border-radius(0px 0px 0px $table-radius-bottom-left);
+              }
+            }
+            @if $table-radius-bottom-right > 0 {
+              &:last-child {
+                @include border-radius(0px 0px $table-radius-bottom-right 0px);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+    
+  /* RESPONSIVE TABLES */
+  /* Flipscroll - http://elvery.net/demo/responsive-tables/ */
+  @if $ao-table-responsive-style == flip-scroll {
+    @include breakpoint($ao-table-responsive-breakpoint){
+      display: block; 
+      position: relative; 
+      width: 100%;
+    
+      THEAD {
+        display: block; 
+        float: left; 
+        TR {
+          display: block; 
+        }
+      }
+      TBODY {
+        display: block; 
+        width: auto; 
+        position: relative; 
+        overflow-x: auto; 
+        white-space: nowrap; 
+        TR {
+          display: inline-block; 
+          vertical-align: top;        
+        }
+      }
+      TD {
+        margin: 0; 
+        vertical-align: top;      
+        display: block; 
+        min-height: 1.25em; 
+        text-align: left;
+      }
+      TH {
+        text-align: left;
+        display: block; 
+        text-align: right;
+      }
+    
+      /* sort out borders 
+        #flip-scroll th { border-bottom: 0; border-left: 0; }
+        #flip-scroll td { border-left: 0; border-right: 0; border-bottom: 0; }
+        #flip-scroll tbody tr { border-left: 1px solid #babcbf; }
+        #flip-scroll th:last-child,
+        #flip-scroll td:last-child { border-bottom: 1px solid #babcbf; }    
+      */    
+    }
+  }
+}

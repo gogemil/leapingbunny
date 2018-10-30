@@ -1,0 +1,367 @@
+/**
+ * @file
+ * Contact Management
+ * Theme for contact management in AbleOrganizer.
+ */
+/**
+ * REGIONS / SECTIONS
+ */ 
+BODY > section {
+  @include ao-horizontal-region (
+    $ao-horiz-region-container-selector: '.section-wrapper',
+    $ao-horiz-region-container-position: center,
+    $ao-horiz-region-container-width: 100%,
+    $ao-horiz-region-container-overflow: hidden
+  );
+  @include ao-transition();
+  .section-wrapper {
+    width: 100%;
+    @include ao-transition();
+  }
+  @include breakpoint($breakpoint-zen-large){
+    .section-wrapper {
+      width: 960px;
+    }
+  }
+  @include breakpoint($breakpoint-zen-larger){
+    .section-wrapper {
+      width: 1200px;
+    }
+  }
+}
+/* TOP BANNER */
+section.banner {
+  @include ao-region (
+    $ao-region-background: $dark-blue,
+    $ao-region-padding: .5em 0em
+  );
+  // @TODO: replace with fontography
+  font-size: $h6-font-size;
+  A {
+    color: #dfe4e6;
+    text-decoration: none;
+    &:hover {
+      color: White;
+    }
+  }
+}
+/* BRANDING BANNER */
+section.branding {
+  @include ao-region (
+    $ao-region-background: White,
+    $ao-region-padding: rhythm(.5) 0em 0em
+  );
+  @include breakpoint($breakpoint-zen-large){
+    @include ao-region (
+      $ao-region-padding: rhythm(1) 0em 0em
+    );
+  }
+}  
+/* HEADER */
+section.header {
+  @include ao-region (
+    $ao-region-background: $base-blue
+  );
+  @include breakpoint($breakpoint-zen-large){
+    .section-wrapper {
+      height: rhythm(3.5);
+    }
+  }
+}
+/* CONTENT */
+section.content {
+  @include ao-region (
+    $ao-region-background: $f-gray,
+    $ao-region-padding: rhythm(1) 0em
+  );
+}
+ 
+/**
+ * MENUS
+ */
+/* Main Menu */
+nav#main-menu {
+  position: absolute;
+  right: 0px;
+  bottom: 0px;
+  UL.links {
+    @include ao-menu-style ($stylename: ao-main-nav);
+    LI, A {
+      @include ao-transition();
+    }
+    A {
+      @include ao-fontography(main-nav-contact-management);
+      @include ao-transition();
+    }
+  }
+}
+.vbo-views-form {
+  #edit-select {
+    display: none;
+  }
+}
+.view-header {
+  .btn-vbo {
+    @extend .ao-vbo-menu;
+  }
+}
+
+/**
+ * DASHBOARD
+ */
+BODY.page-crm-core-dashboard {
+  
+  /* PANELS */
+  
+  /* PANEL TITLES */
+  
+  /* ACTIVITY LISTS */
+  .crm-core-activity {
+    @include ao-activity-item(
+      $ao-activity-item-icon-size: 45px,
+      $ao-activity-item-padding: rhythm(.6) 0em
+    );
+  }
+  /* dashboard */
+  .pane-ao-dashboard-act-stream-panel-pane-1 {
+    @extend .ao-highlighted-panel-pane;
+    .view-content {
+      .crm-core-activity-actions {
+        margin-left: 12px;
+        A {
+          @extend .btn;
+          @extend .btn-small;
+          &:first-child{
+            @extend .btn-blue;
+            @extend .btn-small;
+          }
+        }
+      }
+    }
+  }
+  
+  /* QUICK LINKS */
+  
+  /* SUMMARY TABLES */
+  .summary-pane {
+    @extend .ao-summary-panel-pane;
+    .pane-title {
+      // @TODO: move to mixins
+      @extend .widget-title;
+      @extend .title-fonts;
+    }
+    // all summary tables get this style
+    TABLE {
+      @extend .ao-summary-table;
+    }
+  }
+  /* BREAKPOINTS */
+
+}
+.crm-core-activity-info DIV {
+  display: inline-block;
+}
+
+/**
+ * ACTIVITIES 
+ */
+/* Default Activity List */
+.crm-core-activity {
+  @include ao-activity-item(
+    $ao-activity-item-icon-size: 35px,
+    $ao-activity-item-padding: rhythm(.6) 0em
+  );
+  // @include adjust-font-size-to(15px, $lines: 1);  
+  @include ao-fontography(activity-item-text);
+  .crm-core-activity-date {
+    display: block;
+    @include ao-fontography(activity-item-date);
+  } 
+  border-bottom: 1px solid #d1d1d1;
+}
+/* full page view of an activity */
+// move this to a mixin
+.entity-crm-core-activity {
+  border: 1px solid $e-gray;
+  background-color: White;
+  padding: 1em;
+  margin: 1em 0em;
+}
+
+/**
+ * CONTACTS
+ */
+/* CONTACT TABLE */
+.table-container TABLE,
+.view-ao-crm-core-contacts TABLE {
+  @extend .ao-action-table;
+  TD.views-field-nothing-4 {
+    width: 30px;
+    text-align: center;
+    padding: 0em;
+  }
+  TD.views-field-views-bulk-operations {
+    width: 30px;
+    text-align: center;
+    padding: 0em;
+    background-color: #f1f1f1 !important;
+    .form-item {
+      padding: 0em .5em;
+      margin: 0em auto;
+      display: inline-block;
+    }
+  }
+  TD.views-field-nothing-3 {
+    width: 200px;
+    text-align: center;
+    padding: .1em 0em;
+  }
+}
+
+/**
+ * REPORTS
+ */ 
+/* reports page */
+// this needs to be replaced with styles from icons mixin
+.crm_core_report_icon {
+  
+  background-image: url('../images/ao-icons.png');
+  background-position: -0px -60px;
+  background-repeat: no-repeat;
+  
+  &.report-cmcd {
+    background-position: -1px -61px;
+  }
+  &.report-cmcd-donors {
+    background-position: -60px -60px;
+  }
+  &.report-cmcev {
+    background-position: -30px -60px;
+  }
+  &.report-cmcp {
+    background-position: -90px -60px;
+  }
+  &.report-cmcv {
+    background-position: -120px -60px;
+  }
+}
+
+/**
+ * COMPONENTS
+ */ 
+/* BREADCRUMBS */
+#breadcrumb {
+  clear: both;
+  UL.breadcrumbs {
+    float: left;
+    @include ao-breadcrumb (
+      $ao-bc-height: 19px,
+      $ao-bc-padding: 0px,
+      $ao-bc-margin: 12px 0px 0px,
+      $ao-bc-border: 1px solid rgba(255, 255, 255, .3),
+      $ao-bc-bg-color: rgba(60, 116, 137, .3),
+      $ao-bc-border-radius: 5px,
+      $ao-bc-element-height: 19px,
+      $ao-bc-element-margin: 0px 2px 0px 0px,
+      $ao-bc-element-padding: 0px,
+      $ao-bc-link-margin: 0px,
+      $ao-bc-link-font-style: breadcrumbs,
+      $ao-bc-link-padding: 0px 4px 0px 20px,
+      $ao-bc-link-background: url('../images/ao-backend-icons.png') -452px -6px no-repeat,
+      $ao-bc-link-hover-color: rgba(255,255,255,.9)
+    );
+  }
+}
+#breadcrumb UL.breadcrumbs LI:nth-child(2) A {
+  padding: 0px 4px 0px 8px;
+  background: none;
+  border-left: 1px solid rgba(255,255,255,.3);
+}
+#breadcrumb UL.breadcrumbs LI div.bc_arrow {
+  display: none;
+}
+/* PAGE TITLE */ 
+section.header {
+  H1#page-title {
+    @include ao-fontography(header-font-contact-management);
+    em {
+      color: $base-blue0;
+    }
+  }
+  @include breakpoint($breakpoint-zen-large){
+    H1#page-title {
+      position: absolute;
+      left: 0px;
+      margin: 0px;
+      bottom: rhythm(.18);
+    } 
+  }
+}
+
+/* HEROS */
+.hero-element {
+  @include ao-fontography($ao-fonto-style: hero);
+  width: 60%;
+  margin: 2em 0em;
+  padding: 1em 2em;
+  background-color: rgba(135,105,40,.7);
+  @include border-radius(1em);
+} 
+
+/* ACTION LINKS */
+.action-links {
+  margin: 0em 0em .8em;
+  padding: 0em;
+  LI {
+    display: inline-block;
+    @extend .btn;
+    @extend .btn-large;
+  }
+} 
+
+/* data tables */
+/* displays tables related to run downs of data within reports */
+// move this to a mixin
+.data-tables {
+
+  .table-container,
+  .view-content {
+    background-color: #f1f1f1;
+    padding: 0em .2em .2em;
+    margin: 0em 0em .8em;
+    border: 1px solid #CCC;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    
+    TABLE {
+    
+      margin-bottom: 0em;
+    
+      TR {
+        TD {
+        }
+      }
+    }
+  }
+}
+
+/* handles the display of summary items */
+// move this to a mixin
+.data-summary {
+  .table-container,
+  .views-table {
+    TR {
+      TD {
+        background-color: White;
+        text-align: center;
+        font-weight: 600;
+        font-size: $h2-font-size;
+        padding: .5em 0em;
+      }
+    }
+  }
+}
+
+
+
+

@@ -1,0 +1,77 @@
+/**
+ * @file
+ * Handles drop down menus and whatnot
+ */
+ 
+.menu {
+  
+  @extend .btn;
+  position: relative;
+  background-color: $base-green3;
+  
+  &.btn-disabled {
+    background-color: $base-green2;
+  }
+  
+  &.btn-expander {
+    &:hover {
+       background-color: $base-green3;
+      .btn-expandable {
+        display: block;
+      }
+    }
+    
+  }
+  
+  .btn-expandable {
+    display: none;
+    @include box-sizing(border-box);
+    @include border-radius(4px 0px 4px 4px);
+    background-color: $base-green3;
+    border-top: none;
+    margin-top: -2px;
+    padding: .8em .4em .4em;
+    position: absolute;
+    left: auto;
+    right: 0px;
+    z-index: 1000;
+    min-width: 175px;
+  
+    UL.links {
+      padding: 0em;
+      margin: 0em;
+      LI {
+        list-style-type: none;
+        padding: 0em .4em .2em;
+        margin: 0em;
+        &:hover {
+          background-color: $base-green;
+          @include border-radius(4px);
+        }
+        A {
+          color: White;
+          white-space:nowrap;
+          text-decoration: none;
+          &:hover {
+            color: White;
+          }
+        }
+      }
+    }
+  } 
+  
+  
+} 
+
+.menu-right {
+}
+
+.vbo-views-form {
+  #edit-select {
+    display: none;
+  }
+}
+.btn-vbo {
+  @extend .menu;
+  float: right;
+}

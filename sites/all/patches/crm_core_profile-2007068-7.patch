@@ -1,0 +1,102 @@
+diff --git a/crm_core_profile.module b/crm_core_profile.module
+index 8325460..8deda80 100644
+--- a/crm_core_profile.module
++++ b/crm_core_profile.module
+@@ -409,13 +409,13 @@ function crm_core_profile_generate_profile($profile, $data = array()) {
+ function crm_core_profile_save($profile) {
+   $stored_profile = crm_core_profile_load($profile->name);
+   
+-  if (!empty($stored_profile)) {
++  if (!empty($stored_profile) && empty($stored_profile->in_code_only)) {
+     drupal_write_record('crm_core_profile', $profile, array('name'));
+   }
+   else {
+     drupal_write_record('crm_core_profile', $profile);
+   }
+-  menu_rebuild();
++  variable_set('menu_rebuild_needed', TRUE);
+ }
+ 
+ /**
+@@ -424,24 +424,14 @@ function crm_core_profile_save($profile) {
+  * @param string $machine_name
+  *   Machine readable name of profile.
+  *
+- * @return object
++ * @return object|false
+  *   CRM Core Profile or FALSE.
+  */
+ function crm_core_profile_load($machine_name) {
+-
+-  $profiles = & drupal_static(__FUNCTION__);
+-
++  $profiles = &drupal_static(__FUNCTION__);
+   if (empty($profiles[$machine_name])) {
+-    $profile = db_select('crm_core_profile', 'p')
+-      ->fields('p')
+-      ->condition('name', $machine_name)
+-      ->execute()
+-      ->fetchObject();
+-    if ($profile) {
+-      // Unserialize data.
+-      _crm_core_profile_load_unserialize($profile);
+-      $profiles[$machine_name] = $profile;
+-    }
++    ctools_include('export');
++    $profiles[$machine_name] = ctools_export_crud_load('crm_core_profile', $machine_name);
+   }
+ 
+   return isset($profiles[$machine_name]) ? $profiles[$machine_name] : FALSE;
+@@ -457,27 +447,15 @@ function crm_core_profile_load($machine_name) {
+  *   Array of loaded profiles.
+  */
+ function crm_core_profile_load_all($conditions = array()) {
+-  $data = array();
+-  $query = db_select('crm_core_profile', 'p')
+-    ->fields('p')
+-    ->orderBy('label');
+-
+-  if (!empty($conditions)) {
+-    foreach ($conditions as $condition) {
+-      if (!array_key_exists('operator', $condition)) {
+-        $condition['operator'] = '=';
+-      }
+-      $query->condition($condition['field'], $condition['value'], $condition['operator']);
+-    }
++  ctools_include('export');
++  if (empty($conditions)) {
++    $profiles = ctools_export_crud_load_all('crm_core_profile');
+   }
+-
+-  $result = $query->execute();
+-  while ($record = $result->fetchObject()) {
+-    _crm_core_profile_load_unserialize($record);
+-    $data[$record->name] = $record;
++  else {
++    $profiles = ctools_export_load_object('crm_core_profile', 'conditions', $conditions);
+   }
+ 
+-  return $data;
++  return $profiles;
+ }
+ 
+ /**
+@@ -643,15 +621,11 @@ function crm_core_profile_form_node_form_alter(&$form, $form_state) {
+       ),
+     );
+ 
+-    $profiles = crm_core_profile_load_all(array(
+-      array(
+-        'field' => 'status',
+-        'value' => '1',
+-      ),
+-    ));
++    $profiles = crm_core_profile_load_all();
+     $options = array();
+     foreach ($profiles as $profile) {
+-      if (crm_core_profile_access($profile)) {
++      // Profile enabled and user have access to it.
++      if (!empty($profile->status) && crm_core_profile_access($profile)) {
+         $options[$profile->name] = $profile->label;
+       }
+     }

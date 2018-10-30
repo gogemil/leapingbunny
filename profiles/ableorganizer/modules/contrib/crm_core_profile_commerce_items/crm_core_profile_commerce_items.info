@@ -1,0 +1,17 @@
+name = CRM Core Profile - Commerce Items
+description = Provides commerce integration for CRM Core Profile
+core = 7.x
+package = CRM Core
+version = 7.x-0.4
+project = crm_core_profile_commerce_items
+dependencies[] = commerce
+dependencies[] = commerce_cart
+dependencies[] = commerce_checkout
+dependencies[] = commerce_product
+dependencies[] = crm_core_profile
+dependencies[] = token
+dependencies[] = views
+datestamp = 1417706923
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+files[] = includes/entity_handlers/CommerceProfileHandler.inc

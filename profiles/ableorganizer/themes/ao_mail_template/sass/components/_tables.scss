@@ -1,0 +1,166 @@
+/**
+ * @file
+ * Layout for tables used in the theme
+ */
+ 
+/* container tables */
+/* used to display contacts */
+.container-table {
+  
+  width: 100%;
+  border-collapse: separate;
+  border: none;
+  margin: .75em 0em 1em;
+  padding: 0em;
+  color: #555;
+  font-size: $h5-font-size;  
+  
+  TR {
+  
+    border-collapse: separate;
+    
+    TH {
+    
+      @extend .widget-table-titles-large;
+      @include background-image(linear-gradient(to bottom, #ffffff 31%,#dfe4e6 100%));
+      text-transform: uppercase;
+
+      .form-type-checkbox {
+        background-color: #CCC;
+        margin: 0em .5em 0em .5em;
+        @include border-radius(4px);        
+      }
+      
+      &:first-child {
+        @include border-radius(8px 0px 0px 0px);
+        border-left: 1px solid #CCC;
+      }
+      &:last-child {
+        @include border-radius(0px 8px 0px 0px);
+        border-right: 1px solid #CCC;
+      }
+    }
+  }
+  
+  TR {
+  
+    &:last-child {
+      TD {
+        border-bottom: 1px solid #ccc;
+      }
+    }
+  
+    &:hover {
+      TD {
+        background-color: White;
+      }
+    }
+  
+    &.even {
+    
+      TD {
+        background-color: #f1f1f1;
+      }
+      &:hover {
+        TD {
+          background-color: White;
+        }
+      }
+
+    }
+  
+  
+    TD {
+    
+      border-bottom: 1px solid #e1e1e1;
+      background-color: #fafafa;
+      padding: 0em .5em;
+      border-left: 1px solid #f9f9f9;
+      border-right: 1px solid #CCC;
+      
+      &.active {
+        font-weight: 700;
+        border-left: 1px solid #CCC;
+        border-right: 1px solid #CCC;
+      }
+      
+      
+      &:first-child {
+        border-left: 1px solid #CCC;
+      }
+      &:last-child {
+        border-right: 1px solid #CCC;
+      }      
+    
+      .form-type-checkbox {
+        margin: 0em auto;
+      }
+      
+      .btn {
+         @extend .btn-small;
+      }
+      .form-type-checkbox {
+        background-color: #e5e5e5;
+        margin: 0em;
+        @include border-radius(4px);        
+        text-align: center;
+      }
+      
+      .ao_contact_icon {
+        background: url(../images/ao-backend-icons.png) 0px -150px no-repeat;
+        height: 27px;
+        width: 27px;
+        margin: 0px .05em;
+      }
+
+    }
+  }
+  
+}
+
+/* data tables */
+/* displays tables related to run downs of data within reports */
+.data-tables {
+
+  .table-container,
+  .view-content {
+    background-color: #f1f1f1;
+    padding: 0em .2em .2em;
+    margin: 0em 0em .8em;
+    border: 1px solid #CCC;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
+    
+    TABLE {
+    
+      margin-bottom: 0em;
+    
+      TR {
+        TD {
+        }
+      }
+    }
+  }
+}
+
+/* handles the display of summary items */
+.data-summary {
+  .table-container,
+  .views-table {
+    TR {
+      TD {
+        background-color: White;
+        text-align: center;
+        font-weight: 600;
+        font-size: $h2-font-size;
+        padding: .5em 0em;
+      }
+    }
+  }
+}
+
+.table-container TABLE,
+.views-table {
+  @extend .container-table;
+} 
+ 

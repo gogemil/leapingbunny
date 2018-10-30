@@ -1,0 +1,806 @@
+/**
+ * @file
+ * Forms
+ *
+ * Defines the appearance of forms in the front end
+ */
+
+/**
+ * DEFAULT VARIABLES
+ * Default settings for regions.
+ * See mixin documentation for explanations.
+ */
+$ao-form-item-padding:            false !default;
+$ao-form-item-margin:             false !default;
+$ao-form-item-border:             false !default;
+$ao-form-item-background:         false !default;
+$ao-form-item-width:              false !default;
+$ao-form-item-position:           false !default;
+$ao-form-item-label-padding:      false !default;
+$ao-form-item-label-selector:     LABEL !default;
+$ao-form-item-label-margin:       false !default;
+$ao-form-item-label-border:       false !default;
+$ao-form-item-label-background:   false !default;
+$ao-form-item-label-width:        false !default;
+$ao-form-item-label-position:     false !default;
+$ao-form-item-element-selector:   INPUT !default;
+$ao-form-item-element-padding:    false !default;
+$ao-form-item-element-margin:     false !default;
+$ao-form-item-element-background: false !default;
+$ao-form-item-element-border:     false !default;
+$ao-form-item-element-width:      false !default;
+$ao-form-item-desc-selector:      '.description' !default;
+$ao-form-item-desc-padding:       false !default;
+$ao-form-item-desc-margin:        false !default;
+$ao-form-item-desc-background:    false !default;
+$ao-form-item-desc-border:        false !default;
+$ao-form-item-desc-width:         false !default;
+$ao-form-item-desc-position:      false !default;
+
+/**
+ * AO FORM ITEM
+ *
+ * Themes form items.
+ * Put these together into a style for a form to handle different displays.
+ *
+ * $ao-form-item-padding: Defines the padding of the form item. Set to false to ignore. Defaults to false.
+ * $ao-form-item-border: Defines the border surrounding the form item. Set to false to ignore. Defaults to false.
+ * $ao-form-item-width: Defines the width of the form item. Set to false to ignore. Defaults to false.
+ * $ao-form-item-label-width: Defines the width of the label. Set to false to ignore. Defaults to false.
+ * $ao-form-item-label-position: Positions the label. Set to false to ignore. Defaults to false.
+ * $ao-form-item-element-width: Defines the width of the element. Set to false to ignore. Defaults to false.
+ *
+ */
+@mixin ao-form-item (
+
+  $ao-form-item-padding: $ao-form-item-padding,
+  $ao-form-item-margin: $ao-form-item-margin,
+  $ao-form-item-border: $ao-form-item-border,
+  $ao-form-item-background: $ao-form-item-background,
+  $ao-form-item-width: $ao-form-item-width,
+  $ao-form-item-position: $ao-form-item-position,
+  $ao-form-item-label-selector: $ao-form-item-label-selector,
+  $ao-form-item-label-padding: $ao-form-item-label-padding,
+  $ao-form-item-label-margin: $ao-form-item-label-margin,
+  $ao-form-item-label-border: $ao-form-item-label-border,
+  $ao-form-item-label-width: $ao-form-item-label-width,
+  $ao-form-item-label-position: $ao-form-item-label-position,
+  $ao-form-item-element-selector:  $ao-form-item-element-selector,
+  $ao-form-item-element-padding:  $ao-form-item-element-padding,
+  $ao-form-item-element-margin:  $ao-form-item-element-margin,
+  $ao-form-item-element-border:  $ao-form-item-element-border,
+  $ao-form-item-element-width:  $ao-form-item-element-width,
+  $ao-form-item-desc-selector:  $ao-form-item-desc-selector,
+  $ao-form-item-desc-padding:  $ao-form-item-desc-padding,
+  $ao-form-item-desc-margin:  $ao-form-item-desc-margin,
+  $ao-form-item-desc-border:  $ao-form-item-desc-border,
+  $ao-form-item-desc-width:  $ao-form-item-desc-width,
+  $ao-form-item-desc-position: $ao-form-item-desc-position
+
+){
+
+  // theme the form item
+  @if $ao-form-item-padding != false {
+    padding: $ao-form-item-padding;
+  }
+  @if $ao-form-item-margin != false {
+    margin: $ao-form-item-margin;
+  }
+  @if $ao-form-item-border != false {
+    border: $ao-form-item-border;
+  }
+  @if $ao-form-item-background != false {
+    background: $ao-form-item-background;
+  }
+  @if $ao-form-item-width != false {
+    width: $ao-form-item-width;
+  }
+  @if $ao-form-item-position != false {
+    position: $ao-form-item-position;
+  }
+  
+  // theme the label
+  @if $ao-form-item-label-selector != false {
+    #{$ao-form-item-label-selector} {
+      @if $ao-form-item-label-padding != false {
+        padding: $ao-form-item-label-padding;
+      }
+      @if $ao-form-item-label-margin != false {
+        margin: $ao-form-item-label-margin;
+      }
+      @if $ao-form-item-label-border != false {
+        border: $ao-form-item-label-border;
+      }
+      @if $ao-form-item-label-background != false {
+        background: $ao-form-item-label-background;
+      }
+      @if $ao-form-item-label-width != false {
+        width: $ao-form-item-label-width;
+      }
+      @if $ao-form-item-label-position != false {
+        // here's where we place the label
+        // possible values: above, left, right
+      }
+    }
+  }
+  
+  // theme the element
+  @if $ao-form-item-element-selector != false {
+    #{$ao-form-item-element-selector} {
+      @if $ao-form-item-element-padding != false {
+        padding: $ao-form-item-element-padding;
+      }
+      @if $ao-form-item-element-margin != false {
+        margin: $ao-form-item-element-margin;
+      }
+      @if $ao-form-item-element-border != false {
+        border: $ao-form-item-element-border;
+      }
+      @if $ao-form-item-element-background != false {
+        background: $ao-form-item-element-background;
+      }
+      @if $ao-form-item-element-width != false {
+        width: $ao-form-item-element-width;
+      }
+      @if $ao-form-item-label-position != false {
+        // here's where we place the element
+        // possible values: above, left, right
+        // the element gets placed when the label gets placed to the left or the right
+      }
+    }
+  }
+  
+  // theme the description
+  @if $ao-form-item-desc-selector != false {
+    #{$ao-form-item-desc-selector} {
+      @if $ao-form-item-desc-padding != false {
+        padding: $ao-form-item-desc-padding;
+      }
+      @if $ao-form-item-desc-margin != false {
+        margin: $ao-form-item-desc-margin;
+      }
+      @if $ao-form-item-desc-border != false {
+        border: $ao-form-item-desc-border;
+      }
+      @if $ao-form-item-desc-background != false {
+        border: $ao-form-item-desc-background;
+      }
+      @if $ao-form-item-desc-width != false {
+        width: $ao-form-item-desc-width;
+      }
+      @if $ao-form-item-desc-position != false {
+        // here's where we place the description
+        // possible values: above, left, right
+      }
+    }
+  }
+}
+
+// TESTING
+LABEL.compact-form-label {
+  color: $gray-2;
+  font-weight: normal;
+  opacity: .8;
+  margin-bottom: 0em;
+}
+
+
+// SIDEBAR FORMS
+#block-crm-core-profile-crm-core-profile-form-viewer {
+  @extend .ao-right-sidebar-form;
+}
+.ao-right-sidebar-form {
+  
+  // standard margin for form items
+  $arsf-margin: 0em 0em .5em;
+  
+  // width for form items
+  $arsf-width: 95%;
+
+  // width for textfield form items
+  $arsf-text-width: 95%;
+
+  // undo something unfortunate from normalize
+  .form-item {
+    margin: 0em;
+  }
+  
+  // fieldsets
+  fieldset {
+    padding: 0em;
+    margin: 0em;
+    border: 0px;
+    
+    LEGEND > SPAN.fieldset-legend {
+      @include ao-fontography($ao-fonto-style: form-fieldset-label);
+    }
+    
+  }
+  
+  // textfields
+  FORM > DIV > .form-type-textfield {
+    @include ao-form-item (
+      $ao-form-item-margin: $arsf-margin,
+      $ao-form-item-width: $arsf-width,
+      $ao-form-item-element-width: $arsf-text-width
+    );
+    .form-item, .field-prefix {
+      display: inline-block;
+      vertical-align: center;
+    }
+  }
+  
+  // email addresses
+  FORM > DIV > .field-type-email {
+    @include ao-form-item (
+      $ao-form-item-margin: $arsf-margin,
+      $ao-form-item-width: $arsf-width,
+      $ao-form-item-element-width: $arsf-text-width
+    );
+  }
+
+  // addressfields
+  FORM > DIV > .field-widget-addressfield-standard {
+  
+    // country select
+    .form-type-select {
+      SELECT.country {
+        @include ao-form-item (
+          $ao-form-item-margin: $arsf-margin,
+          $ao-form-item-width: 95%,
+          $ao-form-item-element-width: 95%,
+          $ao-form-item-element-selector: SELECT
+        );
+      }
+    }
+    
+    // streets
+    .fieldset-wrapper > .street-block > .form-type-textfield {
+      @include ao-form-item (
+        $ao-form-item-margin: $arsf-margin,
+        $ao-form-item-width: $arsf-width,
+        $ao-form-item-element-width: $arsf-text-width
+      );
+    }
+    
+    // city, state and postal
+    .addressfield-container-inline {
+      width: $arsf-width;
+      DIV[class*="locality"] {
+        display: inline-block;
+        vertical-align: top;
+        @include ao-form-item (
+          $ao-form-item-margin: $arsf-margin,
+          $ao-form-item-width: 40%,
+          $ao-form-item-element-width: 80%
+        );
+      }
+      
+      // this can be a select list or a text field
+      // 
+      
+      // form-item form-type-textfield form-item-commerce-customer-address-und-0-locality
+      
+      DIV[class*="administrative-area"] {
+      
+        position: relative;
+        
+        &.form-type-select,
+        &.compact-form-wrapper {
+          label {
+            display: none;
+          }
+        }
+        
+        @include ao-form-item (
+          $ao-form-item-margin: $arsf-margin,
+          $ao-form-item-width: 20%,
+          $ao-form-item-element-width: 95%,
+          $ao-form-item-element-selector: SELECT
+        );
+        
+        INPUT {
+        }
+        
+      }
+      DIV[class*="postal-code"] {
+        display: inline-block;
+        vertical-align: top;
+        @include ao-form-item (
+          $ao-form-item-margin: $arsf-margin,
+          $ao-form-item-width: 30%,
+          $ao-form-item-element-width: 80%
+        );
+      }
+    }
+  }
+  
+  // payment fields
+  FORM > DIV > FIELDSET > .fieldset-wrapper > #payment-details {
+    .form-type-textfield {
+      @include ao-form-item (
+        $ao-form-item-margin: $arsf-margin,
+        $ao-form-item-width: $arsf-width,
+        $ao-form-item-element-width: $arsf-text-width
+      );
+    }
+    .commerce-credit-card-expiration {
+      .form-type-select {
+        @include ao-form-item (
+          $ao-form-item-margin: $arsf-margin,
+          $ao-form-item-width: 30%,
+          $ao-form-item-element-selector: SELECT
+        );
+      }
+    }
+  }
+  
+  // amount buttons
+  FORM > DIV > .amounts {
+    &:before {
+      content: 'Select an amount:';
+      display: block;
+      margin-bottom: rhythm(.25);
+    }
+    input[type=button] {
+      @extend .red-button;
+    }
+  }
+  
+  // cart wrapper
+  #edit-cart-wrapper {
+    
+    TABLE {
+      margin: 0px;
+    }
+    
+    .cart-summary {
+      font-weight: 600;
+    }
+    
+    #edit-actions {
+      position: relative;
+      margin: -1.3em 0em 0em;
+      
+      input[type=submit] {
+        @extend .red-button;
+        @include ao-fontography($ao-fonto-style: button);
+        position: absolute;
+        right: 0em;
+        top: 0em;
+      }
+    }
+    
+  }
+  
+  // amount free entry
+  FORM > DIV > .form-item-commerce-amount-single  {
+    &:before {
+      content: 'Or enter the amount you wish to give:';
+      display: block;
+      margin-bottom: rhythm(.25);
+    }
+  }
+  
+  // form actions
+  FORM > DIV > .form-actions {
+    input[type=submit] {
+      @extend .red-button;
+      @include ao-fontography($ao-fonto-style: button-large);
+    }
+  }
+}
+
+
+
+
+
+/*
+
+ao-form-item (
+
+  $ao-form-item-padding: $ao-form-item-padding,
+  $ao-form-item-margin: $ao-form-item-margin,
+  $ao-form-item-border: $ao-form-item-border,
+  $ao-form-item-background: $ao-form-item-background,
+  $ao-form-item-width: $ao-form-item-width,
+  $ao-form-item-label-selector: $ao-form-item-label-selector,
+  $ao-form-item-label-padding: $ao-form-item-label-padding,
+  $ao-form-item-label-margin: $ao-form-item-label-margin,
+  $ao-form-item-label-border: $ao-form-item-label-border,
+  $ao-form-item-label-width: $ao-form-item-label-width,
+  $ao-form-item-label-position: $ao-form-item-label-position,
+  $ao-form-item-element-padding:  $ao-form-item-element-padding,
+  $ao-form-item-element-margin:  $ao-form-item-element-margin,
+  $ao-form-item-element-border:  $ao-form-item-element-border,
+  $ao-form-item-element-width:  $ao-form-item-element-width,
+  $ao-form-item-desc-selector:  $ao-form-item-desc-selector,
+  $ao-form-item-desc-padding:  $ao-form-item-desc-padding,
+  $ao-form-item-desc-margin:  $ao-form-item-desc-margin,
+  $ao-form-item-desc-border:  $ao-form-item-desc-border,
+  $ao-form-item-desc-width:  $ao-form-item-desc-width,
+  $ao-form-item-desc-position: $ao-form-item-desc-position
+
+)
+
+
+*/
+
+
+
+
+/* forms appearing in the main content region */
+.ao-main-content-form {
+  
+  /* make descriptiosn fancy */
+  .description {
+    margin-bottom: 1em;
+    font-style: italic;
+  }
+  
+  /* keep textareas operating as a single unit */
+  /* give them margins on the bottom of the container */
+  .field-type-text-textarea,
+  .field-type-text-with-summary {
+    margin: 0.5em 0em;
+  }
+  
+  .form-field-type-datestamp,
+  .form-field-type-datetime {
+  
+    .date-float {
+      display: block;
+      float: none;
+    }
+  
+    .container-inline-date {
+      display: inline-block;
+      vertical-align: top;
+      width: auto;
+      
+      &.end-date-wrapper {
+        LABEL {
+          display: inline-block;
+          vertical-align: top;
+          margin-right: .5em;
+        }
+        > .form-item > LABEL:first-child {
+          font-weight: 700;
+        }
+        
+        
+        .date-padding {
+          display: inline-block;
+          float: none;
+        }
+      }
+      
+    }
+  }
+  
+
+  .form-item {
+
+    /* remove some of the funk around textareas */
+    &.form-type-textarea {
+      margin: 0em;
+    }
+    
+    /* make name fields more paletable */
+    &.form-type-name-element {
+      .name-credentials-wrapper {
+        width: 10%;
+      }
+      div[class*='name-'] {
+        margin-right: .3em;
+        display: inline-block;
+        vertical-align: top;
+    
+        INPUT[type=text] {
+          width: 100%;
+        }
+        &:last-child {
+          margin-right: 0em;
+        }
+      }
+    }
+  }
+  .container-inline-date {
+    .date-padding {
+      padding: 0em;
+    }
+  }
+
+  .fieldset-legend {
+    color: $gray-2;
+    font-weight: normal;
+    margin-bottom: .3em;
+  }
+  
+  .form-required {
+    display: inline-block;
+  }
+  /* things to hide by default */
+  .text-format-wrapper div.description {
+    display: none;
+  }
+  
+  
+  
+  /* phone numbers */
+  .form-phone-number > DIV {
+    input[type=text]{
+      width: auto;
+    }
+    &:first-child {
+      width: 65%;
+    }
+    &:last-child {
+      width: 25%;
+    }
+  }
+ 
+  /* shopping carts */
+  /* item display */
+  caption, div.caption {
+    display: none;
+  }
+  #edit-cart-wrapper {
+    margin-bottom: 0.5em;
+  }
+  TABLE {
+    margin-bottom: 0em;
+    width: 100%;
+    TH {
+      white-space: nowrap;
+    }
+    DIV[class*="form-item-cart"] {
+      width: 2em;
+      margin: 0em auto;
+      padding: 0em;
+    }
+    DIV[id*="-total"] {
+      text-align: center;
+    }
+  }
+
+  /* cart summary */
+  .cart-summary {
+    .cart-summary-total {
+      text-align: center;
+      .cart-summary-total-value {
+        font-weight: 700;
+      }
+    }
+  }
+  /* amounts */
+  .amounts {
+    margin-bottom: 0.5em;
+  }
+
+}
+
+/* node forms */
+.ao-node-form {
+  border: 1px solid #CCC;
+  padding: 1em;
+  margin-bottom: 1em;
+  
+  .cke {
+    .cke_inner {
+      .cke_wysiwyg_frame {
+        padding: 0em .5em;
+        box-sizing: border-box;
+      }
+    }
+  }
+  
+  .wysiwyg-toggle-wrapper {
+    padding: 0em;
+    background-color: #BaC5D1;
+    text-align: center;
+    font-weight: 700;
+    A {
+      color: White;
+      background-color: #9aA5B1;
+      padding: .3em .6em;
+      cursor: pointer;
+    }
+  }
+  
+  .vertical-tabs {
+    .vertical-tabs-panes {
+      FIELDSET.vertical-tabs-pane {
+        padding: 1em !important;
+      }
+    }
+  }
+}
+
+/* forms appearing in the right hand region */
+.ao-sidebar-2-form {
+  LABEL,
+  LABEL.compact-form-label {
+    color: #777;
+  }
+  .form-required {
+    display: inline-block;
+  }
+  
+  /* phone numbers */
+  .form-phone-number > DIV {
+    input[type=text]{
+      width: auto;
+    }
+    &:first-child {
+      width: 65%;
+    }
+    &:last-child {
+      width: 25%;
+    }
+  }
+ 
+ /* address fields */
+ .field-type-addressfield {
+  .fieldset-wrapper {
+    .addressfield-container-inline {
+      DIV[class*="locality"] {
+        width: 40%;
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 0em;
+      }
+      DIV[class*="administrative-area"] {
+        width: 20%;
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 0.5em;
+      }
+      DIV[class*="postal-code"] {
+        width: 30%;
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 0.25em;
+      }
+    }
+  }
+ }
+ 
+  /* shopping carts */
+  /* item display */
+  caption, div.caption {
+    display: none;
+  }
+  #edit-cart-wrapper {
+    margin-bottom: 0.5em;
+  }
+  TABLE {
+    margin-bottom: 0em;
+    width: 100%;
+    TH {
+      white-space: nowrap;
+    }
+    DIV[class*="form-item-cart"] {
+      width: 2em;
+      margin: 0em auto;
+      padding: 0em;
+    }
+    DIV[id*="-total"] {
+      text-align: center;
+    }
+  }
+
+  /* cart summary */
+  .cart-summary {
+    .cart-summary-total {
+      text-align: center;
+      .cart-summary-total-value {
+        font-weight: 700;
+      }
+    }
+  }
+  /* amounts */
+  .amounts {
+    margin-bottom: 0.5em;
+  }
+
+}
+/* input formats */
+/* TODO: make this a mix-in */
+.ao-filter-wrapper {
+  background-color: #F5F1E9;
+  margin-bottom: 1em;
+  @include border-radius(0em 0em 1em 1em);
+  .form-item {
+    margin: 0em;
+    LABEL {
+      display: block;
+      font-size: $h5-font-size;
+    }
+  }
+  .filter-help {
+    padding-top: 0.5em;
+    font-size: $h5-font-size;
+  }
+  .ao-input-format-select {
+    margin-right: .3em;
+    @include sassy-button("flat", .5em, $h5-font-size, #9aA5B1, $ao_blue2, White, "Raised");
+  }
+  .filter-guidelines {
+    display: none;
+  }
+}
+
+.aoCallout,
+.aoFormatBubble {
+  width: 240px;
+  font-size: $h6-font-size;
+  line-height: $h6-font-size*1.5;
+  @include border-radius(8px);
+  color: White;
+  background-color: $ao_blue;
+  padding: 0.5em 0.8em;
+  position: absolute;
+  display: block;
+  
+  H3 {
+    display: block;
+    text-align: center;
+    margin: 0em;
+  }
+  
+  UL {
+    margin: 0em;
+    padding: 0em;
+    LI {
+      list-style-type: none;
+    }
+  }
+  
+  &:after {
+    position: absolute;
+    display: block;
+    top: 100%;
+    left: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    pointer-events: none;    
+    border-top-color: $ao_blue;
+    border-width: 15px;
+    margin-left: -15px;    
+  }
+  
+}
+
+/* controls the appearance of help overlays */
+.ao-field-help {
+  font-size: $h6-font-size;
+  line-height: $h6-font-size;
+  font-weight: 700;
+  background-color: #BaC5D1;
+  padding: .5em;
+  display: inline-block;
+  vertial-align: bottom;
+  @include border-radius(50%);
+  color: White;
+  cursor: pointer;
+  margin-top: -1em;
+  margin-left: .5em;
+  .ao-show-help {
+    display: none;
+  }
+}
+
+
+/* move to theme */
+
+FORM.node-form {
+  @extend .ao-node-form;
+}
+
+FIELDSET.filter-wrapper {
+  @extend .ao-filter-wrapper;
+}
+

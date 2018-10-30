@@ -1,0 +1,16 @@
+<?php
+/**
+ * @file
+ * Code for the LB Request Guide feature.
+ */
+
+include_once 'lb_request_guide.features.inc';
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function lb_request_guide_form_crm_core_profile_entry_form_request_guide_alter(&$form, &$form_state) {
+  $language = $form['field_mailing_list']['#language'];
+  // Enable subscription by default.
+  $form['field_mailing_list'][$language]['#default_value'] = 1;
+}

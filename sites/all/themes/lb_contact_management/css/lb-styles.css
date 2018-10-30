@@ -1,0 +1,797 @@
+/**
+ * @file
+ * Custom styles for the Leaping Bunny website
+ */
+/* Import Sass mixins, variables, Compass modules, etc. */
+/**
+ * Leaping Bunny Standard Fonts
+ * Supplies some standard fonts used in the theme
+ * Used in the user profile page
+ */
+/**
+ * Displays a set of fields with a uniform
+ */
+/**
+ * Leaping Bunny Box
+ * Creates a box that contains some specific information, typically used in a grid
+ * Used in the user profile page
+ */
+/**
+ * Leaping Bunny Box Button
+ * Creates a button appearing in the header next to the title of an LB box
+ * Used in the user profile page
+ */
+/**
+ * Leaping Bunny User Table
+ * Styles tables appearing on the frontend
+ * Used in the user profile page
+ */
+/**
+ * Leaping Bunny Header Button
+ * Styles a button that appears next to the title of a block on the user profile page
+ * Used in the user profile page
+ */
+/**
+ * Leaping Bunny Brand Grid
+ * Displays brands in a grid
+ * Apply this to the container around the grid
+ * Used in the user profile page
+ */
+/**
+ * Leaping Bunny Activity List
+ * Displays a list of activities on the frontend of the site
+ * Used in the user profile page
+ */
+/**
+ * Leaping Bunny Application Box
+ * Styles the sections of an application for the frontend
+ * Used in the Application page
+ */
+/* components */
+/**
+ * @file
+ * Controls the appearance of applications
+ */
+/**
+ * FORM
+ * Displays form labels to the left of the value
+ */
+/* line 11, ../sass/components/_applications.scss */
+.form-label-to-left > SPAN, .form-data-form .views-field > SPAN, #lb-company-application .views-field > SPAN, #lb-application-request-approved .views-field > SPAN,
+#lb-application-request .views-field > SPAN {
+  display: inline-block;
+  vertical-align: top;
+  font-weight: bold;
+  margin: 0em rhtythm(1) 0em 0em;
+}
+/* line 17, ../sass/components/_applications.scss */
+.form-label-to-left DIV.field-content, .form-data-form .views-field DIV.field-content, #lb-company-application .views-field DIV.field-content, #lb-application-request-approved .views-field DIV.field-content,
+#lb-application-request .views-field DIV.field-content {
+  display: inline-block;
+  vertical-align: top;
+}
+
+/**
+ * FORM: DATA FORM
+ * Style for a form with a lot of data
+ */
+/* line 27, ../sass/components/_applications.scss */
+.form-data-form, #lb-company-application, #lb-application-request-approved,
+#lb-application-request {
+  background-color: White;
+  padding: 1.5em;
+  border: 1px solid #d5d5d5;
+}
+
+/**
+ * @file
+ * Controls the appearance of applications
+ */
+/* container tables */
+/* used to display contacts */
+/* line 4, ../sass/components/_tables.scss */
+.container-table, .table-container TABLE,
+.views-table {
+  width: 100%;
+  border-collapse: separate;
+  border: none;
+  margin: .75em 0em 1em;
+  padding: 0em;
+  color: #555;
+  font-size: 13.28px;
+}
+/* line 14, ../sass/components/_tables.scss */
+.container-table TR, .table-container TABLE TR,
+.views-table TR {
+  border-collapse: separate;
+}
+/* line 18, ../sass/components/_tables.scss */
+.container-table TR TH, .table-container TABLE TR TH,
+.views-table TR TH {
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIzMSUiIHN0b3AtY29sb3I9IiNmZmZmZmYiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNkZmU0ZTYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyYWQpIiAvPjwvc3ZnPiA=');
+  background-size: 100%;
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(31%, #ffffff), color-stop(100%, #dfe4e6));
+  background-image: -moz-linear-gradient(top, #ffffff 31%, #dfe4e6 100%);
+  background-image: -webkit-linear-gradient(top, #ffffff 31%, #dfe4e6 100%);
+  background-image: linear-gradient(to bottom, #ffffff 31%, #dfe4e6 100%);
+  text-transform: uppercase;
+}
+/* line 24, ../sass/components/_tables.scss */
+.container-table TR TH .form-type-checkbox, .table-container TABLE TR TH .form-type-checkbox,
+.views-table TR TH .form-type-checkbox {
+  background-color: #CCC;
+  margin: 0em .5em 0em .5em;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+/* line 30, ../sass/components/_tables.scss */
+.container-table TR TH:first-child, .table-container TABLE TR TH:first-child,
+.views-table TR TH:first-child {
+  -moz-border-radius: 8px 0px 0px 0px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px 0px 0px 0px;
+  border-left: 1px solid #CCC;
+}
+/* line 34, ../sass/components/_tables.scss */
+.container-table TR TH:last-child, .table-container TABLE TR TH:last-child,
+.views-table TR TH:last-child {
+  -moz-border-radius: 0px 8px 0px 0px;
+  -webkit-border-radius: 0px;
+  border-radius: 0px 8px 0px 0px;
+  border-right: 1px solid #CCC;
+}
+/* line 44, ../sass/components/_tables.scss */
+.container-table TR:last-child TD, .table-container TABLE TR:last-child TD,
+.views-table TR:last-child TD {
+  border-bottom: 1px solid #ccc;
+}
+/* line 50, ../sass/components/_tables.scss */
+.container-table TR:hover TD, .table-container TABLE TR:hover TD,
+.views-table TR:hover TD {
+  background-color: White;
+}
+/* line 57, ../sass/components/_tables.scss */
+.container-table TR.even TD, .table-container TABLE TR.even TD,
+.views-table TR.even TD {
+  background-color: #f1f1f1;
+}
+/* line 61, ../sass/components/_tables.scss */
+.container-table TR.even:hover TD, .table-container TABLE TR.even:hover TD,
+.views-table TR.even:hover TD {
+  background-color: White;
+}
+/* line 69, ../sass/components/_tables.scss */
+.container-table TR TD, .table-container TABLE TR TD,
+.views-table TR TD {
+  border-bottom: 1px solid #e1e1e1;
+  background-color: #fafafa;
+  padding: 0em .5em;
+  border-left: 1px solid #f9f9f9;
+  border-right: 1px solid #CCC;
+}
+/* line 77, ../sass/components/_tables.scss */
+.container-table TR TD.active, .table-container TABLE TR TD.active,
+.views-table TR TD.active {
+  font-weight: 700;
+  border-left: 1px solid #CCC;
+  border-right: 1px solid #CCC;
+}
+/* line 84, ../sass/components/_tables.scss */
+.container-table TR TD:first-child, .table-container TABLE TR TD:first-child,
+.views-table TR TD:first-child {
+  border-left: 1px solid #CCC;
+}
+/* line 87, ../sass/components/_tables.scss */
+.container-table TR TD:last-child, .table-container TABLE TR TD:last-child,
+.views-table TR TD:last-child {
+  border-right: 1px solid #CCC;
+}
+/* line 91, ../sass/components/_tables.scss */
+.container-table TR TD .form-type-checkbox, .table-container TABLE TR TD .form-type-checkbox,
+.views-table TR TD .form-type-checkbox {
+  margin: 0em auto;
+}
+/* line 98, ../sass/components/_tables.scss */
+.container-table TR TD .form-type-checkbox, .table-container TABLE TR TD .form-type-checkbox,
+.views-table TR TD .form-type-checkbox {
+  background-color: #e5e5e5;
+  margin: 0em;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  text-align: center;
+}
+/* line 105, ../sass/components/_tables.scss */
+.container-table TR TD .ao_contact_icon, .table-container TABLE TR TD .ao_contact_icon,
+.views-table TR TD .ao_contact_icon {
+  background: url(../images/ao-backend-icons.png) 0px -150px no-repeat;
+  height: 27px;
+  width: 27px;
+  margin: 0px .05em;
+}
+
+/* data tables */
+/* displays tables related to run downs of data within reports */
+/* line 121, ../sass/components/_tables.scss */
+.data-tables .table-container,
+.data-tables .view-content {
+  background-color: #f1f1f1;
+  padding: 0em .2em .2em;
+  margin: 0em 0em .8em;
+  border: 1px solid #CCC;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+}
+/* line 130, ../sass/components/_tables.scss */
+.data-tables .table-container TABLE,
+.data-tables .view-content TABLE {
+  margin-bottom: 0em;
+}
+
+/* handles the display of summary items */
+/* line 147, ../sass/components/_tables.scss */
+.data-summary .table-container TR TD,
+.data-summary .views-table TR TD {
+  background-color: White;
+  text-align: center;
+  font-weight: 600;
+  font-size: 24px;
+  padding: .5em 0em;
+}
+
+/**
+ * @file
+ * Defines the appearance of buttons throughout the theme
+ *
+ */
+/* line 8, ../sass/components/_button.scss */
+.btn, .btn-blue, .btn-red, .menu, .view-header .btn-vbo,
+.btn-vbo {
+  background-color: #ffb600;
+  color: White;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 0.8em;
+  display: inline-block;
+  margin: 0.3em 0.3em 0.3em 0em;
+  padding: 0.1em 0.6em;
+  letter-spacing: 2px;
+  -moz-transition-property: all;
+  -o-transition-property: all;
+  -webkit-transition-property: all;
+  transition-property: all;
+  -moz-transition-duration: 0.1s;
+  -o-transition-duration: 0.1s;
+  -webkit-transition-duration: 0.1s;
+  transition-duration: 0.1s;
+  -moz-transition-timing-function: ease-in-out;
+  -o-transition-timing-function: ease-in-out;
+  -webkit-transition-timing-function: ease-in-out;
+  transition-timing-function: ease-in-out;
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  border: none;
+}
+/* line 26, ../sass/components/_button.scss */
+.btn:hover, .btn-blue:hover, .btn-red:hover, .menu:hover,
+.btn-vbo:hover {
+  background-color: #ffd889;
+  color: White;
+}
+/* line 30, ../sass/components/_button.scss */
+.btn:active, .btn-blue:active, .btn-red:active, .menu:active,
+.btn-vbo:active {
+  background-color: #f89406;
+  color: #7d4a0e;
+}
+/* line 35, ../sass/components/_button.scss */
+.btn A, .btn-blue A, .btn-red A, .menu A, .view-header .btn-vbo A,
+.btn-vbo A {
+  color: White;
+  text-decoration: none;
+}
+/* line 38, ../sass/components/_button.scss */
+.btn A:hover, .btn-blue A:hover, .btn-red A:hover, .menu A:hover,
+.btn-vbo A:hover {
+  color: White;
+}
+
+/* line 44, ../sass/components/_button.scss */
+.btn-small {
+  font-size: 0.8em;
+  padding: 0.1em .8em;
+}
+
+/* line 49, ../sass/components/_button.scss */
+.btn-blue {
+  background-color: #65aff2;
+}
+/* line 54, ../sass/components/_button.scss */
+.btn-blue:hover {
+  background-color: #94c8f6;
+}
+/* line 58, ../sass/components/_button.scss */
+.btn-blue:active {
+  background-color: #6fd6fe;
+  color: #3c7489;
+}
+
+/* line 65, ../sass/components/_button.scss */
+.btn-red {
+  background-color: #FF5A51;
+}
+/* line 70, ../sass/components/_button.scss */
+.btn-red:hover {
+  background-color: #FFBBB7;
+}
+/* line 74, ../sass/components/_button.scss */
+.btn-red:active {
+  background-color: #C1443D;
+  color: #cf4444;
+}
+
+/* line 82, ../sass/components/_button.scss */
+.menu, .view-header .btn-vbo,
+.btn-vbo {
+  position: relative;
+  background-color: #00a03c;
+}
+/* line 88, ../sass/components/_button.scss */
+.menu.btn-disabled,
+.btn-disabled.btn-vbo {
+  background-color: #93e387;
+}
+/* line 93, ../sass/components/_button.scss */
+.menu.btn-expander:hover,
+.btn-expander.btn-vbo:hover {
+  background-color: #00a03c;
+}
+/* line 95, ../sass/components/_button.scss */
+.menu.btn-expander:hover .btn-expandable,
+.btn-expander.btn-vbo:hover .btn-expandable {
+  display: block;
+}
+/* line 102, ../sass/components/_button.scss */
+.menu .btn-expandable,
+.btn-vbo .btn-expandable {
+  display: none;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  -moz-border-radius: 4px 0px 4px 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px 0px 4px 4px;
+  background-color: #00a03c;
+  border-top: none;
+  margin-top: -2px;
+  padding: .8em .4em .4em;
+  position: absolute;
+  left: auto;
+  right: 0px;
+  z-index: 1000;
+  min-width: 175px;
+}
+/* line 116, ../sass/components/_button.scss */
+.menu .btn-expandable UL.links,
+.btn-vbo .btn-expandable UL.links {
+  padding: 0em;
+  margin: 0em;
+}
+/* line 119, ../sass/components/_button.scss */
+.menu .btn-expandable UL.links LI,
+.btn-vbo .btn-expandable UL.links LI {
+  list-style-type: none;
+  padding: 0em .4em .2em;
+  margin: 0em;
+}
+/* line 123, ../sass/components/_button.scss */
+.menu .btn-expandable UL.links LI:hover,
+.btn-vbo .btn-expandable UL.links LI:hover {
+  background-color: #34d06e;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+/* line 127, ../sass/components/_button.scss */
+.menu .btn-expandable UL.links LI A,
+.btn-vbo .btn-expandable UL.links LI A {
+  color: White;
+  white-space: nowrap;
+  text-decoration: none;
+}
+/* line 131, ../sass/components/_button.scss */
+.menu .btn-expandable UL.links LI A:hover,
+.btn-vbo .btn-expandable UL.links LI A:hover {
+  color: White;
+}
+
+/* line 141, ../sass/components/_button.scss */
+.view-header .btn-vbo,
+.btn-vbo {
+  float: right;
+}
+
+/* themes */
+/**
+ * @file lbunny.scss
+ * This implements some styles specific to the lbunny theme
+ */
+/**
+  * APPLICATION
+  */
+/**
+ * ACTIVITIES
+ */
+/* line 31, ../sass/_mixins.scss */
+BODY.page-crm-core-contact-activity .panel-display .view-lb-application-request-about-your-company .view-content,
+BODY.page-crm-core-contact-activity .panel-display .view-id-lb_application_request_contact_info .view-content {
+  width: 100%;
+}
+/* line 35, ../sass/_mixins.scss */
+BODY.page-crm-core-contact-activity .panel-display .view-lb-application-request-about-your-company .view-content .views-row .views-field .views-label,
+BODY.page-crm-core-contact-activity .panel-display .view-id-lb_application_request_contact_info .view-content .views-row .views-field .views-label {
+  width: 20%;
+  min-width: 100px;
+  text-align: right;
+  padding-right: 0.75em;
+}
+
+/**
+  * USER PROFILE
+  */
+/* line 41, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact {
+  /**
+   * Create LB Boxes where appropriate
+   */
+  /**
+   * Apply box button styles as needed
+   */
+  /**
+   * Apply table styles to the info pages
+   */
+  /**
+   * Apply title fonts to some of the panes
+   */
+  /**
+   * Position the panes correctly
+   */
+  /**
+   * Apply header button styles as needed
+   */
+  /**
+   * Apply activity list styles
+   */
+}
+/* line 43, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .panel-panel {
+  position: relative;
+}
+/* line 47, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .panel-pane {
+  position: inherit;
+}
+/* line 51, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .panel-display {
+  padding: 1.5em;
+  background-color: White;
+  border: 1px solid #d5d5d5;
+}
+/* line 57, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .entity-crm-core-contact, BODY.page-crm-core-contact BODY.page-crm-core-contact .panels-flexible-row.contact {
+  border: none;
+  background-color: white;
+  padding: 0em;
+  margin: 0em;
+}
+/* line 67, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .user-profile-container-class {
+  border: 1px solid #CCC;
+  padding: 1.5em;
+  position: relative;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin-bottom: 0.75em;
+  font-size: 90%;
+}
+/* line 60, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .user-profile-container-class H2.pane-title {
+  margin: 0em;
+  text-transform: uppercase;
+  font-size: 120%;
+  margin-bottom: 0.75em;
+}
+/* line 72, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .pane-lb-company-page-brands-managers-panel-pane-1,
+BODY.page-crm-core-contact .pane-lb-company-page-primary-contact-panel-pane-1,
+BODY.page-crm-core-contact .pane-lb-user-profile-primary-contact-panel-pane-1,
+BODY.page-crm-core-contact .pane-lb-user-profile-brands {
+  border: 1px solid #CCC;
+  padding: 1.5em;
+  position: relative;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin-bottom: 0.75em;
+  font-size: 90%;
+}
+/* line 60, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .pane-lb-company-page-brands-managers-panel-pane-1 H2.pane-title,
+BODY.page-crm-core-contact .pane-lb-company-page-primary-contact-panel-pane-1 H2.pane-title,
+BODY.page-crm-core-contact .pane-lb-user-profile-primary-contact-panel-pane-1 H2.pane-title,
+BODY.page-crm-core-contact .pane-lb-user-profile-brands H2.pane-title {
+  margin: 0em;
+  text-transform: uppercase;
+  font-size: 120%;
+  margin-bottom: 0.75em;
+}
+/* line 68, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .pane-lb-company-page-brands-managers-panel-pane-1 .view-content .views-row,
+BODY.page-crm-core-contact .pane-lb-company-page-primary-contact-panel-pane-1 .view-content .views-row,
+BODY.page-crm-core-contact .pane-lb-user-profile-primary-contact-panel-pane-1 .view-content .views-row,
+BODY.page-crm-core-contact .pane-lb-user-profile-brands .view-content .views-row {
+  display: table;
+  width: 100%;
+}
+/* line 72, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .pane-lb-company-page-brands-managers-panel-pane-1 .view-content .views-field,
+BODY.page-crm-core-contact .pane-lb-company-page-primary-contact-panel-pane-1 .view-content .views-field,
+BODY.page-crm-core-contact .pane-lb-user-profile-primary-contact-panel-pane-1 .view-content .views-field,
+BODY.page-crm-core-contact .pane-lb-user-profile-brands .view-content .views-field {
+  display: table-row;
+}
+/* line 75, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .pane-lb-company-page-brands-managers-panel-pane-1 .view-content .views-field .views-label,
+BODY.page-crm-core-contact .pane-lb-company-page-primary-contact-panel-pane-1 .view-content .views-field .views-label,
+BODY.page-crm-core-contact .pane-lb-user-profile-primary-contact-panel-pane-1 .view-content .views-field .views-label,
+BODY.page-crm-core-contact .pane-lb-user-profile-brands .view-content .views-field .views-label {
+  font-weight: 600;
+}
+/* line 78, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .pane-lb-company-page-brands-managers-panel-pane-1 .view-content .views-field .views-label,
+BODY.page-crm-core-contact .pane-lb-company-page-brands-managers-panel-pane-1 .view-content .views-field .field-content,
+BODY.page-crm-core-contact .pane-lb-company-page-primary-contact-panel-pane-1 .view-content .views-field .views-label,
+BODY.page-crm-core-contact .pane-lb-company-page-primary-contact-panel-pane-1 .view-content .views-field .field-content,
+BODY.page-crm-core-contact .pane-lb-user-profile-primary-contact-panel-pane-1 .view-content .views-field .views-label,
+BODY.page-crm-core-contact .pane-lb-user-profile-primary-contact-panel-pane-1 .view-content .views-field .field-content,
+BODY.page-crm-core-contact .pane-lb-user-profile-brands .view-content .views-field .views-label,
+BODY.page-crm-core-contact .pane-lb-user-profile-brands .view-content .views-field .field-content {
+  display: table-cell;
+}
+/* line 82, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .pane-lb-user-profile-brands .pane-bmc-button {
+  position: static;
+}
+/* line 90, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .pane-pc-button,
+BODY.page-crm-core-contact .pane-bmc-button {
+  background-color: Red;
+  margin: 0.375em 0em;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  white-space: nowrap;
+  display: inline-block;
+  text-transform: uppercase;
+  font-size: 90%;
+  padding: 6px 10px;
+  right: 1.5em;
+  margin-top: 0.75em;
+  position: absolute;
+  z-index: 999;
+}
+/* line 115, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .pane-pc-button A,
+BODY.page-crm-core-contact .pane-bmc-button A {
+  color: White;
+}
+/* line 103, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .pane-application-certification div {
+  text-align: center;
+  background-color: #e1e1e1;
+}
+/* line 107, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .pane-application-certification div span {
+  background-color: red;
+  margin: 0.375em 0em;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  white-space: nowrap;
+  display: inline-block;
+  text-transform: uppercase;
+  font-size: 90%;
+  padding: 6px 10px;
+  margin-top: 0.75em;
+}
+/* line 115, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .pane-application-certification div span A {
+  color: White;
+}
+/* line 119, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .pane-company-status TABLE {
+  width: 100%;
+  font-size: 90%;
+}
+/* line 132, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .pane-company-status TABLE TH {
+  text-align: left;
+  text-transform: uppercase;
+  border-bottom: 1px solid #CCC;
+  font-size: 0.85em;
+}
+/* line 138, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .pane-company-status TABLE TR {
+  background-color: transparent;
+}
+/* line 141, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .pane-company-status TABLE TD {
+  padding: 0.75em 0em;
+  font-weight: 600;
+}
+/* line 148, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .pane-company-status TABLE TH {
+  border-top: 1px solid Black;
+  border-bottom: 1px solid Black;
+  text-align: center;
+  padding: 0.75em 0em;
+}
+/* line 154, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .pane-company-status TABLE TD {
+  text-align: center;
+}
+/* line 122, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .view-lb-user-profile-manufacturers,
+BODY.page-crm-core-contact .view-lb-user-profile-suppliers {
+  margin-bottom: 0.75em;
+}
+/* line 126, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .view-lb-user-profile-manufacturers TABLE,
+BODY.page-crm-core-contact .view-lb-user-profile-suppliers TABLE {
+  width: 100%;
+  font-size: 90%;
+}
+/* line 132, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .view-lb-user-profile-manufacturers TABLE TH,
+BODY.page-crm-core-contact .view-lb-user-profile-suppliers TABLE TH {
+  text-align: left;
+  text-transform: uppercase;
+  border-bottom: 1px solid #CCC;
+  font-size: 0.85em;
+}
+/* line 138, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .view-lb-user-profile-manufacturers TABLE TR,
+BODY.page-crm-core-contact .view-lb-user-profile-suppliers TABLE TR {
+  background-color: transparent;
+}
+/* line 141, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .view-lb-user-profile-manufacturers TABLE TD,
+BODY.page-crm-core-contact .view-lb-user-profile-suppliers TABLE TD {
+  padding: 0.75em 0em;
+  font-weight: 600;
+}
+/* line 134, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .pane-lb-user-profile-brands-panel-pane-1 h2.pane-title,
+BODY.page-crm-core-contact .pane-lb-user-profile-manufacturers-panel-pane-1 H2.pane-title,
+BODY.page-crm-core-contact .pane-lb-user-profile-suppliers-panel-pane-1 H2.pane-title {
+  margin: 0em;
+  text-transform: uppercase;
+  font-size: 120%;
+}
+/* line 143, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .pane-lb-user-profile-brands-panel-pane-1,
+BODY.page-crm-core-contact .pane-lb-user-profile-suppliers-panel-pane-1,
+BODY.page-crm-core-contact .pane-lb-user-profile-brands-managers-panel-pane-1,
+BODY.page-crm-core-contact .pane-lb-user-profile-suppliers-panel-pane-1,
+BODY.page-crm-core-contact .pane-lb-user-profile-manufacturers-panel-pane-1 {
+  position: relative;
+}
+/* line 154, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .pane-sup-button,
+BODY.page-crm-core-contact .pane-mc-button {
+  margin: 0em;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  padding: 6px 10px;
+  white-space: nowrap;
+  display: inline-block;
+  text-transform: uppercase;
+  font-size: 90%;
+  background-color: Red;
+  position: absolute;
+  right: 1.5em;
+  margin-top: -.5em;
+}
+/* line 162, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .pane-sup-button A,
+BODY.page-crm-core-contact .pane-mc-button A {
+  color: White;
+}
+/* line 212, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .view-lb-company-page-recent-company-activities .views-row,
+BODY.page-crm-core-contact .view-lb-user-profile-recent-activities .views-row {
+  margin-bottom: 1.125em;
+}
+/* line 215, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .view-lb-company-page-recent-company-activities .views-row-last,
+BODY.page-crm-core-contact .view-lb-user-profile-recent-activities .views-row-last {
+  margin-bottom: 0em;
+}
+/* line 218, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .view-lb-company-page-recent-company-activities .views-field-activity-string,
+BODY.page-crm-core-contact .view-lb-user-profile-recent-activities .views-field-activity-string {
+  margin-left: 40px;
+}
+/* line 221, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .view-lb-company-page-recent-company-activities .views-field-created,
+BODY.page-crm-core-contact .view-lb-company-page-recent-company-activities .views-field-field-activity-date,
+BODY.page-crm-core-contact .view-lb-user-profile-recent-activities .views-field-created,
+BODY.page-crm-core-contact .view-lb-user-profile-recent-activities .views-field-field-activity-date {
+  margin-top: 0.375em;
+  margin-left: 40px;
+}
+/* line 226, ../sass/_mixins.scss */
+BODY.page-crm-core-contact .view-lb-company-page-recent-company-activities .ao-activity-icon,
+BODY.page-crm-core-contact .view-lb-user-profile-recent-activities .ao-activity-icon {
+  height: 30px;
+  width: 30px;
+  background-color: #CCC;
+  float: left;
+}
+
+/**
+ * CONTACTS
+ */
+/* line 183, ../sass/themes/_lbunny.scss */
+BODY.page-crm-core-contact .panel-display {
+  padding: 1.5em;
+  background-color: White;
+}
+
+/* line 189, ../sass/themes/_lbunny.scss */
+#block-menu-menu-crm-core-contact-menu {
+  float: left;
+}
+/* line 191, ../sass/themes/_lbunny.scss */
+#block-menu-menu-crm-core-contact-menu ul {
+  list-style: none;
+  background: none;
+  margin: 0;
+  padding: 0;
+}
+/* line 196, ../sass/themes/_lbunny.scss */
+#block-menu-menu-crm-core-contact-menu ul li {
+  list-style: none;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+/* line 202, ../sass/themes/_lbunny.scss */
+#block-menu-menu-crm-core-contact-menu ul li.active-trail a {
+  background: #cccccc;
+}
+/* line 206, ../sass/themes/_lbunny.scss */
+#block-menu-menu-crm-core-contact-menu ul li a {
+  display: block;
+  background: #777777;
+  padding: 3px 7px;
+}
+/* line 210, ../sass/themes/_lbunny.scss */
+#block-menu-menu-crm-core-contact-menu ul li a:hover {
+  background: #cccccc;
+  color: #000;
+}
+
+/* line 221, ../sass/themes/_lbunny.scss */
+.page-crm-core-reports h3 .crm_core_report_icon {
+  display: none;
+}

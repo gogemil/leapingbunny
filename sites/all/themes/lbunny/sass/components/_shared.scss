@@ -1,0 +1,48 @@
+#page {
+  .not-front & {
+    padding-top: 40px;
+  }
+}
+
+.page-guide-brands {
+  #page-title {
+    margin-top: 20px;
+  }
+}
+
+.page-user {
+  #page-title {
+  }
+  .tabs {
+    display: none;
+  }
+}
+
+// Contact Pages
+.node-type-contact-form {
+  .content-inner {
+    margin: 0 15%;
+  }
+  .node {
+    .field-name-field-cf-body {
+    }
+  }
+}
+
+.page-node-116,
+.page-node-4 {
+  #page {
+    .field-type-text-with-summary {
+      margin-left: 145px;
+    }
+    margin-bottom: 40px;
+    @media #{$mobile} {
+      .field-type-text-with-summary {
+        margin-left: 0;
+      }
+    }
+  }
+  #footer {
+    margin-top: 0;
+  }
+}

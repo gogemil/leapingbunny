@@ -1,0 +1,231 @@
+<?php
+/**
+ * @file
+ * Code for the LB Blog feature.
+ */
+
+include_once 'lb_blog.features.inc';
+
+/**
+ * Implements hook_theme().
+ */
+function lb_blog_theme() {
+  return array(
+    'lb_blog_archive' => array(
+      'render element' => 'element',
+    ),
+    'lb_blog_accordion' => array(
+      'template' => 'accordion',
+      'variables' => array('items' => NULL),
+    ),
+  );
+}
+
+/**
+ * Build out blocks to display in accordion.
+ */
+function lb_blog_accordion() {
+
+  $blocks = array('boxes' => 'lb_blog_about_box', 'tagclouds' => '1', 'lb_blog' => 'lb_date_navigation');
+  $items = array();
+  foreach ($blocks as $key => $delta) {
+    $block = module_invoke($key, 'block_view', $delta);
+    if ($key == 'tagclouds') {
+      $block['subject'] = str_replace('Tags in ', '', $block['subject']);
+    }
+    $items[] = $block;
+  }
+
+  $build['myelement'] = array(
+    '#theme' => 'lb_blog_accordion',
+    '#items' => $items,
+  );
+
+  $path = drupal_get_path('module', 'lb_blog');
+  $build['myelement']['#attached']['library'][] = array('system', 'ui.accordion');
+  $build['myelement']['#attached']['js'][] = array('data' => '(function($){$(function() { $("#accordion").accordion({active: false, collapsible: true, heightStyle: "content"}); })})(jQuery);', 'type' => 'inline');
+  $build['myelement']['#attached']['js'][] = "$path/lb_blog.js";
+  $output = drupal_render($build);
+  return $output;
+}
+
+/**
+ * Theme handler for theme('lb_blog_archive).
+ */
+function theme_lb_blog_archive($element) {
+
+  $items = array();
+
+  $items[] = $element['element']['show_all_link'];
+  $archive = $element['element']['archive'];
+
+  foreach ($archive as $ykey => $year) {
+    $item = array(
+      'data' => t('!link', array('!link' => l(t('@year (@count)', array('@year' => $year['text'], '@count' => $year['count'])), "blog/{$ykey}"))),
+      'children' => array(),
+    );
+    foreach ($year['months'] as $mkey => $month) {
+      $item['children'][] = array(
+        'data' => t('!link', array('!link' => l(t('@month (@count)', array('@month' => $month['text'] . ' ' . $year['text'], '@count' => $month['count'])), "blog/{$ykey}/{$mkey}"))),
+      );
+    }
+    $items[] = $item;
+  }
+  return theme('item_list', array(
+    'items' => $items,
+  ));
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function lb_blog_block_info() {
+  $blocks['lb_date_navigation'] = array(
+    'info' => t('Blog date navigation'),
+    'cache' => DRUPAL_CACHE_PER_PAGE | DRUPAL_CACHE_PER_USER,
+  );
+  $blocks['lb_accordions'] = array(
+    'info' => t('Mobile blog accordions'),
+    'cache' => DRUPAL_CACHE_PER_PAGE | DRUPAL_CACHE_PER_USER,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function lb_blog_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'lb_date_navigation':
+      $archive = _lb_blog_get_blog_archive_tree();
+      // If there aren't any blog posts, hide the block.
+      if (empty($archive)) {
+        return;
+      }
+
+      $block = array(
+        'subject' => t('Archive'),
+        'content' => array(
+          'show_all_link' => l(t('View all'), 'blog'),
+          'archive' => $archive,
+          '#theme' => 'lb_blog_archive',
+          '#cache' => DRUPAL_CACHE_PER_PAGE | DRUPAL_CACHE_PER_USER,
+        ),
+      );
+      break;
+
+    case 'lb_accordions':
+      $block = array(
+        'subject' => t('my accordions'),
+        'content' => lb_blog_accordion(),
+      );
+      break;
+  }
+  return $block;
+}
+
+/**
+ * Build a data tree of all published blog posts, with their year, month, and
+ * post-counts.
+ *
+ * Format:
+ * [2010] =>
+ *           count  => 3
+ *           text   => 2010
+ *           months =>
+ *                     [2] =>
+ *                            count => 1
+ *                            text  => Februrary
+ *                            days  =>
+ *                                     [16] =>
+ *                                             count => 1
+ *                                             text  => Tuesday
+ */
+function _lb_blog_get_blog_archive_tree() {
+  $tree = array();
+
+  // Declare the use of month-names and days to ensure translatioin tools can
+  // discover language-use in this module..
+  array(
+    t('Sunday'),
+    t('Monday'),
+    t('Tuesday'),
+    t('Wednesday'),
+    t('Thursday'),
+    t('Friday'),
+    t('Saturday'),
+  );
+  array(
+    t('January'),
+    t('February'),
+    t('March'),
+    t('April'),
+    t('May'),
+    t('June'),
+    t('July'),
+    t('August'),
+    t('September'),
+    t('October'),
+    t('November'),
+    t('December'),
+  );
+
+  foreach (_lb_blog__get_blog_posts() as $post) {
+    // Assume that getdate will return month-names in English.
+    $date = (object) getdate($post->created);
+
+    // Add the year.
+    if (!array_key_exists($date->year, $tree)) {
+      $tree[$date->year] = array(
+        'count' => 0,
+        'text' => $date->year,
+        'months' => array(),
+      );
+    }
+
+    // Add the month.
+    if (!array_key_exists($date->mon, $tree[$date->year]['months'])) {
+      $tree[$date->year]['months'][$date->mon] = array(
+        'count' => 0,
+        'text' => t($date->month),
+        'days' => array(),
+      );
+    }
+
+
+     // Add the day.
+    if (!array_key_exists($date->mday, $tree[$date->year]['months'][$date->mon]['days'])) {
+      $tree[$date->year]['months'][$date->mon]['days'][$date->mday] = array(
+        'count' => 0,
+        'text' => t($date->weekday),
+      );
+    }
+    $tree[$date->year]['count']++;
+    $tree[$date->year]['months'][$date->mon]['count']++;
+    $tree[$date->year]['months'][$date->mon]['days'][$date->mday]['count']++;
+  }
+  return $tree;
+}
+
+/**
+ * Fetch the nid and created-date of all published blog-posts.
+ *
+ * @return array
+ * An array of objects, each with the property nid and created, sorted by
+ * creation-time (new to old).
+ */
+function _lb_blog__get_blog_posts() {
+  $blog_posts = &drupal_static(__FUNCTION__, NULL);
+  if (is_null($blog_posts)) {
+    $blog_posts = db_select('node', 'n', array('target' => 'slave'))
+      ->fields('n', array('nid', 'created'))
+      ->condition("n.type", 'blog_entry')
+      ->condition("n.status", NODE_PUBLISHED)
+      ->orderBy("n.created", 'DESC')
+      ->addTag('node_access')
+      ->execute()
+      ->fetchAll();
+  }
+  return $blog_posts;
+}

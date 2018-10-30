@@ -1,0 +1,278 @@
+
+/**
+ * Leaping Bunny Standard Fonts
+ * Supplies some standard fonts used in the theme
+ * Used in the user profile page
+ */
+@mixin lb_standard_fonts($type: text){
+
+  @if $type == text {
+    font-size: 90%;
+  }
+
+  @if $type == header {
+    margin: 0em;
+    text-transform: uppercase;
+    font-size: 120%;
+  }
+
+  @if $type == button {
+    text-transform: uppercase;
+    font-size: 90%;
+  }
+
+
+}
+
+/**
+ * Displays a set of fields with a uniform
+ */
+@mixin lb-field-display($container-width: 100%, $label-width: 20%, $label-min-width: 100px) {
+  .view-content {
+    width: $container-width;
+    .views-row {
+      .views-field {
+        .views-label {
+          width: $label-width;
+          min-width: $label-min-width;
+          text-align: right;
+          padding-right: rhythm(.5);
+        }
+      }
+    }
+  }
+}
+
+
+/**
+ * Leaping Bunny Box
+ * Creates a box that contains some specific information, typically used in a grid
+ * Used in the user profile page
+ */
+@mixin lb_box($fields-as-table: false){
+  border: 1px solid #CCC;
+  padding: rhythm(1);
+  position: relative;
+  @include box-sizing(border-box);
+  margin-bottom: rhythm(.5);
+  @include lb_standard_fonts();
+
+  H2.pane-title {
+    @include lb_standard_fonts(header);
+    margin-bottom: rhythm(.5);
+  }
+
+  @if $fields-as-table == true {
+
+    .view-content {
+      .views-row {
+        display: table;
+        width: 100%;
+      }
+      .views-field {
+        display: table-row;
+
+        .views-label {
+          font-weight: 600;
+        }
+        .views-label,
+        .field-content {
+          display: table-cell;
+        }
+
+      }
+    }
+  }
+}
+
+/**
+ * Leaping Bunny Box Button
+ * Creates a button appearing in the header next to the title of an LB box
+ * Used in the user profile page
+ */
+@mixin lb_box_button($position: 'normal', $topoffset: 0px, $bottomoffset: 0px, $leftoffset: 0px, $rightoffset: 0px ){
+
+  @include border-radius(5px);
+  // background: $dark;
+  // color: $white;
+  // border: 1px solid $white;
+  white-space: nowrap;
+  display: inline-block;
+  @include lb_standard_fonts(button);
+  padding: 6px 10px;
+
+  @if $position == 'topright' {
+    position: absolute;
+    top: $topoffset;
+    right: $rightoffset;
+  }
+  @if $position == 'topleft' {
+    position: absolute;
+    top: $topoffset;
+    left: $leftoffset;
+  }
+
+  A {
+    color: White;
+  }
+
+}
+
+/**
+ * Leaping Bunny User Table
+ * Styles tables appearing on the frontend
+ * Used in the user profile page
+ */
+@mixin lb_user_table($header-style: none){
+
+  width: 100%;
+  @include lb_standard_fonts();
+
+  // default cell styles
+  TH {
+    text-align: left;
+    text-transform: uppercase;
+    border-bottom: 1px solid #CCC;
+    font-size: 0.85em;
+  }
+  TR {
+    background-color: transparent;
+  }
+  TD {
+    padding: rhythm(.5) 0em;
+    font-weight: 600;
+  }
+
+  // flying headers
+  @if $header-style == 'flying' {
+    TH {
+      border-top: 1px solid Black;
+      border-bottom: 1px solid Black;
+      text-align: center;
+      padding: rhythm(.5) 0em;
+    }
+    TD {
+      text-align: center;
+    }
+  }
+}
+
+/**
+ * Leaping Bunny Header Button
+ * Styles a button that appears next to the title of a block on the user profile page
+ * Used in the user profile page
+ */
+@mixin lb_header_button($position: 'normal', $topoffset: 0px, $bottomoffset: 0px, $leftoffset: 0px, $rightoffset: 0px ){
+
+  @include border-radius(5px);
+  // background: $dark;
+  // color: $white;
+  // border: 1px solid $white;
+  padding: 6px 10px;
+  white-space: nowrap;
+  display: inline-block;
+  @include lb_standard_fonts(button);
+
+  @if $position == 'full' {
+    position: relative;
+    margin-bottom: rhythm(.5);
+    font-size: 120%;
+  }
+  @if $position == 'topright' {
+    position: absolute;
+    top: $topoffset;
+    right: $rightoffset;
+  }
+  @if $position == 'topleft' {
+    position: absolute;
+    top: $topoffset;
+    left: $leftoffset;
+  }
+
+  A {
+    // color: White;
+  }
+}
+
+/**
+ * Leaping Bunny Brand Grid
+ * Displays brands in a grid
+ * Apply this to the container around the grid
+ * Used in the user profile page
+ */
+@mixin lb_brand_grid(){
+}
+
+/**
+ * Leaping Bunny Activity List
+ * Displays a list of activities on the frontend of the site
+ * Used in the user profile page
+ */
+@mixin lb_activity_list(){
+  .views-row {
+    margin-bottom: rhythm(.75);
+  }
+  .views-row-last {
+    margin-bottom: 0em;
+  }
+  .views-field-activity-string {
+    margin-left: 40px;
+  }
+  .views-field-created,
+  .views-field-field-activity-date {
+    margin-top: rhythm(.25);
+    margin-left: 40px;
+  }
+  .ao-activity-icon {
+    height: 30px;
+    width: 30px;
+    background-color: #CCC;
+    float: left;
+  }
+}
+
+
+/**
+ * Leaping Bunny Application Box
+ * Styles the sections of an application for the frontend
+ * Used in the Application page
+ */
+@mixin lb_app_box($fields-as-table: false){
+  border: 1px solid #CCC;
+  padding: rhythm(1);
+  position: relative;
+  @include box-sizing(border-box);
+  margin-bottom: rhythm(.5);
+  @include lb_standard_fonts();
+
+  H2.pane-title {
+    @include lb_standard_fonts(header);
+    margin-bottom: rhythm(.5);
+  }
+
+  @if $fields-as-table == true {
+
+    .view-content {
+      .views-row {
+        display: table;
+        width: 100%;
+      }
+      .views-field {
+        display: table-row;
+
+        .views-label {
+          font-weight: 600;
+        }
+        .views-label,
+        .field-content {
+          display: table-cell;
+        }
+        .views-label {
+          width: 40%;
+        }
+
+      }
+    }
+  }
+}
+

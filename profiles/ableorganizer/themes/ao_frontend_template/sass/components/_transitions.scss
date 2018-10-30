@@ -1,0 +1,35 @@
+/**
+ * @file
+ * Transitions
+ *
+ * Mixins to create CSS transitions
+ */
+ 
+/**
+ * ao-transition
+ * Creates a CSS transition. All properties can be ignored by setting them to 0.
+ *
+ * $property: the properties to apply the transition to. Defaults to all.
+ * $duration: the duration for the transition. Defaults to .2s.
+ * $timing: the timing function for the transition. Defaults to ease-in-out.
+ * $delay: the delay before transition occurs. Defaults to false.
+ */ 
+@mixin ao-transition (
+  $property:  all,
+  $duration:  .2s,
+  $timing:    ease-in-out,
+  $delay:    false
+) {
+  @if $property != false {
+    @include transition-property($property);
+  }
+  @if $duration != false {
+    @include transition-duration($duration);
+  }
+  @if $timing != false {
+    @include transition-timing-function($timing);  
+  }
+  @if $delay != false {
+    @include transition-delay($delay);
+  }
+}
